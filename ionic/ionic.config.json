@@ -1,0 +1,14 @@
+{
+  "name": "xsmart",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular",
+  "pro_id": "d3d815b1",
+  "proxies": [
+    {
+      "path": "/esp32",
+      "proxyUrl": "https://192.168.4.1/"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Home</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <div>
+    Platform: {{message}}
+  </div>
+
+  <div *ngIf="!xSmartConnect">
+    Waiting to connect to wifi network
+    <br/>
+    <ion-spinner></ion-spinner>
+  </div>
+
+  <div *ngIf="xSmartConnect">
+    {{deviceName}}
+    <br/>
+    <ion-button (click)="scanWifi()" color="primary">Scan Wifi Networks</ion-button>
+    <Br/>
+    <ion-list *ngFor="let wifi of wifinetworks">
+      <ion-item (click)="askWifiPassword(wifi)">
+        <ion-avatar slot="start">
+            <ion-icon slot="start" name="wifi"></ion-icon>
+        </ion-avatar>
+        <ion-label>
+          <h2>{{wifi.SSID}}</h2>
+          <div>
+              {{wifi.RSSI}} -- {{wifi.ENC}}
+          </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+
+
+
+  </div>
+
+</ion-content>
