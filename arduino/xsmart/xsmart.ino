@@ -23,7 +23,7 @@ WebSocketClient webSocketClient; // Use WiFiClient class to create TCP connectio
 WiFiClient client;   //this client is used to make tcp connection
 WiFiMulti wifiMulti; // connecting to multiple wifi networks
 String webID = "LOLIN32-LITE-code-v.0.0.1"; //this should be some random no, we assigned to each device. ;
-
+String device_ssid = "xSmart-" + String(ESP_getChipId());
 
 //this pins for lolin32 large device
 //const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
@@ -42,7 +42,6 @@ const int max_delay_connect_wifi = delay_connect_wifi * 3;  //this is the max ti
 
 int ping_packet_count = 0;  //ping packet is also variable only after 10 times do we second another package
 const int ping_packet_reset = 10;
-long challange = 0;
 
 int ok_ping_not_recieved_count = 0; //this is to check if we get back OK response of our ping, if not we do socket connection again.
 const int ok_ping_not_recieved_count_max = 20;
@@ -78,11 +77,11 @@ void startWifiAP() {
 
 
     //    WiFi.config(ip, gateway, subnet);
-    String ap_ssid = "xSmart-" + String(ESP_getChipId());
-    Serial.println(ap_ssid);
+    
+    Serial.println(device_ssid);
     Serial.println("Configuring  access point for wifi network ...");
-    char ap_ssid_array[ap_ssid.length() + 1];
-    ap_ssid.toCharArray(ap_ssid_array, ap_ssid.length() + 1);
+    char ap_ssid_array[device_ssid.length() + 1];
+    device_ssid.toCharArray(ap_ssid_array, device_ssid.length() + 1);
     WiFi.softAP(ap_ssid_array, esp_ap_password);
     //    WiFi.begin(); // this is to test, because in between when we do this wifi gets disconnected once
     WiFi.waitForConnectResult();
@@ -96,7 +95,7 @@ void startWifiAP() {
 
     server.on("/", HTTP_GET, []() {
       Serial.println("ping");
-      server.send(200, "application/json", "{\"ping\":\"" + webID + "\"}");
+      server.send(200, "application/json", "{\"webid\":\"" + webID + "\",\"chip\":\"" + device_ssid + "\"}");
     });
 
     server.on("/wifi", HTTP_GET, []() {
@@ -291,9 +290,9 @@ void pingPacket() {
       }
     }
     randomSeed(analogRead(0));
-    challange = random(1, 1000);
+    long challenge = random(1, 1000);
     String input =
-      "{\"WEBID\":\"" + webID + "\",\"PINS\":[" + pin_data + "]\,\"PINS_STATUS\":[" + pin_status + "]\,\"challange\":\"" + challange + "\"}";
+      "{\"type\":\"device_ping\",\"WEBID\":\"" + webID + "\",\"chip\":\"" + device_ssid + "\",\"PINS\":[" + pin_data + "]\,\"PINS_STATUS\":[" + pin_status + "]\,\"challenge\":\"" + challenge + "\"}";
     Serial.println(input);
     webSocketClient.sendData(input);
     delay(10);

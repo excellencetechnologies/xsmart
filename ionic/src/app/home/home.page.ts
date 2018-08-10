@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 
 import { ApiService } from "../api/api.service";
-import { Ping, Wifi } from "../api/api"
+import { DeviceService } from "../api/device.service"
+import { Ping, Wifi, Device } from "../api/api"
 
 @Component({
   selector: 'app-home',
@@ -15,26 +16,53 @@ export class HomePage implements OnInit {
 
   message: String = "test";
   xSmartConnect: boolean = false;
-  deviceName: string = "";
   wifinetworks: Wifi[] = [];
+  devicePing: Ping;
+  devices: Device[] = [];
+  isScanningDevice: boolean = false;
 
   constructor(
     private platform: Platform,
     private http: HttpClient,
     private api: ApiService,
-    public alertController: AlertController) { }
+    public alertController: AlertController,
+    private deviceService: DeviceService) { }
 
   ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
-      this.keepCheckingWifiConnected();
+      // this.keepCheckingWifiConnected();
+      this.checkExistingDevice();
     });
+  }
+  async checkExistingDevice() {
+    this.devices = await this.deviceService.getDevices();
+    if(this.devices.length === 0){
+
+    }
+    // if (existingDevices.length === 0) {
+    // test code
+    //   let device: Device = {
+    //     name: "xSmart Test",
+    //     device_id: "test",
+    //     chip: "chip",
+    //     ttl: 123123123,
+    //     online: false
+    //   }
+    //   this.deviceService.addDevice(device)
+    //   existingDevices = await this.deviceService.getDevices();
+    // }
+
+  }
+  scanDevice(){
+    this.isScanningDevice = true;
+    this.keepCheckingWifiConnected();
   }
   keepCheckingWifiConnected() {
     setInterval(async () => {
       try {
-        let response: Ping = await this.api.checkPing();
-        this.deviceName = response.ping;
+        this.devicePing = await this.api.checkPing();
+        console.log(this.devicePing);
         this.xSmartConnect = true;
       } catch (e) {
         console.log(e)

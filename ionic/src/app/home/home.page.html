@@ -10,14 +10,46 @@
     Platform: {{message}}
   </div>
 
-  <div *ngIf="!xSmartConnect">
-    Waiting to connect to wifi network
-    <br/>
-    <ion-spinner></ion-spinner>
+  <div *ngIf="devices.length">
+    <ion-card *ngFor="let device of devices">
+      <!-- <ion-img src="/assets/myImg.png"></ion-img> -->
+    
+      <ion-card-content>
+        <ion-card-title>{{device.name}}</ion-card-title>
+    
+        <p>{{device.chip}}</p>
+        <p>{{device.device_id}}</p>
+        <p>{{device.chip}}</p>
+        <p>{{device.ttl}}</p>
+        <p>{{device.online}}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div *ngIf="!devices.length">
+     No Devices Found!
+  </div>
+
+  
+  <ion-button (click)="scanDevice()" color="primary">Scan For devices</ion-button>
+
+  <div *ngIf="isScanningDevice">
+
+      Turn on Access point on your device and connect to the wifi network.
+      <br/>
+      Network name like xSmart-XXXXXX  should show up on your phone. 
+      <br/>
+      Connect to the network with password : 123456789
+      <br/>
+      Waiting to connect to wifi network
+      <br/>
+      <ion-spinner></ion-spinner>
   </div>
 
   <div *ngIf="xSmartConnect">
-    {{deviceName}}
+    {{device.webid}}
+    <br/>
+    {{device.chip}}
     <br/>
     <ion-button (click)="scanWifi()" color="primary">Scan Wifi Networks</ion-button>
     <Br/>
