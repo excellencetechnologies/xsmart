@@ -1,6 +1,0 @@
-{
-    "name": "xsmart",
-    "scripts": {
-      "start" : "node websocket.js"
-    }
-}

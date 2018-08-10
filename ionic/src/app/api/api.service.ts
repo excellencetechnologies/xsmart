@@ -2,11 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { Ping, Wifi } from "./api"
+import io from 'socket.io-client';
 
+const socket = io('http://5.9.144.226:9030');
 
-import { WebsocketService } from './websocket.service';
+socket.on('connect', function(){
+  console.log("connected");
+});
+  socket.on('event', function(data){});
+  socket.on('disconnect', function(){});
 
-const WS_URL = 'ws://http://5.9.144.226:9030/';
 
 export interface Message {
   author: string,
