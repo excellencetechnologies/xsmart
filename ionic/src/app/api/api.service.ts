@@ -2,16 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Ping, Wifi } from "./api"
-import io from 'socket.io-client';
 
-const socket = io('http://5.9.144.226:9030');
+const socket = new WebSocket('ws://5.9.144.226:9030');
 
-socket.on('connect', function(){
-  console.log("connected");
+// Connection opened
+socket.addEventListener('open', function (event) {
+    socket.send('Hello Server!');
 });
-  socket.on('event', function(data){});
-  socket.on('disconnect', function(){});
 
+// Listen for messages
+socket.addEventListener('message', function (event) {
+    console.log('Message from server ', event.data);
+});
 
 
 @Injectable({
