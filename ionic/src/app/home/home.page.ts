@@ -7,6 +7,11 @@ import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
 import { Ping, Wifi, Device } from "../api/api"
 
+
+const socket = new WebSocket('ws://5.9.144.226:9030');
+
+let wifiCheckInterval = null;
+
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
@@ -33,11 +38,25 @@ export class HomePage implements OnInit {
       this.message = "platform ready";
       // this.keepCheckingWifiConnected();
       this.checkExistingDevice();
+
+
+      // Connection opened
+      socket.addEventListener('open', function (event) {
+        // socket.send({"test":'Hello Server!'});
+        console.log("socket connected");
+      });
+
+      // Listen for messages
+      socket.addEventListener('message', function (event) {
+        console.log('Message from server ', event.data);
+      });
+
+
     });
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
-    if(this.devices.length === 0){
+    if (this.devices.length === 0) {
 
     }
     // if (existingDevices.length === 0) {
@@ -54,16 +73,17 @@ export class HomePage implements OnInit {
     // }
 
   }
-  scanDevice(){
+  scanDevice() {
     this.isScanningDevice = true;
     this.keepCheckingWifiConnected();
   }
   keepCheckingWifiConnected() {
-    setInterval(async () => {
+    wifiCheckInterval = setInterval(async () => {
       try {
         this.devicePing = await this.api.checkPing();
         console.log(this.devicePing);
         this.xSmartConnect = true;
+        clearInterval(wifiCheckInterval);
       } catch (e) {
         console.log(e)
         this.xSmartConnect = false;
@@ -79,6 +99,12 @@ export class HomePage implements OnInit {
       console.log(e)
       this.xSmartConnect = false;
     }
+  }
+  async keepCheckingDeviceOnline() {
+    socket.send(JSON.stringify({ 
+      type: "device_online_check",
+      chip: this.devicePing.chip
+    }));
   }
   async askWifiPassword(wifi) {
     const alert = await this.alertController.create({
@@ -101,6 +127,7 @@ export class HomePage implements OnInit {
             console.log(data.password);
             console.log(wifi.SSID);
             await this.api.setWifiPassword(wifi.SSID, data.password);
+
           }
         }
       ]
