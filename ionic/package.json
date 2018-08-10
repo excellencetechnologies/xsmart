@@ -32,13 +32,6 @@
     "cordova-plugin-hotspot": "^1.2.10",
     "cordova-plugin-nativestorage": "^2.3.2",
     "core-js": "^2.5.3",
-<<<<<<< HEAD
-    "rxjs": "^6.2.2",
-    "rxjs-compat": "^6.2.2",
-=======
-    "rxjs": "6.2.2",
-    "socket.io-client": "^2.1.1",
->>>>>>> parent of 9f9fc29... working on features
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
