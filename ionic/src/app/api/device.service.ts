@@ -2,7 +2,6 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
-
 import { Device } from "./api"
 
 @Injectable({

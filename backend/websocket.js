@@ -1,4 +1,6 @@
 // server.js
+// pm2 start websocket.js --name "xsmart"
+
 var Server = require('ws').Server;
 var port = process.env.PORT || 9030;
 var ws = new Server({ port: port });

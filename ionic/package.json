@@ -32,7 +32,8 @@
     "cordova-plugin-hotspot": "^1.2.10",
     "cordova-plugin-nativestorage": "^2.3.2",
     "core-js": "^2.5.3",
-    "rxjs": "6.2.2",
+    "rxjs": "^6.2.2",
+    "rxjs-compat": "^6.2.2",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
