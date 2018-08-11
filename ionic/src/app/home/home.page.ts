@@ -8,7 +8,7 @@ import { DeviceService } from "../api/device.service"
 import { Ping, Wifi, Device } from "../api/api"
 
 
-const socket = new WebSocket('ws://5.9.144.226:9030');
+let socket = null;
 
 let wifiCheckInterval = null;
 
@@ -25,6 +25,10 @@ export class HomePage implements OnInit {
   devicePing: Ping;
   devices: Device[] = [];
   isScanningDevice: boolean = false;
+  mode: String = "device"; 
+  // mode show in which state the mobile app is 
+  // 1. device (i.e it will show list of devices if any)
+  // 2. scan ( i.e scan for devices )
 
   constructor(
     private platform: Platform,
@@ -40,19 +44,31 @@ export class HomePage implements OnInit {
       this.checkExistingDevice();
 
 
+      
+
+
+    });
+  }
+  sendMessageToSocket(msg){
+    if(socket && socket.readyState === "1"){
+      socket.send(msg);
+      
+    }else{
+      socket = new WebSocket('ws://5.9.144.226:9030');
       // Connection opened
       socket.addEventListener('open', function (event) {
         // socket.send({"test":'Hello Server!'});
         console.log("socket connected");
+        socket.send(msg);
       });
 
       // Listen for messages
       socket.addEventListener('message', function (event) {
         console.log('Message from server ', event.data);
       });
-
-
-    });
+    }
+      
+    
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
@@ -74,6 +90,7 @@ export class HomePage implements OnInit {
 
   }
   scanDevice() {
+    this.mode = "scan";
     this.isScanningDevice = true;
     this.keepCheckingWifiConnected();
   }
@@ -83,10 +100,12 @@ export class HomePage implements OnInit {
         this.devicePing = await this.api.checkPing();
         console.log(this.devicePing);
         this.xSmartConnect = true;
+        this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
       } catch (e) {
         console.log(e)
-        this.xSmartConnect = false;
+        this.isScanningDevice = true;
+        // this.xSmartConnect = false;
       }
     }, 5000)
   }
@@ -97,11 +116,11 @@ export class HomePage implements OnInit {
       console.log(this.wifinetworks);
     } catch (e) {
       console.log(e)
-      this.xSmartConnect = false;
+      this.isScanningDevice = true;
     }
   }
   async keepCheckingDeviceOnline() {
-    socket.send(JSON.stringify({ 
+    this.sendMessageToSocket(JSON.stringify({ 
       type: "device_online_check",
       chip: this.devicePing.chip
     }));
@@ -127,7 +146,7 @@ export class HomePage implements OnInit {
             console.log(data.password);
             console.log(wifi.SSID);
             await this.api.setWifiPassword(wifi.SSID, data.password);
-
+            this.keepCheckingDeviceOnline();
           }
         }
       ]
