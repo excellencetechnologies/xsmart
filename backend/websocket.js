@@ -33,7 +33,7 @@ ws.on('connection', function (w) {
           }
         });
         if(!found){
-          w.send({});
+          w.send("");
         }
         
       }
