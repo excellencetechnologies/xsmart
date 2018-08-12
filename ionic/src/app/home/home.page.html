@@ -21,7 +21,7 @@
 
           <p>Device ID: {{device.device_id}}</p>
           <p>CHIP: {{device.chip}}</p>
-          <p>Last Online: {{device.ttl}}</p>
+          <p>Last Online: {{device.ttl | date:'short'}}</p>
           <p>Is Online: {{device.online}}</p>
         </ion-card-content>
       </ion-card>

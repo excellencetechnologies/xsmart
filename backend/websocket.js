@@ -17,7 +17,6 @@ ws.on('connection', function (w) {
         var id = obj['WEBID'];
         w.id = id;
         w.pins = obj['PINS'];
-        w.pins_status = obj['PINS_STATUS'];
         w.chip = obj['chip'];
         w.send(JSON.stringify({
           type: "OK",
@@ -32,7 +31,6 @@ ws.on('connection', function (w) {
               type :"device_online_check_reply",
               id: client.id,
               pins: client.pins,
-              pins_status: client.pins_status,
               chip: client.chip
             }));
             found = true;

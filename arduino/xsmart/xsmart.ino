@@ -242,12 +242,13 @@ void connectWifi()
   Serial.print("Connecting to wifi");
 
   //  WiFi.begin(ssid, password);
-  
+
   Serial.println("saved wifi details in config");
   JsonArray &savedwifi = xconfig.getWifiSSID();
   Serial.print("found wifi saved");
   Serial.println(savedwifi.size());
-  if(savedwifi.size() == 0){
+  if (savedwifi.size() == 0)
+  {
     Serial.println("switching to ap mode, since no wifi details found");
     current_wifi_status = WIFI_AP_MODE;
     return;
@@ -326,12 +327,10 @@ void pingPacket()
     JsonArray &pins = root.createNestedArray("PINS");
     for (int i = 0; i < PIN_SIZE; i++)
     {
-      pins.add(PINS[i]);
-    }
-    JsonArray &pin_status = root.createNestedArray("PINS_STATUS");
-    for (int i = 0; i < PIN_SIZE; i++)
-    {
-      pin_status.add(PINS[i]);
+      JsonObject &pin = jsonBuffer.createObject();
+      pin["pin"] = PINS[i];
+      pin['status'] = PINS_STATUS[i];
+      pins.add(pin);
     }
 
     String response = "";

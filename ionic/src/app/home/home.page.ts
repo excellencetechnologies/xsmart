@@ -59,19 +59,26 @@ export class HomePage implements OnInit {
       });
 
       // Listen for messages
-      socket.addEventListener('message', function (event) {
+      socket.addEventListener('message', (event) => {
         console.log('Message from server ', event);
-
+        let res = JSON.parse(event.data);
+        if (res.type === "device_online_check_reply") {
+            this.updateDeviceStatus(res);
+        }
       });
     }
 
 
   }
+  async updateDeviceStatus(data) {
+    await this.deviceService.updateDevice(data);
+    this.devices = await this.deviceService.getDevices();
+  }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length === 0) {
 
-    }else{
+    } else {
       this.keepCheckingDeviceOnline();
     }
     // if (existingDevices.length === 0) {
@@ -103,8 +110,8 @@ export class HomePage implements OnInit {
         clearInterval(wifiCheckInterval);
         let newdevice: Device = {
           name: "",
-          device_id : this.devicePing.webid,
-          chip : this.devicePing.chip,
+          device_id: this.devicePing.webid,
+          chip: this.devicePing.chip,
           ttl: 0,
           online: false
         };
