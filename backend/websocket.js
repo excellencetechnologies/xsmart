@@ -21,7 +21,7 @@ ws.on('connection', function (w) {
         w.chip = obj['chip'];
         w.send(JSON.stringify({
           type: "OK",
-          challange: obj['challenge']
+          challenge: obj['challenge']
         }));
       }else if(obj.type === "device_online_check"){
         let chip = obj['chip'];
@@ -29,7 +29,12 @@ ws.on('connection', function (w) {
         ws.clients.forEach(function each(client) {
           if (client.chip == chip) {
             console.log(client);
-            w.send(JSON.stringify(client));
+            w.send(JSON.stringify({
+              id: client.id,
+              pins: client.pins,
+              pins_status: client.pins_status,
+              chip: client.chip
+            }));
             found = true;
           }
         });
