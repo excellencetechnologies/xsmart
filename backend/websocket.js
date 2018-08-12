@@ -30,7 +30,6 @@ ws.on('connection', function (w) {
           if (client.chip == chip) {
             w.send(JSON.stringify(client));
             found = true;
-            break;
           }
         });
         if(!found){

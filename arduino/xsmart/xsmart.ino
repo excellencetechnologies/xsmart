@@ -1,12 +1,12 @@
 #include <WiFi.h>
 #include <WiFiMulti.h>
 #include <WebSocketClient.h>
-#include <ArduinoJson.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
-#include <FS.h>
-#include <SPIFFS.h>
+#include <ArduinoJson.h>
+#include <xconfig.h>
 
+XConfig xconfig = XConfig("/config.json");
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module
 
@@ -91,7 +91,16 @@ void startWifiAP()
 
     server.on("/", HTTP_GET, []() {
       Serial.println("ping");
-      server.send(200, "application/json", "{\"webid\":\"" + webID + "\",\"chip\":\"" + device_ssid + "\"}");
+
+      StaticJsonBuffer<200> jsonBuffer;
+      JsonObject &root = jsonBuffer.createObject();
+      root["webid"] = webID;
+      root["chip"] = device_ssid;
+      String response = "";
+      root.printTo(response);
+      Serial.println();
+      root.printTo(Serial);
+      server.send(200, "application/json", response);
     });
 
     server.on("/wifi", HTTP_GET, []() {
@@ -100,7 +109,8 @@ void startWifiAP()
       // WiFi.scanNetworks will return the number of networks found
       int n = WiFi.scanNetworks();
       Serial.println("scan done");
-      String json = "[";
+      StaticJsonBuffer<2000> jsonBuffer;
+      JsonArray &root = jsonBuffer.createArray();
       if (n == 0)
       {
         Serial.println("no networks found");
@@ -110,27 +120,25 @@ void startWifiAP()
         Serial.print(n);
         Serial.println(" networks found");
 
+        int max = 15;
         for (int i = 0; i < n; ++i)
         {
+          JsonObject &wifi = jsonBuffer.createObject();
           String auth = (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "OPEN" : "AUTH";
-          json +=
-              "{\"SSID\":\"" + WiFi.SSID(i) + "\",\"RSSI\":" + WiFi.RSSI(i) + "\,\"ENC\":\"" + auth + "\"}";
-          // Print SSID and RSSI for each network found
-          Serial.print(i + 1);
-          Serial.print(": ");
-          Serial.print(WiFi.SSID(i));
-          Serial.print(" (");
-          Serial.print(WiFi.RSSI(i));
-          Serial.print(")");
-          Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
-          if (i != (n - 1))
+          wifi["SSID"] = WiFi.SSID(i);
+          wifi["RSSI"] = WiFi.RSSI(i);
+          wifi["auth"] = auth;
+          root.add(wifi);
+          if (i > max)
           {
-            json += ",";
+            break;
           }
           delay(10);
         }
       }
-      json += "]";
+      String json = "";
+      root.printTo(json);
+      root.prettyPrintTo(Serial);
       server.send(200, "application/json", json);
     });
 
@@ -151,7 +159,13 @@ void startWifiAP()
       password.toCharArray(passsword_array, password.length() + 1);
 
       //check if wifi password valid
-      server.send(200, "application/json", "{\"ssid\":\"" + ssid + "\",\"password\":\"" + password + "\"}");
+      StaticJsonBuffer<200> jsonBuffer;
+      JsonObject &root = jsonBuffer.createObject();
+      root["ssid"] = ssid;
+      root["password"] = password;
+      String response = "";
+      root.printTo(response);
+      server.send(200, "application/json", response);
       stopAP();
       WiFi.mode(WIFI_STA);
       delay(100);
@@ -164,6 +178,8 @@ void startWifiAP()
       {
         Serial.println("connected");
         current_wifi_status = WIFI_CONNECT_MODE;
+        xconfig.deleteWifiSSID(ssid);
+        xconfig.addWifiSSID(ssid, password);
         connectWifi();
       }
       else
@@ -174,11 +190,21 @@ void startWifiAP()
     server.on("/wifiresult", HTTP_GET, []() {
       if (store_wifi_api_connect_result == WL_CONNECTED)
       {
-        server.send(200, "application/json", "{\"status\":\"connected\"}");
+        StaticJsonBuffer<200> jsonBuffer;
+        JsonObject &root = jsonBuffer.createObject();
+        root["status"] = "connected";
+        String response = "";
+        root.printTo(response);
+        server.send(200, "application/json", response);
       }
       else
       {
-        server.send(200, "application/json", "{\"password\":\"not_connected\"}");
+        StaticJsonBuffer<200> jsonBuffer;
+        JsonObject &root = jsonBuffer.createObject();
+        root["status"] = "";
+        String response = "not_connected";
+        root.printTo(response);
+        server.send(200, "application/json", response);
       }
       store_wifi_api_connect_result = -1;
     });
@@ -216,11 +242,23 @@ void connectWifi()
   Serial.print("Connecting to wifi");
 
   //  WiFi.begin(ssid, password);
-
-  wifiMulti.addAP("MANISH", "9717071555");
-  wifiMulti.addAP("Binatone 1006", "0123456789");
-  wifiMulti.addAP("Etech4", "building@123");
-  wifiMulti.addAP("Redmi amanish", "java@123");
+  
+  Serial.println("saved wifi details in config");
+  JsonArray &savedwifi = xconfig.getWifiSSID();
+  Serial.print("found wifi saved");
+  Serial.println(savedwifi.size());
+  if(savedwifi.size() == 0){
+    Serial.println("switching to ap mode, since no wifi details found");
+    current_wifi_status = WIFI_AP_MODE;
+    return;
+  }
+  for (int i = 0; i < savedwifi.size(); i++)
+  {
+    JsonObject &obj = savedwifi[i].as<JsonObject>();
+    Serial.println(obj["ssid"].as<char *>());
+    Serial.println(obj["password"].as<char *>());
+    wifiMulti.addAP(obj["ssid"].as<char *>(), obj["password"].as<char *>());
+  }
 
   int tries = 0;
   while (wifiMulti.run() != WL_CONNECTED)
@@ -277,37 +315,29 @@ void pingPacket()
 {
   if (ping_packet_count == 0)
   {
-    String data = "";
-    String pin_data = "";
-    String pin_status = "";
-    for (int i = 0; i < PIN_SIZE; i++)
-    {
-      if (i == PIN_SIZE - 1)
-      {
-        pin_data += String(PINS[i]);
-      }
-      else
-      {
-        pin_data += String(PINS[i]) + ",";
-      }
-    }
-    for (int i = 0; i < PIN_SIZE; i++)
-    {
-      if (i == PIN_SIZE - 1)
-      {
-        pin_status += String(PINS_STATUS[i]);
-      }
-      else
-      {
-        pin_status += String(PINS_STATUS[i]) + ",";
-      }
-    }
     randomSeed(analogRead(0));
     long challenge = random(1, 1000);
-    String input =
-        "{\"type\":\"device_ping\",\"WEBID\":\"" + webID + "\",\"chip\":\"" + device_ssid + "\",\"PINS\":[" + pin_data + "]\,\"PINS_STATUS\":[" + pin_status + "]\,\"challenge\":\"" + challenge + "\"}";
-    Serial.println(input);
-    webSocketClient.sendData(input);
+    StaticJsonBuffer<200> jsonBuffer;
+    JsonObject &root = jsonBuffer.createObject();
+    root["type"] = "device_ping";
+    root["WEBID"] = webID;
+    root["chip"] = device_ssid;
+    root["challenge"] = challenge;
+    JsonArray &pins = root.createNestedArray("PINS");
+    for (int i = 0; i < PIN_SIZE; i++)
+    {
+      pins.add(PINS[i]);
+    }
+    JsonArray &pin_status = root.createNestedArray("PINS_STATUS");
+    for (int i = 0; i < PIN_SIZE; i++)
+    {
+      pin_status.add(PINS[i]);
+    }
+
+    String response = "";
+    root.printTo(response);
+    Serial.println(response);
+    webSocketClient.sendData(response);
     delay(10);
     ping_packet_count++;
   }
@@ -460,75 +490,12 @@ void detectInterruptChange()
     }
   }
 }
-
-String readFile(fs::FS &fs, const char *path)
-{
-  Serial.printf("Reading file: %s\r\n", path);
-
-  File file = fs.open(path);
-  if (!file || file.isDirectory())
-  {
-    Serial.println("- failed to open file for reading");
-    return "";
-  }
-
-  Serial.println("- read from file:");
-  String data = "";
-  while (file.available())
-  {
-    Serial.write(file.read());
-    data = data + file.read();
-  }
-  return data;
-}
-
-void writeFile(fs::FS &fs, const char *path, const char *message)
-{
-  Serial.printf("Writing file: %s\r\n", path);
-
-  File file = fs.open(path, FILE_WRITE);
-  if (!file)
-  {
-    Serial.println("- failed to open file for writing");
-    return;
-  }
-  if (file.print(message))
-  {
-    Serial.println("- file written");
-  }
-  else
-  {
-    Serial.println("- frite failed");
-  }
-}
-
 void setup()
 {
-
   Serial.begin(115200);
-  if (!SPIFFS.begin(true))
-  {
-    Serial.println("SPIFFS Mount Failed");
-    return;
-  }
   delay(10);
-
-  String fileData = readFile(SPIFFS, "wifi.json");
-  Serial.println("file data");
-  Serial.println(fileData);
-
-  writeFile(SPIFFS, "config.json", "{}");
-
-  // String json = "[";
-
-  // json +=
-  //     "{\"SSID\":\"" + ssid + "\",\"AUTH\":\"" + auth + "\"}";
-
-  // // json += ",";
-
-  // json += "]";
-
-  // We start by connecting to a WiFi network
+  xconfig.initConfig();
+  // xconfig.testConfig();
 
   //need to look at interrupts. if we press push button for 5sec it will start wifi mode.
   //https://techtutorialsx.com/2016/12/11/esp8266-external-interrupts/
@@ -543,7 +510,6 @@ void setup()
 
 void loop()
 {
-
   detectInterruptChange();
 
   if (current_wifi_status == WIFI_CONNECT_MODE)
@@ -575,13 +541,16 @@ void loop()
 
         if (data.length() > 0)
         {
-          DynamicJsonDocument doc;
-          Serial.print("Received data: ");
-          Serial.println(data);
-          deserializeJson(doc, data);
-          JsonObject obj = doc.as<JsonObject>();
-          String type = obj[String("type")];
-          int pin = obj[String("pin")];
+          // DynamicJsonDocument doc;
+          // Serial.print("Received data: ");
+          // Serial.println(data);
+          // deserializeJson(doc, data);
+          // JsonObject obj = doc.as<JsonObject>();
+          // String type = obj[String("type")];
+          // int pin = obj[String("pin")];
+
+          String type = "";
+          int pin = 1;
 
           if (type == "HIGH")
           {
