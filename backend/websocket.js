@@ -7,13 +7,13 @@ var ws = new Server({ port: port });
 
 console.log("started");
 ws.on('connection', function (w) {
-  
+
   w.on('message', function (msg) {
     try {
       console.log('message from client', msg);
       let obj = JSON.parse(msg);
       if (obj.type === "device_ping") {
-        console.log("device ping" , obj);
+        console.log("device ping", obj);
         var id = obj['WEBID'];
         w.id = id;
         w.pins = obj['PINS'];
@@ -22,26 +22,30 @@ ws.on('connection', function (w) {
           type: "OK",
           challenge: obj['challenge']
         }));
-      }else if(obj.type === "device_online_check"){
+      } else if (obj.type === "device_online_check") {
         let chip = obj['chip'];
         let found = false;
         ws.clients.forEach(function each(client) {
           if (client.chip == chip) {
             w.send(JSON.stringify({
-              type :"device_online_check_reply",
+              type: "device_online_check_reply",
               id: client.id,
               pins: client.pins,
-              chip: client.chip
+              chip: client.chip,
+              found: true
             }));
             found = true;
           }
         });
-        if(!found){
-          w.send("");
+        if (!found) {
+          w.send(JSON.stringify({
+            type: "device_online_check_reply",
+            found: false
+          }));
         }
-        
+
       }
-      
+
     } catch (e) {
       console.log(e);
     }

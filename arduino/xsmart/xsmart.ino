@@ -329,7 +329,7 @@ void pingPacket()
     {
       JsonObject &pin = jsonBuffer.createObject();
       pin["pin"] = PINS[i];
-      pin['status'] = PINS_STATUS[i];
+      pin["status"] = PINS_STATUS[i];
       pins.add(pin);
     }
 
