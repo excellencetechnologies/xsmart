@@ -29,6 +29,7 @@ ws.on('connection', function (w) {
         ws.clients.forEach(function each(client) {
           if (client.chip == chip) {
             w.send(JSON.stringify({
+              type :"device_online_check_reply",
               id: client.id,
               pins: client.pins,
               pins_status: client.pins_status,
@@ -42,47 +43,7 @@ ws.on('connection', function (w) {
         }
         
       }
-      // else if (msg.indexOf("CLIENTS") >= 0) {
-      //   console.log("getting list of clients");
-      //   var clients = [];
-      //   ws.clients.forEach(function each(client) {
-      //     if (client.id) {
-      //       console.log('Client.ID: ' + client.id);
-      //       clients.push({
-      //         id: client.id,
-      //         pins: client.pins,
-      //         pins_status: client.pins_status
-      //       });
-      //     }
-      //   });
-      //   w.send(JSON.stringify(clients));
-      // } else if (msg.indexOf("PING") >= 0) {
-      //   var obj = JSON.parse(msg);
-      //   console.log("got ping");
-      //   var deviceid = obj['id'];
-      //   var type = obj['type'];
-      //   var pin = obj['pin'];
-      //   var found = false;
-      //   ws.clients.forEach(function each(client) {
-      //     console.log(client.id + "XXXX" + deviceid);
-      //     if (client.id == deviceid) {
-      //       console.log('device found with id ' + deviceid);
-      //       client.send(JSON.stringify({
-      //         type: type,
-      //         pin: pin
-      //       }));
-      //       found = true;
-      //     }
-      //   });
-      //   if (found) {
-      //     w.send("OK");
-      //   } else {
-      //     console.log("device not found with id " + deviceid);
-      //     w.send("NOK");
-      //   }
-      // } else {
-      //   console.log("invalid mmsg");
-      // }
+      
     } catch (e) {
       console.log(e);
     }

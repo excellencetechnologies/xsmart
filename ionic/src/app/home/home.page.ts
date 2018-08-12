@@ -60,7 +60,8 @@ export class HomePage implements OnInit {
 
       // Listen for messages
       socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
+        console.log('Message from server ', event);
+
       });
     }
 
@@ -135,7 +136,7 @@ export class HomePage implements OnInit {
         }));
       })
 
-    }, 1000);
+    }, 5000);
   }
   async askWifiPassword(wifi) {
     const alert = await this.alertController.create({
