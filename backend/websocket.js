@@ -28,6 +28,7 @@ ws.on('connection', function (w) {
         let found = false;
         ws.clients.forEach(function each(client) {
           if (client.chip == chip) {
+            console.log(client);
             w.send(JSON.stringify(client));
             found = true;
           }
