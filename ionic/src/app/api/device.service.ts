@@ -33,6 +33,16 @@ export class DeviceService {
 
         }
     }
+    async updateDeviceNotFound(data) {
+        let devices = await this.getDevices();
+        devices = devices.map((device: Device) => {
+            if (device.chip === data.chip) {
+                device.online = false;
+            }
+            return device;
+        })
+        this.setDevices(devices);
+    }
     async updateDevice(data) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {

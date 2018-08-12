@@ -63,7 +63,7 @@ export class HomePage implements OnInit {
         console.log('Message from server ', event);
         let res = JSON.parse(event.data);
         if (res.type === "device_online_check_reply") {
-            this.updateDeviceStatus(res);
+          this.updateDeviceStatus(res);
         }
       });
     }
@@ -71,7 +71,11 @@ export class HomePage implements OnInit {
 
   }
   async updateDeviceStatus(data) {
-    await this.deviceService.updateDevice(data);
+    if (data.found) {
+      await this.deviceService.updateDevice(data);
+    } else {
+      await this.deviceService.updateDeviceNotFound(data);
+    }
     this.devices = await this.deviceService.getDevices();
   }
   async checkExistingDevice() {

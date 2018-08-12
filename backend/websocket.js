@@ -40,7 +40,8 @@ ws.on('connection', function (w) {
         if (!found) {
           w.send(JSON.stringify({
             type: "device_online_check_reply",
-            found: false
+            found: false,
+            chip: chip
           }));
         }
 
