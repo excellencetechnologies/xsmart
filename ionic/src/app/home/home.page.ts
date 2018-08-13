@@ -59,17 +59,18 @@ export class HomePage implements OnInit {
 
       // Listen for messages
       socket.addEventListener('message', (event) => {
-        
+
         let res = JSON.parse(event.data);
+        console.log('Message from server ', res);
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
-        }else{
-          console.log('Message from server ', res);
+        } else {
+          
         }
       });
     }
   }
-  async switchOff(s: Switch, d: Device){
+  async switchOff(s: Switch, d: Device) {
     this.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
@@ -77,7 +78,7 @@ export class HomePage implements OnInit {
       status: 0
     })
   }
-  async switchOn(s: Switch, d: Device){
+  async switchOn(s: Switch, d: Device) {
     this.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
@@ -95,12 +96,15 @@ export class HomePage implements OnInit {
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
-    if (this.devices.length === 0) {
-
-    } else {
+    if (this.devices.length > 0) {
       this.keepCheckingDeviceOnline();
     }
-
+  }
+  trackByDevice(device: Device){
+    return device.chip;
+  }
+  trackBySwitch(s: Switch){
+    return s.pin;
   }
   scanDevice() {
     this.mode = "scan";
@@ -109,6 +113,8 @@ export class HomePage implements OnInit {
     this.keepCheckingWifiConnected();
   }
   keepCheckingWifiConnected() {
+    if(wifiCheckInterval)
+     clearInterval(wifiCheckInterval);
     wifiCheckInterval = setInterval(async () => {
       try {
         this.devicePing = await this.api.checkPing();
@@ -178,7 +184,7 @@ export class HomePage implements OnInit {
             console.log(wifi.SSID);
             try {
               await this.api.setWifiPassword(wifi.SSID, data.password);
-            } catch (e) { 
+            } catch (e) {
               console.log(e);
             }
             this.keepCheckingDeviceOnline();

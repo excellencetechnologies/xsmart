@@ -554,11 +554,12 @@ void loop()
 
         if (data.length() > 0)
         {
-          JsonObject &root = jsonBuffer.parseObject(file);
+          StaticJsonBuffer<200> jsonBuffer;
+          JsonObject &root = jsonBuffer.parseObject(data);
           Serial.println("data from socket");
-          root.printTo(root);
-          String type = root['type'];
-          int pin = root['pin'];
+          root.printTo(Serial);
+          String type = root["type"];
+          int pin = root["pin"];
 
           if (type == "HIGH")
           {

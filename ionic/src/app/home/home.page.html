@@ -13,7 +13,7 @@
   <div *ngIf="mode === 'device'">
 
     <div *ngIf="devices.length">
-      <ion-card *ngFor="let device of devices">
+      <ion-card *ngFor="let device of devices; trackBy: trackByDevice">
         <!-- <ion-img src="/assets/myImg.png"></ion-img> -->
 
         <ion-card-content>
@@ -27,11 +27,18 @@
             <ion-badge *ngIf="!device.online" color="warning">Offline</ion-badge>
           </p>
 
-          
-            <span *ngFor="let switch of device.switches">
-                <ion-button (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="light" size="small">{{switch.pin}}</ion-button>
-                <ion-button (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="dark" size="small">{{switch.pin}}</ion-button>
-            </span>
+
+          <p *ngIf="device.switches.length > 0"> Switches In Device </p>
+          <ion-toolbar>
+            <ion-buttons slot="start" *ngFor="let switch of device.switches; trackBy: trackBySwitch">
+                <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 0" color="medium">
+                  <ion-icon name="power"></ion-icon>
+                </ion-button>
+                <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 1" color="dark">
+                  <ion-icon name="power"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
           
         </ion-card-content>
       </ion-card>
