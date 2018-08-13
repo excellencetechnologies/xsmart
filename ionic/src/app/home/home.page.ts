@@ -46,24 +46,25 @@ export class HomePage implements OnInit {
   }
   sendMessageToSocket(msg) {
     if (socket && socket.readyState === 1) {
-      console.log("socket msg send to", msg);
-      socket.send(msg);
+      // console.log("socket msg send to", msg);
+      socket.send(JSON.stringify(msg));
 
     } else {
       socket = new WebSocket('ws://5.9.144.226:9030');
       // Connection opened
       socket.addEventListener('open', function (event) {
-        // socket.send({"test":'Hello Server!'});
         console.log("socket connected");
         socket.send(msg);
       });
 
       // Listen for messages
       socket.addEventListener('message', (event) => {
-        console.log('Message from server ', event);
+        
         let res = JSON.parse(event.data);
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
+        }else{
+          console.log('Message from server ', res);
         }
       });
     }
@@ -147,10 +148,10 @@ export class HomePage implements OnInit {
     setInterval(async () => {
 
       this.devices.forEach((device) => {
-        this.sendMessageToSocket(JSON.stringify({
+        this.sendMessageToSocket({
           type: "device_online_check",
           chip: device.chip
-        }));
+        });
       })
 
     }, 5000);

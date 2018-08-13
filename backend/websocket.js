@@ -50,6 +50,7 @@ ws.on('connection', function (w) {
         let chip = obj['chip'];
         let found = false;
         ws.clients.forEach(function each(client) {
+          console.log(client.chip, chip)
           if (client.chip == chip) {
             w.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
