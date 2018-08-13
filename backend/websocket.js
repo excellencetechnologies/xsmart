@@ -18,6 +18,9 @@ ws.on('connection', function (w) {
         w.id = id;
         w.pins = obj['PINS'];
         w.chip = obj['chip'];
+        let offset = new Date().getTimezoneOffset();
+        let time  = new Date().getTime() + offset * 60 * 1000;
+        w.time = time;
         w.send(JSON.stringify({
           type: "OK",
           challenge: obj['challenge']
@@ -34,7 +37,8 @@ ws.on('connection', function (w) {
               pins: client.pins,
               chip: client.chip,
               found: true,
-              readyState: client.readyState
+              readyState: client.readyState,
+              time: client.time
             }));
             found = true;
           }
