@@ -35,7 +35,6 @@ ws.on('connection', function (w) {
               found: true
             }));
             found = true;
-            console.log(w);
           }
         });
         if (!found) {
@@ -44,6 +43,8 @@ ws.on('connection', function (w) {
             found: false,
             chip: chip
           }));
+          
+          console.log(w);
         }
 
       }
