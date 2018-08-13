@@ -22,7 +22,10 @@
           <p>Device ID: {{device.device_id}}</p>
           <p>CHIP: {{device.chip}}</p>
           <p>Last Online: {{device.ttl | date:'short'}}</p>
-          <p>Is Online: {{device.online}}</p>
+          <p>
+            <ion-badge *ngIf="device.online" color="secondary">Online</ion-badge>
+            <ion-badge *ngIf="!device.online" color="warning">Offline</ion-badge>
+          </p>
         </ion-card-content>
       </ion-card>
     </div>

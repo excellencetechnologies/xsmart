@@ -35,6 +35,7 @@ ws.on('connection', function (w) {
               found: true
             }));
             found = true;
+            console.log(w);
           }
         });
         if (!found) {
