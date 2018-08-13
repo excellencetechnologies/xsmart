@@ -46,7 +46,25 @@ ws.on('connection', function (w) {
           }));
         }
 
+      } else if (obj.type === "device_pin_oper") {
+        let chip = obj['chip'];
+        let found = false;
+        ws.clients.forEach(function each(client) {
+          if (client.chip == chip) {
+            w.send(JSON.stringify({
+              type: obj['status'] == 0 ? 'LOW' : 'HIGH',
+              pin: obj['pin']
+            }));
+            found = true;
+          }
+        });
+        w.send(JSON.stringify({
+          type: "device_pin_oper_reply",
+          found: found,
+          chip: chip
+        }));
       }
+
 
     } catch (e) {
       console.log(e);

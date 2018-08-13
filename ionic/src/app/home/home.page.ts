@@ -5,7 +5,7 @@ import { AlertController } from '@ionic/angular';
 
 import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
-import { Ping, Wifi, Device } from "../api/api"
+import { Ping, Wifi, Device, Switch } from "../api/api"
 
 
 let socket = null;
@@ -67,8 +67,22 @@ export class HomePage implements OnInit {
         }
       });
     }
-
-
+  }
+  async switchOff(s: Switch, d: Device){
+    this.sendMessageToSocket({
+      type: "device_pin_oper",
+      chip: d.chip,
+      pin: s.pin,
+      status: 0
+    })
+  }
+  async switchOn(s: Switch, d: Device){
+    this.sendMessageToSocket({
+      type: "device_pin_oper",
+      chip: d.chip,
+      pin: s.pin,
+      status: 1
+    })
   }
   async updateDeviceStatus(data) {
     if (data.found) {
@@ -85,23 +99,12 @@ export class HomePage implements OnInit {
     } else {
       this.keepCheckingDeviceOnline();
     }
-    // if (existingDevices.length === 0) {
-    // test code
-    //   let device: Device = {
-    //     name: "xSmart Test",
-    //     device_id: "test",
-    //     chip: "chip",
-    //     ttl: 123123123,
-    //     online: false
-    //   }
-    //   this.deviceService.addDevice(device)
-    //   existingDevices = await this.deviceService.getDevices();
-    // }
 
   }
   scanDevice() {
     this.mode = "scan";
     this.isScanningDevice = true;
+    this.wifinetworks = [];
     this.keepCheckingWifiConnected();
   }
   keepCheckingWifiConnected() {
@@ -112,14 +115,17 @@ export class HomePage implements OnInit {
         this.xSmartConnect = true;
         this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
-        let newdevice: Device = {
-          name: "",
-          device_id: this.devicePing.webid,
-          chip: this.devicePing.chip,
-          ttl: 0,
-          online: false
-        };
-        this.deviceService.addDevice(newdevice);
+        if (!this.deviceService.checkDeviceExists(this.devicePing.chip)) {
+          let newdevice: Device = {
+            name: "",
+            device_id: this.devicePing.webid,
+            chip: this.devicePing.chip,
+            ttl: 0,
+            online: false,
+            switches: []
+          };
+          this.deviceService.addDevice(newdevice);
+        }
       } catch (e) {
         console.log(e)
         this.isScanningDevice = true;
@@ -169,7 +175,11 @@ export class HomePage implements OnInit {
             console.log('Confirm Ok')
             console.log(data.password);
             console.log(wifi.SSID);
-            await this.api.setWifiPassword(wifi.SSID, data.password);
+            try {
+              await this.api.setWifiPassword(wifi.SSID, data.password);
+            } catch (e) { 
+              console.log(e);
+            }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
           }

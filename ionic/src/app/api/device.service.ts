@@ -2,8 +2,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
 
-import { Device } from "./api"
-import { forEach } from '@angular/router/src/utils/collection';
+import { Device, Switch } from "./api"
 
 @Injectable({
     providedIn: 'root',
@@ -24,6 +23,17 @@ export class DeviceService {
                 return [];
             }
         }
+    }
+    async checkDeviceExists(chipid: String) {
+        let devices = await this.getDevices();
+        let device: Device = devices.find((device: Device) => {
+            if (device.chip === chipid) {
+                return true;
+            }
+            return false;
+        })
+        this.setDevices(devices);
+        return device;
     }
     async setDevices(devices) {
         if (this.platform.is("mobile"))
@@ -49,6 +59,15 @@ export class DeviceService {
             if (device.chip === data.chip) {
                 device.ttl = new Date().getTime();
                 device.online = true;
+                device.switches = [];
+                data.pins.forEach((pin: Switch) => {
+                    let swtich: Switch = {
+                        "status": pin.status,
+                        "pin": pin.pin
+                    }
+                    device.switches.push(swtich);
+                })
+
             }
             return device;
         })

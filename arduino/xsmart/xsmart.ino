@@ -100,6 +100,8 @@ void startWifiAP()
       root.printTo(response);
       Serial.println();
       root.printTo(Serial);
+      server.sendHeader("Access-Control-Allow-Origin", "*");
+      server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", response);
     });
 
@@ -139,6 +141,8 @@ void startWifiAP()
       String json = "";
       root.printTo(json);
       root.prettyPrintTo(Serial);
+      server.sendHeader("Access-Control-Allow-Origin", "*");
+      server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", json);
     });
 
@@ -165,7 +169,10 @@ void startWifiAP()
       root["password"] = password;
       String response = "";
       root.printTo(response);
+      server.sendHeader("Access-Control-Allow-Origin", "*");
+      server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", response);
+      delay(1000);
       stopAP();
       WiFi.mode(WIFI_STA);
       delay(100);
@@ -195,6 +202,8 @@ void startWifiAP()
         root["status"] = "connected";
         String response = "";
         root.printTo(response);
+        server.sendHeader("Access-Control-Allow-Origin", "*");
+        server.sendHeader("Access-Control-Allow-Methods", "*");
         server.send(200, "application/json", response);
       }
       else
@@ -204,6 +213,8 @@ void startWifiAP()
         root["status"] = "";
         String response = "not_connected";
         root.printTo(response);
+        server.sendHeader("Access-Control-Allow-Origin", "*");
+        server.sendHeader("Access-Control-Allow-Methods", "*");
         server.send(200, "application/json", response);
       }
       store_wifi_api_connect_result = -1;
@@ -543,16 +554,11 @@ void loop()
 
         if (data.length() > 0)
         {
-          // DynamicJsonDocument doc;
-          // Serial.print("Received data: ");
-          // Serial.println(data);
-          // deserializeJson(doc, data);
-          // JsonObject obj = doc.as<JsonObject>();
-          // String type = obj[String("type")];
-          // int pin = obj[String("pin")];
-
-          String type = "";
-          int pin = 1;
+          JsonObject &root = jsonBuffer.parseObject(file);
+          Serial.println("data from socket");
+          root.printTo(root);
+          String type = root['type'];
+          int pin = root['pin'];
 
           if (type == "HIGH")
           {

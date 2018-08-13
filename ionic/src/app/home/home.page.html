@@ -26,6 +26,13 @@
             <ion-badge *ngIf="device.online" color="secondary">Online</ion-badge>
             <ion-badge *ngIf="!device.online" color="warning">Offline</ion-badge>
           </p>
+
+          
+            <span *ngFor="let switch of device.switches">
+                <ion-button (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="light" size="small">{{switch.pin}}</ion-button>
+                <ion-button (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="dark" size="small">{{switch.pin}}</ion-button>
+            </span>
+          
         </ion-card-content>
       </ion-card>
     </div>
