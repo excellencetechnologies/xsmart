@@ -32,7 +32,8 @@ ws.on('connection', function (w) {
               id: client.id,
               pins: client.pins,
               chip: client.chip,
-              found: true
+              found: true,
+              readyState: client.readyState
             }));
             found = true;
           }
@@ -43,8 +44,6 @@ ws.on('connection', function (w) {
             found: false,
             chip: chip
           }));
-          
-          console.log(w);
         }
 
       }
