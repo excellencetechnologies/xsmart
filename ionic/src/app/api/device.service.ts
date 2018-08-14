@@ -56,7 +56,8 @@ export class DeviceService {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
             if (device.chip === data.chip) {
-                device.ttl = new Date().getTime();
+                let offset = new Date().getTimezoneOffset() * 60 * 1000;
+                device.ttl = data.time * 1 + offset * -1;
                 device.online = true;
                 device.switches = [];
                 data.pins.forEach((pin: Switch) => {

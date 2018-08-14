@@ -18,8 +18,9 @@ ws.on('connection', function (w) {
         w.id = id;
         w.pins = obj['PINS'];
         w.chip = obj['chip'];
+        w.isDevice = true;
         let offset = new Date().getTimezoneOffset();
-        let time  = new Date().getTime() + offset * 60 * 1000;
+        let time = new Date().getTime() + offset * 60 * 1000;
         w.time = time;
         w.send(JSON.stringify({
           type: "OK",
@@ -28,6 +29,15 @@ ws.on('connection', function (w) {
       } else if (obj.type === "device_online_check") {
         let chip = obj['chip'];
         let found = false;
+        w.isApp = true;
+        if (!w.devices) {
+          w.devices = [];
+        }
+        if (w.devices) {
+          if (!w.devices.findIndex(chip)) {
+            w.devices.push(chip);
+          }
+        }
         ws.clients.forEach(function each(client) {
           if (client.chip == chip) {
             w.send(JSON.stringify({
@@ -53,8 +63,8 @@ ws.on('connection', function (w) {
       } else if (obj.type === "device_pin_oper") {
         let chip = obj['chip'];
         let found = false;
+        w.isApp = true;
         ws.clients.forEach(function each(client) {
-          console.log(client.chip, chip)
           if (client.chip == chip) {
             client.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
@@ -68,6 +78,21 @@ ws.on('connection', function (w) {
           found: found,
           chip: chip
         }));
+      } else if (obj.type === "device_io_reply") {
+        w.isDevice = true;
+        let chip = obj['chip'];
+        let pin = obj['pin'];
+        let status = obj['status'];
+        ws.clients.forEach(function each(client) {
+          if (client.devices.findIndex(chip)) {
+            client.send({
+              type: "device_io_notify",
+              pin: pin,
+              status: status,
+              chip: chip
+            })
+          }
+        });
       }
 
 

@@ -323,6 +323,23 @@ void forcePingPacket()
   ping_packet_count = 0;
   pingPacket();
 }
+void sendIOPack(int pin, int status)
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_io_reply";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+  root["pin"] = pin;
+  root["status"] = status;
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void pingPacket()
 {
   if (ping_packet_count == 0)
@@ -337,7 +354,7 @@ void pingPacket()
     root["challenge"] = challenge;
     JsonArray &pins = root.createNestedArray("PINS");
 
-   StaticJsonBuffer<500> jsonBuffer5;
+    StaticJsonBuffer<500> jsonBuffer5;
     for (int i = 0; i < PIN_SIZE; i++)
     {
       JsonObject &pin = jsonBuffer5.createObject();
@@ -565,14 +582,14 @@ void loop()
             Serial.println("setting hight");
             pinWrite(pin, HIGH);
             delay(10);
-            forcePingPacket();
+            sendIOPack(pin, 1);
           }
           else if (type == "LOW")
           {
             Serial.println("setting low");
             pinWrite(pin, LOW);
             delay(10);
-            forcePingPacket();
+            sendIOPack(pin, 0);
           }
           else if (type == "OK")
           {

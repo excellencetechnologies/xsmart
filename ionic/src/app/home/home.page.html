@@ -31,10 +31,10 @@
           <p *ngIf="device.switches.length > 0"> Switches In Device </p>
           <ion-toolbar>
             <ion-buttons slot="start" *ngFor="let switch of device.switches; trackBy: trackBySwitch">
-                <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 0" color="medium">
+                <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
                   <ion-icon name="power"></ion-icon>
                 </ion-button>
-                <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 1" color="dark">
+                <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="dark">
                   <ion-icon name="power"></ion-icon>
                 </ion-button>
             </ion-buttons>

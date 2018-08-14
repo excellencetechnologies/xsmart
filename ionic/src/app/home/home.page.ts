@@ -64,8 +64,8 @@ export class HomePage implements OnInit {
         console.log('Message from server ', res);
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
-        } else {
-          
+        } else if(res.type === "device_io_notify"){
+         
         }
       });
     }
