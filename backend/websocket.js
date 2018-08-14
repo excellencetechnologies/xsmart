@@ -33,11 +33,10 @@ ws.on('connection', function (w) {
         if (!w.devices) {
           w.devices = [];
         }
-        if (w.devices) {
-          if (!w.devices.findIndex(chip)) {
-            w.devices.push(chip);
-          }
+        if (!w.devices.includes(chip)) {
+          w.devices.push(chip);
         }
+
         ws.clients.forEach(function each(client) {
           if (client.chip == chip) {
             w.send(JSON.stringify({
@@ -84,7 +83,7 @@ ws.on('connection', function (w) {
         let pin = obj['pin'];
         let status = obj['status'];
         ws.clients.forEach(function each(client) {
-          if (client.devices.findIndex(chip)) {
+          if (client.devices && client.devices.includes(chip)) {
             client.send({
               type: "device_io_notify",
               pin: pin,
