@@ -84,12 +84,12 @@ ws.on('connection', function (w) {
         let status = obj['status'];
         ws.clients.forEach(function each(client) {
           if (client.devices && client.devices.includes(chip)) {
-            client.send({
+            client.send(JSON.stringify({
               type: "device_io_notify",
               pin: pin,
               status: status,
               chip: chip
-            })
+            }));
           }
         });
       }
