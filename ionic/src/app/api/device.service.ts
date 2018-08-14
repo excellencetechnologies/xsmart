@@ -31,11 +31,10 @@ export class DeviceService {
                 return true;
             }
             return false;
-        })
-        this.setDevices(devices);
+        });
         return device;
     }
-    async setDevices(devices) {
+    async setDevices(devices: Device[]) {
         if (this.platform.is("mobile"))
             await this.nativeStorage.setItem('devices', devices);
         else {

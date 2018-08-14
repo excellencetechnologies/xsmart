@@ -122,7 +122,7 @@ export class HomePage implements OnInit {
         this.xSmartConnect = true;
         this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
-        if (!this.deviceService.checkDeviceExists(this.devicePing.chip)) {
+        if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
           let newdevice: Device = {
             name: "",
             device_id: this.devicePing.webid,

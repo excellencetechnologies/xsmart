@@ -329,7 +329,7 @@ void pingPacket()
   {
     randomSeed(analogRead(0));
     long challenge = random(1, 1000);
-    StaticJsonBuffer<200> jsonBuffer;
+    StaticJsonBuffer<1000> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["type"] = "device_ping";
     root["WEBID"] = webID;
@@ -337,14 +337,13 @@ void pingPacket()
     root["challenge"] = challenge;
     JsonArray &pins = root.createNestedArray("PINS");
 
-    StaticJsonBuffer<1000> jsonBuffer1;
+   StaticJsonBuffer<500> jsonBuffer5;
     for (int i = 0; i < PIN_SIZE; i++)
     {
-      JsonObject &pin = jsonBuffer1.createObject();
+      JsonObject &pin = jsonBuffer5.createObject();
       pin["pin"] = PINS[i];
       pin["status"] = PINS_STATUS[i];
       pins.add(pin);
-      delay(10);
     }
 
     String response = "";
