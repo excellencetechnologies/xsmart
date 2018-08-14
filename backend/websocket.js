@@ -96,6 +96,7 @@ ws.on('connection', function (w) {
 
 
     } catch (e) {
+      console.log(msg);
       console.log(e);
     }
   });
