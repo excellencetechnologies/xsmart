@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 
 import { Device, Switch } from "./api"
+import { stat } from 'fs';
 
 @Injectable({
     providedIn: 'root',
@@ -52,6 +53,21 @@ export class DeviceService {
 
         }
     }
+    async updateDevicePin(pin: number, status: number, chip: string) {
+        let devices = await this.getDevices();
+        devices = devices.map((device: Device) => {
+            if (device.chip === chip) {
+                device.switches = device.switches.map((s: Switch) => {
+                    if (s.pin === pin) {
+                        s.status = status;
+                    }
+                    return s;
+                })
+            }
+            return device;
+        })
+        this.setDevices(devices);
+    }
     async updateDeviceNotFound(data) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
@@ -68,8 +84,6 @@ export class DeviceService {
             if (device.chip === data.chip) {
                 let offset = new Date().getTimezoneOffset() * 60 * 1000;
                 device.ttl = data.time * 1 + offset * -1;
-
-                console.log(device.ttl , new Date().getTime() - 5 * 60 * 1000)
                 if (device.ttl < new Date().getTime() - 5 * 60 * 1000) {
                     device.online = false;
                 } else {

@@ -68,7 +68,7 @@ export class HomePage implements OnInit {
       });
 
       // Listen for messages
-      socket.addEventListener('message', (event) => {
+      socket.addEventListener('message', async (event) => {
 
         let res = JSON.parse(event.data);
         console.log('Message from server ', res);
@@ -77,6 +77,8 @@ export class HomePage implements OnInit {
         } else if (res.type === "device_pin_oper_reply") {
           this.notifyService.alertUser("operation sent to device");
         } else if (res.type === "device_io_notify") {
+          await this.deviceService.updateDevicePin(res.pin, res.status, res.chip);
+          this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
         }
       });

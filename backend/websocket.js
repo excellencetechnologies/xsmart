@@ -50,7 +50,7 @@ ws.on('connection', function (w) {
                   status: devices[chip].status,
                   chip: devices[chip].chip,
                   time: devices[chip].time,
-                  found : true
+                  found: true
                 }));
               }
             });
@@ -110,6 +110,13 @@ ws.on('connection', function (w) {
               pin: obj['pin']
             }));
             found = true;
+            //experimental feature
+            devices[chip].interval = setTimeout(() => {
+              client.send(JSON.stringify({
+                type: obj['status'] == 0 ? 'LOW' : 'HIGH',
+                pin: obj['pin']
+              }));
+            }, 2000);
           }
         });
         w.send(JSON.stringify({
@@ -122,6 +129,9 @@ ws.on('connection', function (w) {
         let chip = obj['chip'];
         let pin = obj['pin'];
         let status = obj['status'];
+        if (devices[chip].interval) {
+          clearTimeout(devices[chip].interval);
+        }
         w.chip = chip;
         if (apps[chip]) {
           apps[chip].forEach((app) => {
