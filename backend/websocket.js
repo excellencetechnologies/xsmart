@@ -16,6 +16,8 @@ ws.on('connection', function (w) {
       console.log('message from client', msg);
       let obj = JSON.parse(msg);
       if (obj.type === "device_ping") {
+        //this is basically the event which a device like esp32, 8266 
+        // send every 1sec. this is ping from the device.
         console.log("device ping", obj);
         let chip = obj['chip'];
         let offset = new Date().getTimezoneOffset();
@@ -27,42 +29,44 @@ ws.on('connection', function (w) {
           id: obj["WEBID"],
           pins: obj['PINS'],
           chip: obj['chip'],
-          time: time,
-          w: w
+          time: time
         };
+        w.chip = chip;
 
         w.send(JSON.stringify({
           type: "OK",
           challenge: obj['challenge']
         }));
       } else if (obj.type === "device_online_check") {
+        // this is a pint from mobile apps or web app every 5sec
+        // to check if there devices are online.
         let chip = obj['chip'];
-        let device_id = obj['id'];
+        let app_id = obj['app_id'];
+        w.app_id = app_id;
         if (!apps[chip]) {
           apps[chip] = [];
         }
-        if (!apps[chip].includes(device_id)) {
-          apps[chip].push(device_id);
+        if (!apps[chip].includes(app_id)) {
+          apps[chip].push(app_id);
         }
 
-        devices.forEach( (device) => {
-          console.log(device);
+        Object.keys(devices).forEach((c) => {
+          if (c === chip) {
+
+            w.send(JSON.stringify({
+              type: "device_online_check_reply",
+              id: devices[c].id,
+              pins: devices[c].pins,
+              chip: devices[c].chip,
+              found: true,
+              time: devices[c].time
+            }));
+            found = true;
+
+          }
         })
 
-        // ws.clients.forEach(function each(client) {
-        //   if (client.chip == chip) {
-        //     w.send(JSON.stringify({
-        //       type: "device_online_check_reply",
-        //       id: client.id,
-        //       pins: client.pins,
-        //       chip: client.chip,
-        //       found: true,
-        //       readyState: client.readyState,
-        //       time: client.time
-        //     }));
-        //     found = true;
-        //   }
-        // });
+
         if (!found) {
           w.send(JSON.stringify({
             type: "device_online_check_reply",
@@ -72,11 +76,13 @@ ws.on('connection', function (w) {
         }
 
       } else if (obj.type === "device_pin_oper") {
+        // this is when a mobile app, web app is doing a pin operation like on/off
         let chip = obj['chip'];
+        let app_id = obj['app_id'];
+        w.app_id = app_id;
         let found = false;
-        w.isApp = true;
         ws.clients.forEach(function each(client) {
-          if (client.chip == chip) {
+          if (client.chip && client.chip === chip) {
             client.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
               pin: obj['pin']
@@ -90,20 +96,28 @@ ws.on('connection', function (w) {
           chip: chip
         }));
       } else if (obj.type === "device_io_reply") {
-        w.isDevice = true;
+        // this is when a device send back reply after a sucessfuly i/o operation
         let chip = obj['chip'];
         let pin = obj['pin'];
         let status = obj['status'];
-        ws.clients.forEach(function each(client) {
-          if (client.devices && client.devices.includes(chip)) {
-            client.send(JSON.stringify({
-              type: "device_io_notify",
-              pin: pin,
-              status: status,
-              chip: chip
-            }));
-          }
+        w.chip = chip;
+        forEach(apps[chip] , (app) => {
+
+          ws.clients.forEach(function each(client) {
+            if (client.app_id && client.app_id == app) {
+              client.send(JSON.stringify({
+                type: "device_io_notify",
+                pin: pin,
+                status: status,
+                chip: chip
+              }));
+            }
+          });
+
+
         });
+
+        
       }
 
 

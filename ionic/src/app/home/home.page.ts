@@ -81,7 +81,7 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       status: 0,
-      id: this.deviceService.getAppID()
+      app_id: this.deviceService.getAppID()
     })
   }
   async switchOn(s: Switch, d: Device) {
@@ -90,7 +90,7 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       status: 1,
-      id: this.deviceService.getAppID()
+      app_id: this.deviceService.getAppID()
     })
   }
   async updateDeviceStatus(data) {
@@ -193,7 +193,7 @@ export class HomePage implements OnInit {
         this.sendMessageToSocket({
           type: "device_online_check",
           chip: device.chip,
-          id: this.deviceService.getAppID()
+          app_id: this.deviceService.getAppID()
         });
       })
 
