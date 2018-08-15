@@ -6,6 +6,7 @@ import { RouterModule, RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -19,6 +20,7 @@ import { AppComponent } from './app.component';
     StatusBar,
     SplashScreen,
     NativeStorage,
+    UniqueDeviceID,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

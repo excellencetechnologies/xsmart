@@ -41,8 +41,8 @@ ws.on('connection', function (w) {
         if (!apps[chip]) {
           apps[chip] = [];
         }
-        if (!apps.includes(device_id)) {
-          apps.push(device_id);
+        if (!apps[chip].includes(device_id)) {
+          apps[chip].push(device_id);
         }
 
         devices.forEach( (device) => {
