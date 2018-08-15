@@ -49,6 +49,7 @@ ws.on('connection', function (w) {
         if (!apps[chip].includes(app_id)) {
           apps[chip].push(app_id);
         }
+        let found = false;
 
         Object.keys(devices).forEach((c) => {
           if (c === chip) {
