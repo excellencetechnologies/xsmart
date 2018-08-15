@@ -38,6 +38,7 @@ ws.on('connection', function (w) {
         }));
 
         if (apps[chip]) {
+          console.log(apps[chip]);
           apps[chip].forEach((app) => {
 
             ws.clients.forEach((client) => {
