@@ -27,6 +27,7 @@ export class HomePage implements OnInit {
   devices: Device[] = [];
   isScanningDevice: boolean = false;
   mode: String = "device";
+  isSocketConnected: boolean = false;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -48,16 +49,22 @@ export class HomePage implements OnInit {
     });
   }
   sendMessageToSocket(msg) {
-    if (socket && socket.readyState === 1) {
+    if (this.isSocketConnected) {
       console.log("socket msg send to", msg);
       socket.send(JSON.stringify(msg));
 
     } else {
       socket = new WebSocket('ws://5.9.144.226:9030');
       // Connection opened
-      socket.addEventListener('open', function (event) {
+      socket.addEventListener('open', (event) => {
         console.log("socket connected");
-        socket.send(msg);
+        this.isSocketConnected = true;
+        socket.send(JSON.stringify(msg));
+      });
+
+      socket.addEventListener('close', () => {
+        console.log("socket closed");
+        this.isSocketConnected = false;
       });
 
       // Listen for messages
@@ -81,7 +88,7 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       status: 0,
-      app_id: this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID()
     })
   }
   async switchOn(s: Switch, d: Device) {
@@ -90,7 +97,7 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       status: 1,
-      app_id: this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID()
     })
   }
   async updateDeviceStatus(data) {
@@ -187,27 +194,21 @@ export class HomePage implements OnInit {
       this.isScanningDevice = true;
     }
   }
-  async pingDevice(device) {
-    this.devices.forEach((device) => {
+  async pingDevices() {
+    this.devices.forEach(async (device) => {
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
-        app_id: this.deviceService.getAppID()
+        app_id: await this.deviceService.getAppID()
       });
     });
   }
   async keepCheckingDeviceOnline() {
-
-    this.devices.forEach((device) => {
-      this.pingDevice(device);
-    })
-    setInterval(async () => {
-
-      this.devices.forEach((device) => {
-        this.pingDevice(device);
-      })
-
-    }, 1000 * 60); ////this so high because, when device does a ping, we automatically listen to it
+    setTimeout(async () => {
+      this.pingDevices();
+      console.log(this.isSocketConnected);
+      this.keepCheckingDeviceOnline();  
+    }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
     const alert = await this.alertController.create({

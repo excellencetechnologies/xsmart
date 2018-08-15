@@ -20,7 +20,7 @@ export class DeviceService {
         if (this.platform.is("mobile")) {
             return await this.uniqueDeviceID.get()
         } else {
-            return Promise.resolve("!23");;
+            return await Promise.resolve("!23");;
         }
     }
     async getDevices(): Promise<Device[]> {
@@ -68,6 +68,8 @@ export class DeviceService {
             if (device.chip === data.chip) {
                 let offset = new Date().getTimezoneOffset() * 60 * 1000;
                 device.ttl = data.time * 1 + offset * -1;
+
+                console.log(device.ttl , new Date().getTime() - 5 * 60 * 1000)
                 if (device.ttl < new Date().getTime() - 5 * 60 * 1000) {
                     device.online = false;
                 } else {
@@ -85,7 +87,7 @@ export class DeviceService {
             }
             return device;
         })
-        this.setDevices(devices);
+        await this.setDevices(devices);
     }
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();

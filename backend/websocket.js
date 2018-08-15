@@ -42,6 +42,7 @@ ws.on('connection', function (w) {
 
             ws.clients.forEach((client) => {
               if (client.app_id && client.app_id == app) {
+                console.log(devices[chip]);
                 client.send(JSON.stringify({
                   type: "device_online_check_reply",
                   pin: devices[chip].pin,
