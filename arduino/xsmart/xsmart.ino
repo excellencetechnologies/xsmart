@@ -384,13 +384,11 @@ void pingPacket()
   if (ping_packet_count == 0)
   {
     randomSeed(analogRead(0));
-    long challenge = random(1, 1000);
     StaticJsonBuffer<1000> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["type"] = "device_ping";
     root["WEBID"] = webID;
     root["chip"] = device_ssid;
-    root["challenge"] = challenge;
     JsonArray &pins = root.createNestedArray("PINS");
 
     StaticJsonBuffer<500> jsonBuffer5;
@@ -474,6 +472,7 @@ void initIOPins()
   for (int i = 0; i < pins.size(); i++)
   {
     JsonObject &obj = pins[i].as<JsonObject>();
+    PINS_STATUS[i] = obj.get<int>("status");
     digitalWrite(obj.get<int>("pin"), obj.get<int>("status"));
   }
 }

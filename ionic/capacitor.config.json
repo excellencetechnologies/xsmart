@@ -1,0 +1,6 @@
+{
+  "appId": "com.excellence.xmsart",
+  "appName": "xsmart",
+  "bundledWebRuntime": false,
+  "webDir": "www"
+}

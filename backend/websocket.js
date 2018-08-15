@@ -34,8 +34,7 @@ ws.on('connection', function (w) {
         w.chip = chip;
 
         w.send(JSON.stringify({
-          type: "OK",
-          challenge: obj['challenge']
+          type: "OK"
         }));
       } else if (obj.type === "device_online_check") {
         // this is a pint from mobile apps or web app every 5sec
@@ -102,7 +101,7 @@ ws.on('connection', function (w) {
         let pin = obj['pin'];
         let status = obj['status'];
         w.chip = chip;
-        forEach(apps[chip] , (app) => {
+        forEach(apps[chip], (app) => {
 
           ws.clients.forEach(function each(client) {
             if (client.app_id && client.app_id == app) {
@@ -118,7 +117,7 @@ ws.on('connection', function (w) {
 
         });
 
-        
+
       }
 
 
