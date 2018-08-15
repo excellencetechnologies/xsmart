@@ -49,7 +49,7 @@ export class HomePage implements OnInit {
   }
   sendMessageToSocket(msg) {
     if (socket && socket.readyState === 1) {
-      // console.log("socket msg send to", msg);
+      console.log("socket msg send to", msg);
       socket.send(JSON.stringify(msg));
 
     } else {
@@ -149,7 +149,7 @@ export class HomePage implements OnInit {
         this.isScanningDevice = true;
         // this.xSmartConnect = false;
       }
-    }, 60000)  //this so high because, when device does a ping, we automatically listen to it
+    }, 1000);
   }
   async freshDevice() {
     this.devicePing.name = "";
@@ -187,18 +187,27 @@ export class HomePage implements OnInit {
       this.isScanningDevice = true;
     }
   }
+  async pingDevice(device) {
+    this.devices.forEach((device) => {
+      this.sendMessageToSocket({
+        type: "device_online_check",
+        chip: device.chip,
+        app_id: this.deviceService.getAppID()
+      });
+    });
+  }
   async keepCheckingDeviceOnline() {
+
+    this.devices.forEach((device) => {
+      this.pingDevice(device);
+    })
     setInterval(async () => {
 
       this.devices.forEach((device) => {
-        this.sendMessageToSocket({
-          type: "device_online_check",
-          chip: device.chip,
-          app_id: this.deviceService.getAppID()
-        });
+        this.pingDevice(device);
       })
 
-    }, 5000);
+    }, 1000 * 60); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
     const alert = await this.alertController.create({

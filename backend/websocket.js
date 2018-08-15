@@ -37,22 +37,21 @@ ws.on('connection', function (w) {
           type: "OK"
         }));
 
+        if (apps[chip]) {
+          apps[chip].forEach((app) => {
 
-        forEach(apps[chip], (app) => {
-
-          ws.clients.forEach((client) => {
-            if (client.app_id && client.app_id == app) {
-              client.send(JSON.stringify({
-                type: "device_online_check_reply",
-                pin: pin,
-                status: status,
-                chip: chip
-              }));
-            }
+            ws.clients.forEach((client) => {
+              if (client.app_id && client.app_id == app) {
+                client.send(JSON.stringify({
+                  type: "device_online_check_reply",
+                  pin: pin,
+                  status: status,
+                  chip: chip
+                }));
+              }
+            });
           });
-
-
-        });
+        }
 
 
       } else if (obj.type === "device_online_check") {
@@ -120,23 +119,21 @@ ws.on('connection', function (w) {
         let pin = obj['pin'];
         let status = obj['status'];
         w.chip = chip;
-        forEach(apps[chip], (app) => {
-
-          ws.clients.forEach((client) => {
-            if (client.app_id && client.app_id == app) {
-              client.send(JSON.stringify({
-                type: "device_io_notify",
-                pin: pin,
-                status: status,
-                chip: chip
-              }));
-            }
+        if (apps[chip]) {
+          apps[chip].forEach((app) => {
+            ws.clients.forEach((client) => {
+              if (client.app_id && client.app_id == app) {
+                client.send(JSON.stringify({
+                  type: "device_io_notify",
+                  pin: pin,
+                  status: status,
+                  chip: chip
+                }));
+              }
+            });
           });
 
-
-        });
-
-
+        }
       }
 
 
