@@ -17,6 +17,7 @@ ws.on('connection', function (w) {
       let obj = JSON.parse(msg);
       if (obj.type === "device_ping") {
         console.log("device ping", obj);
+        let chip = obj['chip'];
         let offset = new Date().getTimezoneOffset();
         let time = new Date().getTime() + offset * 60 * 1000;
         if (!devices[chip])
