@@ -17,7 +17,16 @@
         <!-- <ion-img src="/assets/myImg.png"></ion-img> -->
 
         <ion-card-content>
-          <ion-card-title>{{device.name}}</ion-card-title>
+          <ion-card-title>
+              <ion-item>
+                  <ion-label>{{device.name}}</ion-label>
+                  <ion-button (click)="deleteDevice(device)" fill="outline" slot="end">
+                    <ion-icon name="trash"></ion-icon>
+                  </ion-button>
+                </ion-item>
+          </ion-card-title>
+
+          
 
           <p>Device ID: {{device.device_id}}</p>
           <p>CHIP: {{device.chip}}</p>
@@ -53,6 +62,26 @@
     <ion-button (click)="scanDevice()" color="primary">Scan For devices</ion-button>
 
   </div>
+  <div *ngIf="mode === 'discovery'">
+      
+      <div *ngIf="!devicePing.isNew">
+        This device was configured previously with name <b>{{devicePing.name}}</b> 
+        <br/>
+        Do you want keep this name or change it?
+        <br/>
+        <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Keep</ion-button>
+        <ion-button (click)="freshDevice()" color="primary">Start New</ion-button>
+      </div>
+      <div *ngIf="devicePing.isNew">
+         This is a new device device, please set name for the device
+
+         <ion-item>
+            <ion-input [(ngModel)]="devicePing.name" required type="text" placeholder="Device Name.."></ion-input>
+            <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Set Name</ion-button>
+          </ion-item>
+      </div>
+
+  </div>
   <div *ngIf="mode === 'scan'">
     <div *ngIf="isScanningDevice">
 
@@ -66,7 +95,10 @@
 
     <div *ngIf="xSmartConnect">
       {{devicePing.webid}}
-      <br/> {{devicePing.chip}}
+      <br/> 
+      {{devicePing.chip}}
+      <br/>
+      {{devicePing.name}}
       <br/>
       <ion-button (click)="scanWifi()" color="primary">Scan Wifi Networks</ion-button>
       <Br/>

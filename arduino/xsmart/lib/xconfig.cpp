@@ -13,14 +13,15 @@ void XConfig::initConfig(void)
 {
   if (!SPIFFS.begin(true))
   {
-    Serial.println("SPIFFS Mount Failed");
+    P("SPIFFS Mount Failed");
   }
   else
   {
-    Serial.println("xconfig init");
+    P("xconfig init");
   }
 }
-void XConfig::testConfig(void){
+void XConfig::testConfig(void)
+{
   addWifiSSID("manish", "java@123");
   getWifiSSID();
   deleteWifiSSID("manish");
@@ -29,12 +30,12 @@ void XConfig::testConfig(void){
 
 String XConfig::loadConfigFile(void)
 {
-  Serial.println("load config file");
-  Serial.println(configfile);
+  P("load config file");
+  P(configfile);
   File file = SPIFFS.open(configfile);
   if (!file || file.isDirectory())
   {
-    Serial.println("- failed to open file for reading");
+    P("- failed to open file for reading");
   }
   String data = "";
   while (file.available())
@@ -47,42 +48,45 @@ String XConfig::loadConfigFile(void)
 
 void XConfig::saveConfigFile(const char *message)
 {
-  Serial.println("saving config file ");
+  P("saving config file ");
   Serial.print(message);
   File file = SPIFFS.open(configfile, FILE_WRITE);
   if (!file)
   {
-    Serial.println("- failed to open file for writing");
+    P("- failed to open file for writing");
     return;
   }
   if (file.print(message))
   {
-    Serial.println("- file written");
+    P("- file written");
   }
   else
   {
-    Serial.println("- frite failed");
+    P("- frite failed");
   }
 }
 
-void XConfig::deleteWifiSSID(String ssid){
-  Serial.println("deleteWifiSSID");
+void XConfig::deleteWifiSSID(String ssid)
+{
+  P("deleteWifiSSID");
   String file = loadConfigFile();
   StaticJsonBuffer<1024> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   JsonArray &array1 = root["networks"].as<JsonArray>();
 
   StaticJsonBuffer<500> jsonBuffer2;
-  JsonArray& networks = jsonBuffer2.createArray();
+  JsonArray &networks = jsonBuffer2.createArray();
 
-  for(int i = 0;i<array1.size();i++){
+  for (int i = 0; i < array1.size(); i++)
+  {
     JsonObject &obj = array1[i].as<JsonObject>();
-    Serial.println(obj["ssid"].as<char*>());
-    if(ssid != obj["ssid"].as<char*>()){
+    P(obj["ssid"].as<char *>());
+    if (ssid != obj["ssid"].as<char *>())
+    {
       StaticJsonBuffer<100> jsonBuffer1;
       JsonObject &object1 = jsonBuffer1.createObject();
-      object1["ssid"] = obj["ssid"].as<char*>();
-      object1["password"] = obj["password"].as<char*>();
+      object1["ssid"] = obj["ssid"].as<char *>();
+      object1["password"] = obj["password"].as<char *>();
       networks.add(object1);
     }
   }
@@ -93,24 +97,26 @@ void XConfig::deleteWifiSSID(String ssid){
   root.printTo(file);
   saveConfigFile(file.c_str());
 }
-JsonArray& XConfig::getWifiSSID(void){
-  Serial.println("getWifiSSID");
+JsonArray &XConfig::getWifiSSID(void)
+{
+  P("getWifiSSID");
   String file = loadConfigFile();
-  Serial.println("reading ssid");
+  P("reading ssid");
   StaticJsonBuffer<1024> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   JsonArray &array1 = root["networks"].as<JsonArray>();
-  for(int i = 0;i<array1.size();i++){
+  for (int i = 0; i < array1.size(); i++)
+  {
     JsonObject &obj = array1[i].as<JsonObject>();
-    Serial.println(obj["ssid"].as<char*>());
+    P(obj["ssid"].as<char *>());
   }
   return array1;
 }
 void XConfig::addWifiSSID(String ssid, String password)
 {
-  Serial.println("addWifiSSID");
+  P("addWifiSSID");
   String file = loadConfigFile();
-  Serial.println(file);
+  P(file);
   StaticJsonBuffer<1024> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
 
@@ -118,7 +124,7 @@ void XConfig::addWifiSSID(String ssid, String password)
 
   if (!networks)
   {
-    Serial.println("no networks in config file");
+    P("no networks in config file");
     JsonArray &array1 = root.createNestedArray("networks");
     StaticJsonBuffer<200> jsonBuffer1;
     JsonObject &object1 = jsonBuffer1.createObject();
@@ -139,4 +145,69 @@ void XConfig::addWifiSSID(String ssid, String password)
   file = "";
   root.printTo(file);
   saveConfigFile(file.c_str());
+}
+
+void XConfig::setNickName(String deviceName)
+{
+  P("setNickName");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<1024> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+
+  root["nickname"] = deviceName;
+
+  root.printTo(Serial);
+  file = "";
+  root.printTo(file);
+  saveConfigFile(file.c_str());
+}
+String XConfig::getNickName()
+{
+  P("getNickName");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<1024> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+  return root.get<String>("nickname");
+}
+JsonArray& XConfig::getPinConfig()
+{
+  P("getPinConfig");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<1024> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+
+  if(root["pins"]){
+    return root.get<JsonVariant>("pins").as<JsonArray&>();
+  }else{
+    StaticJsonBuffer<200> jsonBuffer;
+    return jsonBuffer.createArray();
+  }
+  
+}
+void XConfig::setPinConfig(JsonArray& pinsConfig)
+{
+  P("setPinConfig");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<1024> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+
+  JsonArray& pins = root.createNestedArray("pins");
+
+  for(int i = 0;i<pinsConfig.size(); i++){
+    pins.add(pinsConfig[i].as<JsonObject>());
+  }
+
+  root.printTo(Serial);
+  file = "";
+  root.printTo(file);
+  saveConfigFile(file.c_str());
+}
+
+void XConfig::P(String msg)
+{
+    Serial.println(msg);
 }

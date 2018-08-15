@@ -5,6 +5,9 @@ var Server = require('ws').Server;
 var port = process.env.PORT || 9030;
 var ws = new Server({ port: port });
 
+let devices = {};
+let apps = {};
+
 console.log("started");
 ws.on('connection', function (w) {
 
@@ -22,6 +25,17 @@ ws.on('connection', function (w) {
         let offset = new Date().getTimezoneOffset();
         let time = new Date().getTime() + offset * 60 * 1000;
         w.time = time;
+        if (!devices[chip])
+          devices[chip] = {};
+
+        devices[chip] = {
+          id: obj["WEBID"],
+          pins: obj['PINS'],
+          chip: obj['chip'],
+          time: time,
+          w: w
+        };
+
         w.send(JSON.stringify({
           type: "OK",
           challenge: obj['challenge']

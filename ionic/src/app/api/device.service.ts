@@ -82,5 +82,14 @@ export class DeviceService {
             return localStorage.setItem('devices', JSON.stringify(devices));
         }
     }
-    async deleteDevice(device: Device) { }
+    async deleteDevice(deleteDevice: Device) {
+        let devices = await this.getDevices();
+        devices = devices.filter((device: Device) => {
+            if (device.chip === deleteDevice.chip) {
+                return false;
+            }
+            return true;
+        })
+        this.setDevices(devices);
+    }
 }

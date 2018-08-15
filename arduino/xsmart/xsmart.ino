@@ -10,6 +10,8 @@ XConfig xconfig = XConfig("/config.json");
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module
 
+#define LEDPIN 12
+
 #define ESP_getChipId() ((uint32_t)ESP.getEfuseMac())
 
 int current_wifi_status = WIFI_CONNECT_MODE;
@@ -91,11 +93,23 @@ void startWifiAP()
 
     server.on("/", HTTP_GET, []() {
       Serial.println("ping");
+      String name = xconfig.getNickName();
 
-      StaticJsonBuffer<200> jsonBuffer;
+      StaticJsonBuffer<1024> jsonBuffer;
       JsonObject &root = jsonBuffer.createObject();
       root["webid"] = webID;
       root["chip"] = device_ssid;
+      root["name"] = name;
+
+      JsonArray &pins = root.createNestedArray("pins");
+      for (int i = 0; i < PIN_SIZE; i++)
+      {
+        JsonObject &pin = jsonBuffer.createObject();
+        pin["pin"] = PINS[i];
+        pin["status"] = PINS_STATUS[i];
+        pins.add(pin);
+      }
+
       String response = "";
       root.printTo(response);
       Serial.println();
@@ -145,6 +159,17 @@ void startWifiAP()
       server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", json);
     });
+    server.on("/setnickname", HTTP_GET, []() {
+      if (server.args() == 0)
+        return server.send(500, "text/plain", "BAD ARGS");
+
+      String name = server.arg("name");
+      xconfig.setNickName(name);
+
+      server.sendHeader("Access-Control-Allow-Origin", "*");
+      server.sendHeader("Access-Control-Allow-Methods", "*");
+      server.send(200, "application/json", xconfig.getNickName());
+    });
 
     server.on("/wifisave", HTTP_GET, []() {
       store_wifi_api_connect_result = -1;
@@ -153,8 +178,6 @@ void startWifiAP()
 
       String ssid = server.arg("SSID");
       String password = server.arg("password");
-      String path = server.arg(0);
-      Serial.println(path);
       Serial.println("wifi save called");
 
       char ssid_array[ssid.length() + 1];
@@ -229,11 +252,27 @@ void startWifiAP()
   {
     Serial.print(WiFi.localIP());
     Serial.println("webserver..");
+    int ledToggle = 0;
+    int ledPinVal = HIGH;
     while (AP_STARTED == 1)
     {
-      //      Serial.print(".");
       server.handleClient();
       yield();
+      // Serial.print(".");
+      ledToggle++;
+      if (ledToggle > 200)
+      {
+        if (ledPinVal == HIGH)
+        {
+          ledPinVal = LOW;
+        }
+        else
+        {
+          ledPinVal = HIGH;
+        }
+        digitalWrite(LEDPIN, ledPinVal);
+        ledToggle = 0;
+      }
     }
     Serial.println("ap while loop stopped");
   }
@@ -408,20 +447,34 @@ void connectSocket()
 void pinWrite(int pin_no, int pin_mode)
 {
   digitalWrite(pin_no, pin_mode);
+  StaticJsonBuffer<1000> jsonBuffer;
+  JsonArray &root = jsonBuffer.createArray();
   for (int i = 0; i < PIN_SIZE; i++)
   {
     if (PINS[i] == pin_no)
     {
       PINS_STATUS[i] = pin_mode;
     }
+    JsonObject &pin = jsonBuffer.createObject();
+    pin["pin"] = PINS[i];
+    pin["status"] = PINS_STATUS[i];
+    root.add(pin);
   }
-}
 
+  xconfig.setPinConfig(root);
+}
 void initIOPins()
 {
   for (int i = 0; i < PIN_SIZE; i++)
   {
     pinMode(PINS[i], OUTPUT);
+  }
+
+  JsonArray &pins = xconfig.getPinConfig();
+  for (int i = 0; i < pins.size(); i++)
+  {
+    JsonObject &obj = pins[i].as<JsonObject>();
+    digitalWrite(obj.get<int>("pin"), obj.get<int>("status"));
   }
 }
 
@@ -523,8 +576,12 @@ void setup()
 {
   Serial.begin(115200);
   delay(10);
+  pinMode(LEDPIN, OUTPUT);
+  digitalWrite(LEDPIN, LOW);
   xconfig.initConfig();
-  // xconfig.testConfig();
+
+  Serial.println("device name");
+  Serial.println(xconfig.getNickName());
 
   //need to look at interrupts. if we press push button for 5sec it will start wifi mode.
   //https://techtutorialsx.com/2016/12/11/esp8266-external-interrupts/
@@ -534,7 +591,7 @@ void setup()
   attachInterrupt(digitalPinToInterrupt(interruptPin), handleInterrupt, CHANGE);
 
   initIOPins();
-  playIOPins();
+  // playIOPins(); //not used anymore
 }
 
 void loop()
@@ -546,6 +603,7 @@ void loop()
     String data;
     if (WiFi.status() != WL_CONNECTED)
     {
+      digitalWrite(LEDPIN, LOW);
       Serial.println("wifi disconnected, connecting again.");
 
       if (delay_connect_wifi < max_delay_connect_wifi)
@@ -559,7 +617,7 @@ void loop()
     }
     else
     {
-
+      digitalWrite(LEDPIN, HIGH);
       if (client.connected())
       {
 

@@ -16,11 +16,16 @@ class XConfig
     void deleteWifiSSID(String);
     JsonArray& getWifiSSID(void);
     void addWifiSSID(String, String);
+    void setNickName(String);
+    String getNickName();
     void testConfig(void);
+    JsonArray& getPinConfig();
+    void setPinConfig(JsonArray&);
 
   // library-accessible "private" interface
   private:
     char * configfile;
+    void P(String);
 };
 
 #endif

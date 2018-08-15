@@ -29,7 +29,7 @@ export class ApiService {
     return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
   }
 
-  async checkDeviceOnline() {
-
+  async setDeviceNickName(name: String) {
+    return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
   }
 }

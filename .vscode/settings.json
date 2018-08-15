@@ -8,6 +8,7 @@
         "unordered_set": "cpp",
         "vector": "cpp",
         "initializer_list": "cpp",
-        "list": "cpp"
+        "list": "cpp",
+        "typeinfo": "cpp"
     }
 }

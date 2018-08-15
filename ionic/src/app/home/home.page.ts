@@ -5,6 +5,7 @@ import { AlertController } from '@ionic/angular';
 
 import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
+import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
 
 
@@ -29,13 +30,15 @@ export class HomePage implements OnInit {
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
+  // 3. discovery ( i.e new device found )
 
   constructor(
     private platform: Platform,
     private http: HttpClient,
     private api: ApiService,
     public alertController: AlertController,
-    private deviceService: DeviceService) { }
+    private deviceService: DeviceService,
+    private notifyService: NotifyService) { }
 
   ngOnInit() {
     this.platform.ready().then(() => {
@@ -64,8 +67,10 @@ export class HomePage implements OnInit {
         console.log('Message from server ', res);
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
-        } else if(res.type === "device_io_notify"){
-         
+        } else if (res.type === "device_pin_oper_reply") {
+          this.notifyService.alertUser("operation sent to device");
+        } else if (res.type === "device_io_notify") {
+          this.notifyService.alertUser("device performed the action!");
         }
       });
     }
@@ -100,45 +105,74 @@ export class HomePage implements OnInit {
       this.keepCheckingDeviceOnline();
     }
   }
-  trackByDevice(device: Device){
+  trackByDevice(device: Device) {
     return device.chip;
   }
-  trackBySwitch(s: Switch){
+  trackBySwitch(s: Switch) {
     return s.pin;
+  }
+  async deleteDevice(device: Device) {
+    this.deviceService.deleteDevice(device);
+    this.checkExistingDevice();
   }
   scanDevice() {
     this.mode = "scan";
     this.isScanningDevice = true;
     this.wifinetworks = [];
+    this.devicePing = {
+      name: "",
+      chip: "",
+      webid: "",
+      isNew: false
+    }
     this.keepCheckingWifiConnected();
   }
   keepCheckingWifiConnected() {
-    if(wifiCheckInterval)
-     clearInterval(wifiCheckInterval);
+    if (wifiCheckInterval)
+      clearInterval(wifiCheckInterval);
     wifiCheckInterval = setInterval(async () => {
       try {
         this.devicePing = await this.api.checkPing();
+        if (this.devicePing.name.length > 0) {
+          this.devicePing.isNew = false;
+        } else {
+          this.devicePing.isNew = true;
+        }
         console.log(this.devicePing);
-        this.xSmartConnect = true;
         this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
-        if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-          let newdevice: Device = {
-            name: "",
-            device_id: this.devicePing.webid,
-            chip: this.devicePing.chip,
-            ttl: 0,
-            online: false,
-            switches: []
-          };
-          this.deviceService.addDevice(newdevice);
-        }
+        this.mode = "discovery";
       } catch (e) {
         console.log(e)
         this.isScanningDevice = true;
         // this.xSmartConnect = false;
       }
     }, 5000)
+  }
+  async freshDevice() {
+    this.devicePing.name = "";
+    this.devicePing.isNew = true;
+  }
+  async setDeviceName(name: String) {
+    try {
+      await this.api.setDeviceNickName(name);
+      if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
+        let newdevice: Device = {
+          name: name,
+          device_id: this.devicePing.webid,
+          chip: this.devicePing.chip,
+          ttl: 0,
+          online: false,
+          switches: []
+        };
+        this.deviceService.addDevice(newdevice);
+      }
+      this.mode = "scan";
+      this.xSmartConnect = true;
+      this.scanWifi();
+    } catch (e) {
+      this.notifyService.alertUser("failed to set device name");
+    }
   }
 
   async scanWifi() {

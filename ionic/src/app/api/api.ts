@@ -1,6 +1,8 @@
 export class Ping {
     webid: string;
     chip: string;
+    name: string;
+    isNew?: boolean;
 }
 
 export class Wifi {
