@@ -149,7 +149,7 @@ export class HomePage implements OnInit {
         this.isScanningDevice = true;
         // this.xSmartConnect = false;
       }
-    }, 1000)
+    }, 60000)  //this so high because, when device does a ping, we automatically listen to it
   }
   async freshDevice() {
     this.devicePing.name = "";

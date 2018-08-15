@@ -36,6 +36,25 @@ ws.on('connection', function (w) {
         w.send(JSON.stringify({
           type: "OK"
         }));
+
+
+        forEach(apps[chip], (app) => {
+
+          ws.clients.forEach((client) => {
+            if (client.app_id && client.app_id == app) {
+              client.send(JSON.stringify({
+                type: "device_online_check_reply",
+                pin: pin,
+                status: status,
+                chip: chip
+              }));
+            }
+          });
+
+
+        });
+
+
       } else if (obj.type === "device_online_check") {
         // this is a pint from mobile apps or web app every 5sec
         // to check if there devices are online.
@@ -81,7 +100,7 @@ ws.on('connection', function (w) {
         let app_id = obj['app_id'];
         w.app_id = app_id;
         let found = false;
-        ws.clients.forEach(function each(client) {
+        ws.clients.forEach((client) => {
           if (client.chip && client.chip === chip) {
             client.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
@@ -103,7 +122,7 @@ ws.on('connection', function (w) {
         w.chip = chip;
         forEach(apps[chip], (app) => {
 
-          ws.clients.forEach(function each(client) {
+          ws.clients.forEach((client) => {
             if (client.app_id && client.app_id == app) {
               client.send(JSON.stringify({
                 type: "device_io_notify",
