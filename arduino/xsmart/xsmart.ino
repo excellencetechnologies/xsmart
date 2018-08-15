@@ -27,10 +27,10 @@ String webID = "LOLIN32-LITE-code-v.0.0.1"; //this should be some random no, we 
 String device_ssid = "xSmart-" + String(ESP_getChipId());
 
 //this pins for lolin32 large device
-const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+// const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
 
 //this pint for lolin32 mini
-// const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
+const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
 
 const byte interruptPin = 19;
 
@@ -48,7 +48,7 @@ const int ok_ping_not_recieved_count_max = 20;
 
 volatile byte interruptCounter = 0;
 unsigned long interruptMills = 0;
-unsigned long interruptMillsMax = 100;
+unsigned long interruptMillsMax = 500;
 
 char *esp_ap_password = "123456789";
 int store_wifi_api_connect_result = -1;
