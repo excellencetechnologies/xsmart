@@ -1,6 +1,7 @@
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
 import { Platform } from '@ionic/angular';
+import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 
 import { Device, Switch } from "./api"
 
@@ -10,8 +11,17 @@ import { Device, Switch } from "./api"
 export class DeviceService {
     constructor(
         private nativeStorage: NativeStorage,
-        private platform: Platform) {
+        private platform: Platform,
+        private uniqueDeviceID: UniqueDeviceID) {
 
+    }
+    //random id to identify the current app
+    async getAppID(){
+        if (this.platform.is("mobile")){
+            return await this.uniqueDeviceID.get()
+        }else {
+            return 123;
+        }
     }
     async getDevices(): Promise<Device[]> {
         if (this.platform.is("mobile"))

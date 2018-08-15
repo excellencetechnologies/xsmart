@@ -17,14 +17,8 @@ ws.on('connection', function (w) {
       let obj = JSON.parse(msg);
       if (obj.type === "device_ping") {
         console.log("device ping", obj);
-        var id = obj['WEBID'];
-        w.id = id;
-        w.pins = obj['PINS'];
-        w.chip = obj['chip'];
-        w.isDevice = true;
         let offset = new Date().getTimezoneOffset();
         let time = new Date().getTime() + offset * 60 * 1000;
-        w.time = time;
         if (!devices[chip])
           devices[chip] = {};
 
@@ -42,29 +36,32 @@ ws.on('connection', function (w) {
         }));
       } else if (obj.type === "device_online_check") {
         let chip = obj['chip'];
-        let found = false;
-        w.isApp = true;
-        if (!w.devices) {
-          w.devices = [];
+        let device_id = obj['id'];
+        if (!apps[chip]) {
+          apps[chip] = [];
         }
-        if (!w.devices.includes(chip)) {
-          w.devices.push(chip);
+        if (!apps.includes(device_id)) {
+          apps.push(device_id);
         }
 
-        ws.clients.forEach(function each(client) {
-          if (client.chip == chip) {
-            w.send(JSON.stringify({
-              type: "device_online_check_reply",
-              id: client.id,
-              pins: client.pins,
-              chip: client.chip,
-              found: true,
-              readyState: client.readyState,
-              time: client.time
-            }));
-            found = true;
-          }
-        });
+        devices.forEach( (device) => {
+          console.log(device);
+        })
+
+        // ws.clients.forEach(function each(client) {
+        //   if (client.chip == chip) {
+        //     w.send(JSON.stringify({
+        //       type: "device_online_check_reply",
+        //       id: client.id,
+        //       pins: client.pins,
+        //       chip: client.chip,
+        //       found: true,
+        //       readyState: client.readyState,
+        //       time: client.time
+        //     }));
+        //     found = true;
+        //   }
+        // });
         if (!found) {
           w.send(JSON.stringify({
             type: "device_online_check_reply",
