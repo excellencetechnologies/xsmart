@@ -16,11 +16,14 @@ export class NotifyService {
         const alert = await this.alertController.create({
             header: 'Alert',
             subHeader: subtitle,
-            message: msg,
-            buttons: ['OK']
+            message: msg
         });
 
         await alert.present();
+
+        setTimeout(() => {
+            alert.dismiss();
+        }, 1000)
     }
 
 }

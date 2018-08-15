@@ -16,11 +16,11 @@ export class DeviceService {
 
     }
     //random id to identify the current app
-    async getAppID(){
-        if (this.platform.is("mobile")){
+    async getAppID() {
+        if (this.platform.is("mobile")) {
             return await this.uniqueDeviceID.get()
-        }else {
-            return 123;
+        } else {
+            return Promise.resolve("!23");;
         }
     }
     async getDevices(): Promise<Device[]> {
@@ -68,7 +68,11 @@ export class DeviceService {
             if (device.chip === data.chip) {
                 let offset = new Date().getTimezoneOffset() * 60 * 1000;
                 device.ttl = data.time * 1 + offset * -1;
-                device.online = true;
+                if (device.ttl < new Date().getTime() - 5 * 60 * 1000) {
+                    device.online = false;
+                } else {
+                    device.online = true;
+                }
                 device.switches = [];
                 data.pins.forEach((pin: Switch) => {
                     let swtich: Switch = {

@@ -209,5 +209,5 @@ void XConfig::setPinConfig(JsonArray& pinsConfig)
 
 void XConfig::P(String msg)
 {
-    Serial.println(msg);
+    // Serial.println(msg);
 }

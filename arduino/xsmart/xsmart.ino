@@ -27,10 +27,10 @@ String webID = "LOLIN32-LITE-code-v.0.0.1"; //this should be some random no, we 
 String device_ssid = "xSmart-" + String(ESP_getChipId());
 
 //this pins for lolin32 large device
-//const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
 
 //this pint for lolin32 mini
-const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
+// const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
 
 const byte interruptPin = 19;
 
@@ -48,7 +48,7 @@ const int ok_ping_not_recieved_count_max = 20;
 
 volatile byte interruptCounter = 0;
 unsigned long interruptMills = 0;
-unsigned long interruptMillsMax = 2000;
+unsigned long interruptMillsMax = 100;
 
 char *esp_ap_password = "123456789";
 int store_wifi_api_connect_result = -1;
@@ -168,7 +168,7 @@ void startWifiAP()
 
       server.sendHeader("Access-Control-Allow-Origin", "*");
       server.sendHeader("Access-Control-Allow-Methods", "*");
-      server.send(200, "application/json", xconfig.getNickName());
+      server.send(200, "application/json", "{ \"name\": \" " + xconfig.getNickName() + " \" }");
     });
 
     server.on("/wifisave", HTTP_GET, []() {
@@ -260,7 +260,7 @@ void startWifiAP()
       yield();
       // Serial.print(".");
       ledToggle++;
-      if (ledToggle > 200)
+      if (ledToggle > 4000)
       {
         if (ledPinVal == HIGH)
         {
@@ -543,12 +543,19 @@ void handleInterrupt()
       {
         Serial.println("set ap mode");
         current_wifi_status = WIFI_AP_MODE;
+        
       }
       else
       {
         current_wifi_status = WIFI_CONNECT_MODE;
         Serial.println("set wifi mode");
+        AP_STARTED = 0; // so that it comes out of the while loop
+        
       }
+    }
+    else if (millis() - interruptMills > 5000)
+    {
+      ESP.restart();
     }
   }
 }

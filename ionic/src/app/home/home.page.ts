@@ -149,7 +149,7 @@ export class HomePage implements OnInit {
         this.isScanningDevice = true;
         // this.xSmartConnect = false;
       }
-    }, 5000)
+    }, 1000)
   }
   async freshDevice() {
     this.devicePing.name = "";
@@ -173,6 +173,7 @@ export class HomePage implements OnInit {
       this.xSmartConnect = true;
       this.scanWifi();
     } catch (e) {
+      console.log(e);
       this.notifyService.alertUser("failed to set device name");
     }
   }
