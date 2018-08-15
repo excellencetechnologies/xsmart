@@ -45,9 +45,12 @@ ws.on('connection', function (w) {
                 console.log(devices[chip]);
                 client.send(JSON.stringify({
                   type: "device_online_check_reply",
-                  pin: devices[chip].pin,
+                  id: devices[chip].id,
+                  pins: devices[chip].pins,
                   status: devices[chip].status,
-                  chip: devices[chip].chip
+                  chip: devices[chip].chip,
+                  time: devices[chip].time,
+                  found : true
                 }));
               }
             });
