@@ -38,16 +38,15 @@ ws.on('connection', function (w) {
         }));
 
         if (apps[chip]) {
-          console.log(apps[chip]);
           apps[chip].forEach((app) => {
 
             ws.clients.forEach((client) => {
               if (client.app_id && client.app_id == app) {
                 client.send(JSON.stringify({
                   type: "device_online_check_reply",
-                  pin: pin,
-                  status: status,
-                  chip: chip
+                  pin: devices[chip].pin,
+                  status: devices[chip].status,
+                  chip: devices[chip].chip
                 }));
               }
             });
