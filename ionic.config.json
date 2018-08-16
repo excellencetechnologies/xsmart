@@ -1,0 +1,15 @@
+{
+  "name": "xsmart",
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
+  "type": "angular",
+  "pro_id": "29ad746d",
+  "proxies": [
+    {
+      "path": "/esp32",
+      "proxyUrl": "https://192.168.4.1/"
+    }
+  ]
+}
