@@ -1,4 +1,8 @@
 {
+  "name": "xsmart",
+  "version": "0.0.1",
+  "author": "Ionic Framework",
+  "homepage": "http://ionicframework.com/",
     "scripts": {
         "install": "cd ionic && npm install",
         "build": "cd ionic && ng build"
