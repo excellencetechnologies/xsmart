@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">xsmart</string>
-    <string name="title_activity_main">xsmart</string>
-    <string name="package_name">com.excellence.xmsart</string>
-    <string name="fileprovider_authority">com.excellence.xmsart.fileprovider</string>
-    <string name="custom_url_scheme">com.excellence.xmsart</string>
-</resources>
