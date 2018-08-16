@@ -84,7 +84,7 @@ export class DeviceService {
             if (device.chip === data.chip) {
                 let offset = new Date().getTimezoneOffset() * 60 * 1000;
                 device.ttl = data.time * 1 + offset * -1;
-                if (device.ttl < new Date().getTime() - 5 * 60 * 1000) {
+                if (device.ttl < new Date().getTime() - 1 * 60 * 1000) {
                     device.online = false;
                 } else {
                     device.online = true;

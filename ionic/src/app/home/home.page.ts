@@ -71,7 +71,8 @@ export class HomePage implements OnInit {
       socket.addEventListener('message', async (event) => {
 
         let res = JSON.parse(event.data);
-        console.log('Message from server ', res);
+        console.log('Message from server ');
+        console.log(res);
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
         } else if (res.type === "device_pin_oper_reply") {

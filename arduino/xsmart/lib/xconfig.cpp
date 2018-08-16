@@ -49,7 +49,7 @@ String XConfig::loadConfigFile(void)
 void XConfig::saveConfigFile(const char *message)
 {
   P("saving config file ");
-  Serial.print(message);
+  P(message);
   File file = SPIFFS.open(configfile, FILE_WRITE);
   if (!file)
   {

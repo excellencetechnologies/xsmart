@@ -445,6 +445,7 @@ void connectSocket()
 void pinWrite(int pin_no, int pin_mode)
 {
   digitalWrite(pin_no, pin_mode);
+  delay(50);
   StaticJsonBuffer<1000> jsonBuffer;
   JsonArray &root = jsonBuffer.createArray();
   for (int i = 0; i < PIN_SIZE; i++)
