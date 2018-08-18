@@ -1,6 +1,6 @@
 {
-  "appId": "io.ionic.starter",
+  "appId": "com.excellence.xsmart",
   "appName": "xsmart",
   "bundledWebRuntime": false,
-  "webDir": "www"
+  "webDir": "src"
 }

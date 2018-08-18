@@ -26,6 +26,7 @@ WiFiMulti wifiMulti;                        // connecting to multiple wifi netwo
 String webID = "LOLIN32-LITE-code-v.0.0.1"; //this should be some random no, we assigned to each device. ;
 String device_ssid = "xSmart-" + String(ESP_getChipId());
 
+
 //this pins for lolin32 large device
 // const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
 
