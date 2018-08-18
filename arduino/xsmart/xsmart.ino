@@ -363,6 +363,21 @@ void forcePingPacket()
   ping_packet_count = 0;
   pingPacket();
 }
+void sendNamePack(String name){
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_name_success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+  root["name"] = name;
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void sendIOPack(int pin, int status)
 {
   ping_packet_count = 0;
@@ -493,35 +508,6 @@ void lowIOPins()
     pinWrite(PINS[i], LOW);
   }
 }
-void playIOPins()
-{
-  //left to right all leds play
-  for (int i = 0; i < PIN_SIZE; i++)
-  {
-    lowIOPins();
-    pinWrite(PINS[i], HIGH);
-    delay(200);
-  }
-  //
-  //  //right to left all leds play
-  //
-  for (int i = PIN_SIZE - 1; i >= 0; i--)
-  {
-    lowIOPins();
-    pinWrite(PINS[i], HIGH);
-    delay(200);
-  }
-
-  lowIOPins();
-  delay(300);
-  highIOPins();
-  delay(500);
-  lowIOPins();
-  delay(300);
-  highIOPins();
-  delay(500);
-  lowIOPins();
-}
 
 void handleInterrupt()
 {
@@ -588,12 +574,11 @@ void setup()
   digitalWrite(LEDPIN, LOW);
   xconfig.initConfig();
 
+  // xconfig.setPinName(5," bedroom fan");
+  // Serial.println(xconfig.getPinName(5));
+
   Serial.println("device name");
   Serial.println(xconfig.getNickName());
-
-  //need to look at interrupts. if we press push button for 5sec it will start wifi mode.
-  //https://techtutorialsx.com/2016/12/11/esp8266-external-interrupts/
-  //http://www.electronicwings.com/nodemcaAwgw s  AT                                     S4RRRRRRRRRRRRRRRRRR4AGu/nodemcu-gpio-interrupts-with-arduino-ide
 
   pinMode(interruptPin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(interruptPin), handleInterrupt, CHANGE);
@@ -656,6 +641,10 @@ void loop()
             pinWrite(pin, LOW);
             delay(10);
             sendIOPack(pin, 0);
+          }
+          else if(type == "DEVICE_NAME"){
+            xconfig.setNickName(root.get<string>("name"));
+            sendNamePack(root.get<string>("name"));
           }
           else if (type == "OK")
           {

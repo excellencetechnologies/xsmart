@@ -138,6 +138,43 @@ ws.on('connection', function (w) {
           });
 
         }
+      } else if (obj.type === "device_set_name") {
+        let chip = obj['chip'];
+        let app_id = obj['app_id'];
+        w.app_id = app_id;
+        let found = false;
+        ws.clients.forEach((client) => {
+          if (client.chip && client.chip === chip) {
+            client.send(JSON.stringify({
+              type: "DEVICE_NAME",
+              name : obj['name']
+            }));
+            found = true;
+          }
+        });
+        w.send(JSON.stringify({
+          type: "device_set_name_reply",
+          found: found,
+          chip: chip
+        }));
+      } else if (obj.type === "device_set_name_success") {
+        let chip = obj['chip'];
+        let name = obj['name'];
+        w.chip = chip;
+        if (apps[chip]) {
+          apps[chip].forEach((app) => {
+            ws.clients.forEach((client) => {
+              if (client.app_id && client.app_id == app) {
+                client.send(JSON.stringify({
+                  type: "device_set_name__notify",
+                  name: name,
+                  chip: chip
+                }));
+              }
+            });
+          });
+
+        }
       }
 
 

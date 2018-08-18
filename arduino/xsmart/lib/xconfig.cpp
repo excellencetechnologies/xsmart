@@ -4,6 +4,8 @@
 #include <SPIFFS.h>
 #include <ArduinoJson.h>
 
+#define JSON_SIZE 1024
+
 XConfig::XConfig(char *filename)
 {
   configfile = filename;
@@ -18,6 +20,7 @@ void XConfig::initConfig(void)
   else
   {
     P("xconfig init");
+    // SPIFFS.remove("/config.json");
   }
 }
 void XConfig::testConfig(void)
@@ -42,6 +45,7 @@ String XConfig::loadConfigFile(void)
   {
     char ch = (char)file.read();
     data += String(ch);
+    // P(String(ch));
   }
   return data;
 }
@@ -70,7 +74,7 @@ void XConfig::deleteWifiSSID(String ssid)
 {
   P("deleteWifiSSID");
   String file = loadConfigFile();
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   JsonArray &array1 = root["networks"].as<JsonArray>();
 
@@ -102,7 +106,7 @@ JsonArray &XConfig::getWifiSSID(void)
   P("getWifiSSID");
   String file = loadConfigFile();
   P("reading ssid");
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   JsonArray &array1 = root["networks"].as<JsonArray>();
   for (int i = 0; i < array1.size(); i++)
@@ -117,7 +121,7 @@ void XConfig::addWifiSSID(String ssid, String password)
   P("addWifiSSID");
   String file = loadConfigFile();
   P(file);
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
 
   JsonVariant networks = root["networks"];
@@ -152,7 +156,7 @@ void XConfig::setNickName(String deviceName)
   P("setNickName");
   String file = loadConfigFile();
   P(file);
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
 
   root["nickname"] = deviceName;
@@ -167,38 +171,125 @@ String XConfig::getNickName()
   P("getNickName");
   String file = loadConfigFile();
   P(file);
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   return root.get<String>("nickname");
 }
-JsonArray& XConfig::getPinConfig()
+JsonArray &XConfig::getPinConfig()
 {
   P("getPinConfig");
   String file = loadConfigFile();
   P(file);
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
 
-  if(root["pins"]){
-    return root.get<JsonVariant>("pins").as<JsonArray&>();
-  }else{
+  if (root["pins"])
+  {
+    return root.get<JsonVariant>("pins").as<JsonArray &>();
+  }
+  else
+  {
     StaticJsonBuffer<200> jsonBuffer;
     return jsonBuffer.createArray();
   }
-  
 }
-void XConfig::setPinConfig(JsonArray& pinsConfig)
+void XConfig::setPinConfig(JsonArray &pinsConfig)
 {
   P("setPinConfig");
   String file = loadConfigFile();
   P(file);
-  StaticJsonBuffer<1024> jsonBuffer;
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
 
-  JsonArray& pins = root.createNestedArray("pins");
+  JsonArray &pins = root.createNestedArray("pins");
 
-  for(int i = 0;i<pinsConfig.size(); i++){
+  for (int i = 0; i < pinsConfig.size(); i++)
+  {
     pins.add(pinsConfig[i].as<JsonObject>());
+  }
+
+  root.printTo(Serial);
+  file = "";
+  root.printTo(file);
+  saveConfigFile(file.c_str());
+}
+
+String XConfig::getPinName(int pin)
+{
+  P("getPinName");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+
+  root.printTo(Serial);
+
+  JsonArray &array1 = root["switches"].as<JsonArray>();
+
+  String pinName = "";
+
+  for (int i = 0; i < array1.size(); i++)
+  {
+    JsonObject &obj = array1[i].as<JsonObject>();
+    P(obj["pin"].as<char *>());
+    if (pin == obj["pin"].as<int>())
+    {
+      pinName = obj["name"].as<String>();
+    }
+  }
+  return pinName;
+}
+void XConfig::setPinName(int pin, String name)
+{
+  P("setPinName");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+
+  JsonVariant switches = root["switches"];
+
+  if (!switches)
+  {
+    P("no switches in config file");
+    JsonArray &array1 = root.createNestedArray("switches");
+    StaticJsonBuffer<200> jsonBuffer1;
+    JsonObject &object1 = jsonBuffer1.createObject();
+    object1["pin"] = pin;
+    object1["name"] = name;
+    array1.add(object1);
+  }
+  else
+  {
+
+    //first delete
+
+    JsonArray &array1 = root["switches"].as<JsonArray>();
+
+    StaticJsonBuffer<500> jsonBuffer2;
+    JsonArray &networks = jsonBuffer2.createArray();
+
+    for (int i = 0; i < array1.size(); i++)
+    {
+      JsonObject &obj = array1[i].as<JsonObject>();
+      P(obj["pin"].as<char *>());
+      if (pin != obj["pin"].as<int>())
+      {
+        StaticJsonBuffer<100> jsonBuffer1;
+        JsonObject &object1 = jsonBuffer1.createObject();
+        object1["pin"] = obj["pin"].as<int>();
+        object1["name"] = obj["name"].as<String>();
+        networks.add(object1);
+      }
+    }
+
+    StaticJsonBuffer<100> jsonBuffer1;
+    JsonObject &object1 = jsonBuffer1.createObject();
+    object1["pin"] = pin;
+    object1["name"] = name;
+    networks.add(object1);
+
+    root.set("switches", networks);
   }
 
   root.printTo(Serial);
@@ -209,5 +300,5 @@ void XConfig::setPinConfig(JsonArray& pinsConfig)
 
 void XConfig::P(String msg)
 {
-    // Serial.println(msg);
+  Serial.println(msg);
 }
