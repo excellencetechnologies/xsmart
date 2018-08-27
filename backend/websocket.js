@@ -61,6 +61,8 @@ ws.on('connection', function (w) {
       } else if (obj.type === "device_online_check") {
         // this is a pint from mobile apps or web app every 5sec
         // to check if there devices are online.
+        // this has been removed now. not used anymore
+        // depriciated
         let chip = obj['chip'];
         let app_id = obj['app_id'];
         w.app_id = app_id;

@@ -165,6 +165,9 @@ export class HomePage implements OnInit {
     this.devicePing.name = "";
     this.devicePing.isNew = true;
   }
+  async askDeviceName(){
+    
+  }
   async setDeviceName(name: String) {
     try {
       await this.api.setDeviceNickName(name);

@@ -19,7 +19,7 @@
         <ion-card-content>
           <ion-card-title>
               <ion-item>
-                  <ion-label>{{device.name}}</ion-label>
+                  <ion-label (click)="askDeviceName(device);" >{{device.name}}</ion-label>
                   <ion-button (click)="deleteDevice(device)" fill="outline" slot="end">
                     <ion-icon name="trash"></ion-icon>
                   </ion-button>

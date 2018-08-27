@@ -1,683 +1,213 @@
-#include <WiFi.h>
-#include <WiFiMulti.h>
-#include <WebSocketClient.h>
-#include <WebServer.h>
-#include <ESPmDNS.h>
-#include <ArduinoJson.h>
-#include <xconfig.h>
+/*************************************************** 
+  This is an example sketch for our optical Fingerprint sensor
 
-XConfig xconfig = XConfig("/config.json");
-#define WIFI_AP_MODE 1      //acts as access point
-#define WIFI_CONNECT_MODE 2 //acts a normal wifi module
+  Designed specifically to work with the Adafruit BMP085 Breakout 
+  ----> http://www.adafruit.com/products/751
 
-#define LEDPIN 12
+  These displays use TTL Serial to communicate, 2 pins are required to 
+  interface
+  Adafruit invests time and resources providing this open source code, 
+  please support Adafruit and open-source hardware by purchasing 
+  products from Adafruit!
 
-#define ESP_getChipId() ((uint32_t)ESP.getEfuseMac())
+  Written by Limor Fried/Ladyada for Adafruit Industries.  
+  BSD license, all text above must be included in any redistribution
+ ****************************************************/
 
-int current_wifi_status = WIFI_CONNECT_MODE;
-int previous_wifi_status = current_wifi_status; //this used to detect change
+#include <Adafruit_Fingerprint.h>
 
-char path[] = "/";
-char host[] = "5.9.144.226";
+// On Leonardo/Micro or others with hardware serial, use those! #0 is green wire, #1 is white
+// uncomment this line:
+#define mySerial Serial2
 
-WebSocketClient webSocketClient;            // Use WiFiClient class to create TCP connections
-WiFiClient client;                          //this client is used to make tcp connection
-WiFiMulti wifiMulti;                        // connecting to multiple wifi networks
-String webID = "LOLIN32-LITE-code-v.0.0.1"; //this should be some random no, we assigned to each device. ;
-String device_ssid = "xSmart-" + String(ESP_getChipId());
+// For UNO and others without hardware serial, we must use software serial...
+// pin #2 is IN from sensor (GREEN wire)
+// pin #3 is OUT from arduino  (WHITE wire)
+// comment these two lines if using hardware serial
+// #include <SoftwareSerial.h>
+// SoftwareSerial mySerial(16, 17);
 
+Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
-//this pins for lolin32 large device
-// const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+uint8_t id;
 
-//this pint for lolin32 mini
-const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
-
-const byte interruptPin = 19;
-
-int PINS_STATUS[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW}; //default status of all pins
-const int PIN_SIZE = 7;
-
-int delay_connect_wifi = 5000;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
-const int max_delay_connect_wifi = delay_connect_wifi * 3; //this is the max time we try to connect.
-
-int ping_packet_count = 0; //ping packet is also variable only after 10 times do we second another package
-const int ping_packet_reset = 10;
-
-int ok_ping_not_recieved_count = 0; //this is to check if we get back OK response of our ping, if not we do socket connection again.
-const int ok_ping_not_recieved_count_max = 20;
-
-volatile byte interruptCounter = 0;
-unsigned long interruptMills = 0;
-unsigned long interruptMillsMax = 500;
-
-char *esp_ap_password = "123456789";
-int store_wifi_api_connect_result = -1;
-
-IPAddress ip(192, 168, 1, 99);       // where xx is the desired IP Address
-IPAddress gateway(192, 168, 1, 254); // set gateway to match your wifi network
-IPAddress subnet(255, 255, 255, 0);  // set subnet mask to match your wifi network
-
-WebServer server(80);
-
-int AP_STARTED = 0; //this is mainly used to set when AP mode is started because in loop, we cannot start ap again and again
-
-void stopAP()
+void setup()  
 {
-  WiFi.softAPdisconnect();
+  Serial.begin(9600);
+  while (!Serial);  // For Yun/Leo/Micro/Zero/...
   delay(100);
-  server.close();
-  AP_STARTED = 0;
-}
-void startWifiAP()
-{
-  if (AP_STARTED == 0)
-  {
-    WiFi.mode(WIFI_AP_STA);
-    AP_STARTED = 1;
+  Serial.println("\n\nAdafruit Fingerprint sensor enrollment");
 
-    //    WiFi.config(ip, gateway, subnet);
-
-    Serial.println(device_ssid);
-    Serial.println("Configuring  access point for wifi network ...");
-    char ap_ssid_array[device_ssid.length() + 1];
-    device_ssid.toCharArray(ap_ssid_array, device_ssid.length() + 1);
-    WiFi.softAP(ap_ssid_array, esp_ap_password);
-    WiFi.waitForConnectResult();
-    IPAddress accessIP = WiFi.softAPIP();
-    Serial.print("ESP AccessPoint IP address: ");
-    Serial.println(accessIP);
-    if (MDNS.begin("xsmart"))
-    {
-      Serial.println("MDNS responder started");
-    }
-
-    server.on("/", HTTP_GET, []() {
-      Serial.println("ping");
-      String name = xconfig.getNickName();
-
-      StaticJsonBuffer<1024> jsonBuffer;
-      JsonObject &root = jsonBuffer.createObject();
-      root["webid"] = webID;
-      root["chip"] = device_ssid;
-      root["name"] = name;
-
-      JsonArray &pins = root.createNestedArray("pins");
-      for (int i = 0; i < PIN_SIZE; i++)
-      {
-        JsonObject &pin = jsonBuffer.createObject();
-        pin["pin"] = PINS[i];
-        pin["status"] = PINS_STATUS[i];
-        pins.add(pin);
-      }
-
-      String response = "";
-      root.printTo(response);
-      Serial.println();
-      root.printTo(Serial);
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.sendHeader("Access-Control-Allow-Methods", "*");
-      server.send(200, "application/json", response);
-    });
-
-    server.on("/wifi", HTTP_GET, []() {
-      Serial.println("scan start");
-
-      // WiFi.scanNetworks will return the number of networks found
-      int n = WiFi.scanNetworks();
-      Serial.println("scan done");
-      StaticJsonBuffer<2000> jsonBuffer;
-      JsonArray &root = jsonBuffer.createArray();
-      if (n == 0)
-      {
-        Serial.println("no networks found");
-      }
-      else
-      {
-        Serial.print(n);
-        Serial.println(" networks found");
-
-        int max = 15;
-        for (int i = 0; i < n; ++i)
-        {
-          JsonObject &wifi = jsonBuffer.createObject();
-          String auth = (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "OPEN" : "AUTH";
-          wifi["SSID"] = WiFi.SSID(i);
-          wifi["RSSI"] = WiFi.RSSI(i);
-          wifi["auth"] = auth;
-          root.add(wifi);
-          if (i > max)
-          {
-            break;
-          }
-          delay(10);
-        }
-      }
-      String json = "";
-      root.printTo(json);
-      root.prettyPrintTo(Serial);
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.sendHeader("Access-Control-Allow-Methods", "*");
-      server.send(200, "application/json", json);
-    });
-    server.on("/setnickname", HTTP_GET, []() {
-      if (server.args() == 0)
-        return server.send(500, "text/plain", "BAD ARGS");
-
-      String name = server.arg("name");
-      xconfig.setNickName(name);
-
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.sendHeader("Access-Control-Allow-Methods", "*");
-      server.send(200, "application/json", "{ \"name\": \" " + xconfig.getNickName() + " \" }");
-    });
-
-    server.on("/wifisave", HTTP_GET, []() {
-      store_wifi_api_connect_result = -1;
-      if (server.args() == 0)
-        return server.send(500, "text/plain", "BAD ARGS");
-
-      String ssid = server.arg("SSID");
-      String password = server.arg("password");
-      Serial.println("wifi save called");
-
-      char ssid_array[ssid.length() + 1];
-      char passsword_array[password.length() + 1];
-      ssid.toCharArray(ssid_array, ssid.length() + 1);
-      password.toCharArray(passsword_array, password.length() + 1);
-
-      //check if wifi password valid
-      StaticJsonBuffer<200> jsonBuffer;
-      JsonObject &root = jsonBuffer.createObject();
-      root["ssid"] = ssid;
-      root["password"] = password;
-      String response = "";
-      root.printTo(response);
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.sendHeader("Access-Control-Allow-Methods", "*");
-      server.send(200, "application/json", response);
-      delay(1000);
-      stopAP();
-      WiFi.mode(WIFI_STA);
-      delay(100);
-      Serial.print(String(ssid_array));
-      Serial.print(passsword_array);
-      WiFi.begin(ssid_array, passsword_array);
-      WiFi.waitForConnectResult();
-      store_wifi_api_connect_result = WiFi.status();
-      if (store_wifi_api_connect_result == WL_CONNECTED)
-      {
-        Serial.println("connected");
-        current_wifi_status = WIFI_CONNECT_MODE;
-        xconfig.deleteWifiSSID(ssid);
-        xconfig.addWifiSSID(ssid, password);
-        connectWifi();
-      }
-      else
-      {
-        Serial.println("non connected");
-      }
-    });
-    server.on("/wifiresult", HTTP_GET, []() {
-      if (store_wifi_api_connect_result == WL_CONNECTED)
-      {
-        StaticJsonBuffer<200> jsonBuffer;
-        JsonObject &root = jsonBuffer.createObject();
-        root["status"] = "connected";
-        String response = "";
-        root.printTo(response);
-        server.sendHeader("Access-Control-Allow-Origin", "*");
-        server.sendHeader("Access-Control-Allow-Methods", "*");
-        server.send(200, "application/json", response);
-      }
-      else
-      {
-        StaticJsonBuffer<200> jsonBuffer;
-        JsonObject &root = jsonBuffer.createObject();
-        root["status"] = "";
-        String response = "not_connected";
-        root.printTo(response);
-        server.sendHeader("Access-Control-Allow-Origin", "*");
-        server.sendHeader("Access-Control-Allow-Methods", "*");
-        server.send(200, "application/json", response);
-      }
-      store_wifi_api_connect_result = -1;
-    });
-    server.onNotFound(handleNotFound);
-
-    server.begin();
-    Serial.println("HTTP server started");
-    MDNS.addService("http", "tcp", 80);
-  }
-  else
-  {
-    Serial.print(WiFi.localIP());
-    Serial.println("webserver..");
-    int ledToggle = 0;
-    int ledPinVal = HIGH;
-    while (AP_STARTED == 1)
-    {
-      server.handleClient();
-      yield();
-      // Serial.print(".");
-      ledToggle++;
-      if (ledToggle > 4000)
-      {
-        if (ledPinVal == HIGH)
-        {
-          ledPinVal = LOW;
-        }
-        else
-        {
-          ledPinVal = HIGH;
-        }
-        digitalWrite(LEDPIN, ledPinVal);
-        ledToggle = 0;
-      }
-    }
-    Serial.println("ap while loop stopped");
+  // set the data rate for the sensor serial port
+  finger.begin(57600);
+  
+  if (finger.verifyPassword()) {
+    Serial.println("Found fingerprint sensor!");
+  } else {
+    Serial.println("Did not find fingerprint sensor :(");
+    while (1) { delay(1); }
   }
 }
 
-void stopWifi()
-{
-  WiFi.disconnect();
-  //  WiFi.config(IPAddress(0, 0, 0, 0), IPAddress(0,0,0,0), IPAddress(0,0,0,0));
+uint8_t readnumber(void) {
+  uint8_t num = 0;
+  
+  while (num == 0) {
+    while (! Serial.available());
+    num = Serial.parseInt();
+  }
+  return num;
 }
-void connectWifi()
+
+void loop()                     // run over and over again
 {
-  WiFi.mode(WIFI_STA);
-  delay(100);
-  Serial.println();
-  Serial.println();
-  Serial.print("Connecting to wifi");
-
-  //  WiFi.begin(ssid, password);
-
-  Serial.println("saved wifi details in config");
-  JsonArray &savedwifi = xconfig.getWifiSSID();
-  Serial.print("found wifi saved");
-  Serial.println(savedwifi.size());
-  if (savedwifi.size() == 0)
-  {
-    Serial.println("switching to ap mode, since no wifi details found");
-    current_wifi_status = WIFI_AP_MODE;
-    return;
+  Serial.println("Ready to enroll a fingerprint!");
+  Serial.println("Please type in the ID # (from 1 to 127) you want to save this finger as...");
+  id = readnumber();
+  if (id == 0) {// ID #0 not allowed, try again!
+     return;
   }
-  for (int i = 0; i < savedwifi.size(); i++)
-  {
-    JsonObject &obj = savedwifi[i].as<JsonObject>();
-    Serial.println(obj["ssid"].as<char *>());
-    Serial.println(obj["password"].as<char *>());
-    wifiMulti.addAP(obj["ssid"].as<char *>(), obj["password"].as<char *>());
-  }
+  Serial.print("Enrolling ID #");
+  Serial.println(id);
+  
+  while (!  getFingerprintEnroll() );
+}
 
-  int tries = 0;
-  while (wifiMulti.run() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-    //to handle interrupt here, because it gets stuck in loop for a long time
-    if (current_wifi_status != WIFI_CONNECT_MODE)
-    {
-      Serial.print("stopped connecting to wifi due to interrupt");
+uint8_t getFingerprintEnroll() {
+
+  int p = -1;
+  Serial.print("Waiting for valid finger to enroll as #"); Serial.println(id);
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+    switch (p) {
+    case FINGERPRINT_OK:
+      Serial.println("Image taken");
       break;
-    }
-    tries++;
-    if (tries > 100)
-    {
-      Serial.print("some issue with wifi");
+    case FINGERPRINT_NOFINGER:
+      Serial.println(".");
+      break;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Communication error");
+      break;
+    case FINGERPRINT_IMAGEFAIL:
+      Serial.println("Imaging error");
+      break;
+    default:
+      Serial.println("Unknown error");
       break;
     }
   }
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
-    delay_connect_wifi = 5000;
+
+  // OK success!
+
+  p = finger.image2Tz(1);
+  switch (p) {
+    case FINGERPRINT_OK:
+      Serial.println("Image converted");
+      break;
+    case FINGERPRINT_IMAGEMESS:
+      Serial.println("Image too messy");
+      return p;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Communication error");
+      return p;
+    case FINGERPRINT_FEATUREFAIL:
+      Serial.println("Could not find fingerprint features");
+      return p;
+    case FINGERPRINT_INVALIDIMAGE:
+      Serial.println("Could not find fingerprint features");
+      return p;
+    default:
+      Serial.println("Unknown error");
+      return p;
   }
-  delay(delay_connect_wifi);
-}
-
-void handleNotFound()
-{
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET) ? "GET" : "POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-  for (uint8_t i = 0; i < server.args(); i++)
-  {
-    message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
+  
+  Serial.println("Remove finger");
+  delay(2000);
+  p = 0;
+  while (p != FINGERPRINT_NOFINGER) {
+    p = finger.getImage();
   }
-  server.send(404, "text/plain", message);
-}
-
-void forcePingPacket()
-{
-  ping_packet_count = 0;
-  pingPacket();
-}
-void sendNamePack(String name){
-  ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
-  JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_name_success";
-  root["WEBID"] = webID;
-  root["chip"] = device_ssid;
-  root["name"] = name;
-  String json = "";
-  root.printTo(json);
-  Serial.println(json);
-  webSocketClient.sendData(json);
-  delay(10);
-  ping_packet_count++;
-}
-void sendIOPack(int pin, int status)
-{
-  ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
-  JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_io_reply";
-  root["WEBID"] = webID;
-  root["chip"] = device_ssid;
-  root["pin"] = pin;
-  root["status"] = status;
-  String json = "";
-  root.printTo(json);
-  Serial.println(json);
-  webSocketClient.sendData(json);
-  delay(10);
-  ping_packet_count++;
-}
-void pingPacket()
-{
-  if (ping_packet_count == 0)
-  {
-    randomSeed(analogRead(0));
-    StaticJsonBuffer<1000> jsonBuffer;
-    JsonObject &root = jsonBuffer.createObject();
-    root["type"] = "device_ping";
-    root["WEBID"] = webID;
-    root["chip"] = device_ssid;
-    JsonArray &pins = root.createNestedArray("PINS");
-
-    StaticJsonBuffer<500> jsonBuffer5;
-    for (int i = 0; i < PIN_SIZE; i++)
-    {
-      JsonObject &pin = jsonBuffer5.createObject();
-      pin["pin"] = PINS[i];
-      pin["status"] = PINS_STATUS[i];
-      pins.add(pin);
-    }
-
-    String response = "";
-    root.printTo(response);
-    Serial.println(response);
-    webSocketClient.sendData(response);
-    delay(10);
-    ping_packet_count++;
-  }
-  else
-  {
-    ping_packet_count++;
-    if (ping_packet_count > ping_packet_reset)
-    {
-      ping_packet_count = 0;
+  Serial.print("ID "); Serial.println(id);
+  p = -1;
+  Serial.println("Place same finger again");
+  while (p != FINGERPRINT_OK) {
+    p = finger.getImage();
+    switch (p) {
+    case FINGERPRINT_OK:
+      Serial.println("Image taken");
+      break;
+    case FINGERPRINT_NOFINGER:
+      Serial.print(".");
+      break;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Communication error");
+      break;
+    case FINGERPRINT_IMAGEFAIL:
+      Serial.println("Imaging error");
+      break;
+    default:
+      Serial.println("Unknown error");
+      break;
     }
   }
-}
-void connectSocket()
-{
 
-  // Connect to the websocket server
-  if (client.connect(host, 9030))
-  {
-    Serial.println("Connected");
-    // Handshake with the server
-    webSocketClient.path = path;
-    webSocketClient.host = host;
-    if (webSocketClient.handshake(client))
-    {
-      Serial.println("Handshake successful");
-      pingPacket();
-    }
-    else
-    {
-      Serial.println("Handshake failed.");
-    }
+  // OK success!
+
+  p = finger.image2Tz(2);
+  switch (p) {
+    case FINGERPRINT_OK:
+      Serial.println("Image converted");
+      break;
+    case FINGERPRINT_IMAGEMESS:
+      Serial.println("Image too messy");
+      return p;
+    case FINGERPRINT_PACKETRECIEVEERR:
+      Serial.println("Communication error");
+      return p;
+    case FINGERPRINT_FEATUREFAIL:
+      Serial.println("Could not find fingerprint features");
+      return p;
+    case FINGERPRINT_INVALIDIMAGE:
+      Serial.println("Could not find fingerprint features");
+      return p;
+    default:
+      Serial.println("Unknown error");
+      return p;
   }
-  else
-  {
-    Serial.println("Connection failed.");
-  }
-}
-
-void pinWrite(int pin_no, int pin_mode)
-{
-  digitalWrite(pin_no, pin_mode);
-  delay(50);
-  StaticJsonBuffer<1000> jsonBuffer;
-  JsonArray &root = jsonBuffer.createArray();
-  for (int i = 0; i < PIN_SIZE; i++)
-  {
-    if (PINS[i] == pin_no)
-    {
-      PINS_STATUS[i] = pin_mode;
-    }
-    JsonObject &pin = jsonBuffer.createObject();
-    pin["pin"] = PINS[i];
-    pin["status"] = PINS_STATUS[i];
-    root.add(pin);
-  }
-
-  xconfig.setPinConfig(root);
-}
-void initIOPins()
-{
-  for (int i = 0; i < PIN_SIZE; i++)
-  {
-    pinMode(PINS[i], OUTPUT);
-  }
-
-  JsonArray &pins = xconfig.getPinConfig();
-  for (int i = 0; i < pins.size(); i++)
-  {
-    JsonObject &obj = pins[i].as<JsonObject>();
-    PINS_STATUS[i] = obj.get<int>("status");
-    digitalWrite(obj.get<int>("pin"), obj.get<int>("status"));
-  }
-}
-
-void highIOPins()
-{
-  for (int i = 0; i < PIN_SIZE; i++)
-  {
-    pinWrite(PINS[i], HIGH);
-  }
-}
-void lowIOPins()
-{
-  for (int i = 0; i < PIN_SIZE; i++)
-  {
-    pinWrite(PINS[i], LOW);
-  }
-}
-
-void handleInterrupt()
-{
-  if (interruptCounter == 0)
-  {
-    interruptCounter = 1;
-    interruptMills = millis();
-    Serial.println("interrupt");
-    Serial.println(interruptMills);
-    Serial.println("***");
-  }
-  else
-  {
-    interruptCounter = 0;
-    Serial.println("interrupt end");
-    Serial.println(millis() - interruptMills);
-    if (millis() - interruptMills > interruptMillsMax)
-    {
-      if (current_wifi_status == WIFI_CONNECT_MODE)
-      {
-        Serial.println("set ap mode");
-        current_wifi_status = WIFI_AP_MODE;
-        
-      }
-      else
-      {
-        current_wifi_status = WIFI_CONNECT_MODE;
-        Serial.println("set wifi mode");
-        AP_STARTED = 0; // so that it comes out of the while loop
-        
-      }
-    }
-    else if (millis() - interruptMills > 5000)
-    {
-      ESP.restart();
-    }
-  }
-}
-
-void detectInterruptChange()
-{
-  if (previous_wifi_status != current_wifi_status)
-  {
-    if (current_wifi_status == WIFI_AP_MODE)
-    {
-      Serial.println("detect ap mode");
-      previous_wifi_status = WIFI_AP_MODE;
-      stopWifi();
-    }
-    else
-    {
-      current_wifi_status = WIFI_CONNECT_MODE;
-      previous_wifi_status = WIFI_CONNECT_MODE;
-      Serial.println("detect connect mode");
-      stopAP();
-    }
-  }
-}
-void setup()
-{
-  Serial.begin(115200);
-  delay(10);
-  pinMode(LEDPIN, OUTPUT);
-  digitalWrite(LEDPIN, LOW);
-  xconfig.initConfig();
-
-  // xconfig.setPinName(5," bedroom fan");
-  // Serial.println(xconfig.getPinName(5));
-
-  Serial.println("device name");
-  Serial.println(xconfig.getNickName());
-
-  pinMode(interruptPin, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(interruptPin), handleInterrupt, CHANGE);
-
-  initIOPins();
-  // playIOPins(); //not used anymore
-}
-
-void loop()
-{
-  detectInterruptChange();
-
-  if (current_wifi_status == WIFI_CONNECT_MODE)
-  {
-    String data;
-    if (WiFi.status() != WL_CONNECTED)
-    {
-      digitalWrite(LEDPIN, LOW);
-      Serial.println("wifi disconnected, connecting again.");
-
-      if (delay_connect_wifi < max_delay_connect_wifi)
-      {
-        delay_connect_wifi += delay_connect_wifi;
-      }
-      Serial.print("some issue with wifi trying again in ");
-      Serial.println(delay_connect_wifi);
-      delay(delay_connect_wifi);
-      connectWifi();
-    }
-    else
-    {
-      digitalWrite(LEDPIN, HIGH);
-      if (client.connected())
-      {
-
-        //      Serial.println("websocket connected");
-        //      Serial.println("my id" + webID);
-
-        webSocketClient.getData(data);
-
-        if (data.length() > 0)
-        {
-          StaticJsonBuffer<200> jsonBuffer;
-          JsonObject &root = jsonBuffer.parseObject(data);
-          Serial.println("data from socket");
-          root.printTo(Serial);
-          String type = root["type"];
-          int pin = root["pin"];
-
-          if (type == "HIGH")
-          {
-            Serial.println("setting hight");
-            pinWrite(pin, HIGH);
-            delay(10);
-            sendIOPack(pin, 1);
-          }
-          else if (type == "LOW")
-          {
-            Serial.println("setting low");
-            pinWrite(pin, LOW);
-            delay(10);
-            sendIOPack(pin, 0);
-          }
-          else if(type == "DEVICE_NAME"){
-            xconfig.setNickName(root.get<string>("name"));
-            sendNamePack(root.get<string>("name"));
-          }
-          else if (type == "OK")
-          {
-            ok_ping_not_recieved_count = 0;
-          }
-          data = "";
-        }
-        else
-        {
-          pingPacket();
-          ok_ping_not_recieved_count++;
-
-          if (ok_ping_not_recieved_count > ok_ping_not_recieved_count_max)
-          {
-            Serial.println("websocket not responding.");
-            ok_ping_not_recieved_count = 0;
-            connectSocket();
-          }
-        }
-      }
-      else
-      {
-        Serial.println("websocket disconnected.");
-        connectSocket();
-      }
-    }
-
-    // wait to fully let the client disconnect
-  }
-  else
-  {
-
-    startWifiAP();
-  }
-  delay(1000);
+  
+  // OK converted!
+  Serial.print("Creating model for #");  Serial.println(id);
+  
+  p = finger.createModel();
+  if (p == FINGERPRINT_OK) {
+    Serial.println("Prints matched!");
+  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+    Serial.println("Communication error");
+    return p;
+  } else if (p == FINGERPRINT_ENROLLMISMATCH) {
+    Serial.println("Fingerprints did not match");
+    return p;
+  } else {
+    Serial.println("Unknown error");
+    return p;
+  }   
+  
+  Serial.print("ID "); Serial.println(id);
+  p = finger.storeModel(id);
+  if (p == FINGERPRINT_OK) {
+    Serial.println("Stored!");
+  } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
+    Serial.println("Communication error");
+    return p;
+  } else if (p == FINGERPRINT_BADLOCATION) {
+    Serial.println("Could not store in that location");
+    return p;
+  } else if (p == FINGERPRINT_FLASHERR) {
+    Serial.println("Error writing to flash");
+    return p;
+  } else {
+    Serial.println("Unknown error");
+    return p;
+  }   
 }
