@@ -162,7 +162,7 @@ ws.on('connection', function (w) {
       } 
       
       else if (obj.type === "device_bulk_pin_oper") {
-      // this is when a mobile app, web app is doing a pin operation like on/off
+      // this is when a mobile app, web app is doing a bulk pin operation like on/off for all pins together etc
       let chip = obj['chip'];
       let app_id = obj['app_id'];
       w.app_id = app_id;
@@ -182,10 +182,8 @@ ws.on('connection', function (w) {
         chip: chip
       }));
     } else if (obj.type === "device_bulk_io_reply") {
-      // this is when a device send back reply after a sucessfuly i/o operation
+      // this is when a device send back reply after a sucessfuly bulk i/o operation 
       let chip = obj['chip'];
-      let pin = obj['pin'];
-      let status = obj['status'];
       w.chip = chip;
       if (apps[chip]) {
         apps[chip].forEach((app) => {
@@ -193,8 +191,7 @@ ws.on('connection', function (w) {
             if (client.app_id && client.app_id == app) {
               client.send(JSON.stringify({
                 type: "device_bulk_io_notify",
-                pin: pin,
-                status: status,
+                pins: obj['PINS'],
                 chip: chip
               }));
             }

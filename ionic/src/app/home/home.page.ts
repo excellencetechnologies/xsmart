@@ -76,13 +76,27 @@ export class HomePage implements OnInit {
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
         } else if (res.type === "device_pin_oper_reply") {
-          this.notifyService.alertUser("operation sent to device");
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        }else if(res.type === "device_bulk_io_notify"){
+          res.PINS.forEach( async (p) => {
+            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip);
+          })
+          this.devices = await this.deviceService.getDevices();
+          this.notifyService.alertUser("device performed the action!");
         } else if (res.type === "device_io_notify") {
           await this.deviceService.updateDevicePin(res.pin, res.status, res.chip);
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
-        }else if(res.type === "device_bulk_pin_oper_reply"){
-          this.notifyService.alertUser("operation sent to device");
+        } else if (res.type === "device_bulk_pin_oper_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
         }
       });
     }
@@ -105,13 +119,13 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID()
     })
   }
-  async deviceBulkIO(d: Device, isChecked: boolean){
-    
+  async deviceBulkIO(d: Device, isChecked: boolean) {
+
     let io = [];
     d.switches.forEach((s: Switch) => {
       io.push({
         pin: s.pin,
-        status: isChecked ? 1: 0
+        status: isChecked ? 1 : 0
       })
     })
     this.sendMessageToSocket({

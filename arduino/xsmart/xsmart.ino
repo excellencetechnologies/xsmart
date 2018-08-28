@@ -646,7 +646,7 @@ void loop()
 
         if (data.length() > 0)
         {
-          StaticJsonBuffer<200> jsonBuffer;
+          StaticJsonBuffer<1024> jsonBuffer;
           JsonObject &root = jsonBuffer.parseObject(data);
           Serial.println("data from socket");
           root.printTo(Serial);
