@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
-import { AlertController } from '@ionic/angular';
+import { AlertController, ToastController } from '@ionic/angular';
 
 import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
@@ -39,12 +39,12 @@ export class HomePage implements OnInit {
     private api: ApiService,
     public alertController: AlertController,
     private deviceService: DeviceService,
-    private notifyService: NotifyService) { }
+    private notifyService: NotifyService,
+    private toastController: ToastController) { }
 
   ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
-      // this.keepCheckingWifiConnected();
       this.checkExistingDevice();
     });
   }
@@ -81,6 +81,8 @@ export class HomePage implements OnInit {
           await this.deviceService.updateDevicePin(res.pin, res.status, res.chip);
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
+        }else if(res.type === "device_bulk_pin_oper_reply"){
+          this.notifyService.alertUser("operation sent to device");
         }
       });
     }
@@ -100,6 +102,22 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       status: 1,
+      app_id: await this.deviceService.getAppID()
+    })
+  }
+  async deviceBulkIO(d: Device, isChecked: boolean){
+    
+    let io = [];
+    d.switches.forEach((s: Switch) => {
+      io.push({
+        pin: s.pin,
+        status: isChecked ? 1: 0
+      })
+    })
+    this.sendMessageToSocket({
+      type: "device_bulk_pin_oper",
+      chip: d.chip,
+      switches: io,
       app_id: await this.deviceService.getAppID()
     })
   }
@@ -165,8 +183,8 @@ export class HomePage implements OnInit {
     this.devicePing.name = "";
     this.devicePing.isNew = true;
   }
-  async askDeviceName(){
-    
+  async askDeviceName() {
+
   }
   async setDeviceName(name: String) {
     try {
@@ -181,6 +199,14 @@ export class HomePage implements OnInit {
           switches: []
         };
         this.deviceService.addDevice(newdevice);
+      } else {
+
+        const toast = await this.toastController.create({
+          message: 'This device already exists!.',
+          duration: 2000
+        });
+        toast.present();
+
       }
       this.mode = "scan";
       this.xSmartConnect = true;
@@ -213,10 +239,11 @@ export class HomePage implements OnInit {
     setTimeout(async () => {
       this.pingDevices();
       console.log(this.isSocketConnected);
-      this.keepCheckingDeviceOnline();  
+      this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
+    console.log("123123");
     const alert = await this.alertController.create({
       header: 'Enter Wifi Password',
       inputs: [

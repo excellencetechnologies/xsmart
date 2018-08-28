@@ -18,15 +18,15 @@
 
         <ion-card-content>
           <ion-card-title>
-              <ion-item>
-                  <ion-label (click)="askDeviceName(device);" >{{device.name}}</ion-label>
-                  <ion-button (click)="deleteDevice(device)" fill="outline" slot="end">
-                    <ion-icon name="trash"></ion-icon>
-                  </ion-button>
-                </ion-item>
+            <ion-item>
+              <ion-label (click)="askDeviceName(device);">{{device.name}}</ion-label>
+              <ion-button (click)="deleteDevice(device)" fill="outline" slot="end">
+                <ion-icon name="trash"></ion-icon>
+              </ion-button>
+            </ion-item>
           </ion-card-title>
 
-          
+
 
           <p>Device ID: {{device.device_id}}</p>
           <p>CHIP: {{device.chip}}</p>
@@ -40,15 +40,19 @@
           <p *ngIf="device.switches.length > 0"> Switches In Device </p>
           <ion-toolbar>
             <ion-buttons slot="start" *ngFor="let switch of device.switches; trackBy: trackBySwitch">
-                <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
-                  <ion-icon name="power"></ion-icon>
-                </ion-button>
-                <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="dark">
-                  <ion-icon name="power"></ion-icon>
-                </ion-button>
+              <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
+                <ion-icon name="power"></ion-icon>
+              </ion-button>
+              <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="dark">
+                <ion-icon name="power"></ion-icon>
+              </ion-button>
             </ion-buttons>
+
+
+            <ion-toggle (ionChange)="deviceBulkIO(device,$event.detail.checked);" slot="end"></ion-toggle>
+
           </ion-toolbar>
-          
+
         </ion-card-content>
       </ion-card>
     </div>
@@ -63,23 +67,22 @@
 
   </div>
   <div *ngIf="mode === 'discovery'">
-      
-      <div *ngIf="!devicePing.isNew">
-        This device was configured previously with name <b>{{devicePing.name}}</b> 
-        <br/>
-        Do you want keep this name or change it?
-        <br/>
-        <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Keep</ion-button>
-        <ion-button (click)="freshDevice()" color="primary">Start New</ion-button>
-      </div>
-      <div *ngIf="devicePing.isNew">
-         This is a new device device, please set name for the device
 
-         <ion-item>
-            <ion-input [(ngModel)]="devicePing.name" required type="text" placeholder="Device Name.."></ion-input>
-            <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Set Name</ion-button>
-          </ion-item>
-      </div>
+    <div *ngIf="!devicePing.isNew">
+      This device was configured previously with name <b>{{devicePing.name}}</b>
+      <br/> Do you want keep this name or change it?
+      <br/>
+      <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Keep</ion-button>
+      <ion-button (click)="freshDevice()" color="primary">Start New</ion-button>
+    </div>
+    <div *ngIf="devicePing.isNew">
+      This is a new device device, please set name for the device
+
+      <ion-item>
+        <ion-input [(ngModel)]="devicePing.name" required type="text" placeholder="Device Name.."></ion-input>
+        <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Set Name</ion-button>
+      </ion-item>
+    </div>
 
   </div>
   <div *ngIf="mode === 'scan'">
@@ -95,10 +98,8 @@
 
     <div *ngIf="xSmartConnect">
       {{devicePing.webid}}
-      <br/> 
-      {{devicePing.chip}}
-      <br/>
-      {{devicePing.name}}
+      <br/> {{devicePing.chip}}
+      <br/> {{devicePing.name}}
       <br/>
       <ion-button (click)="scanWifi()" color="primary">Scan Wifi Networks</ion-button>
       <Br/>
