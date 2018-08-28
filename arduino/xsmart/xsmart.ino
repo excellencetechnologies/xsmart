@@ -28,10 +28,10 @@ String device_ssid = "xSmart-" + String(ESP_getChipId());
 
 
 //this pins for lolin32 large device
-// const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+ const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
 
 //this pint for lolin32 mini
-const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
+//const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
 
 const byte interruptPin = 19;
 
