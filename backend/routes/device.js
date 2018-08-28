@@ -4,14 +4,11 @@ var middleware = require("../middleware/authentication");
 var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
 
-
 router.post('/addDevice', [middleware.validateToken, middleware.checkForRepeatAction], async(req, res) => {
     let body = req.body;
     body.user_id = req.id;
     let result = await dataValidation.validateDeviceData(req.checkBody, req.validationErrors, body)
-
     let newDevice = new Device(result);
-
     newDevice.save((err, device) => {
         if (err) {
             res.status(500).json({ error: 1, message: "error during saving the device" });
@@ -19,7 +16,6 @@ router.post('/addDevice', [middleware.validateToken, middleware.checkForRepeatAc
             res.status(200).json({ status: 1, message: "successfully inserted device", device: device });
         }
     })
-
 });
 
 router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], (req, res) => {
@@ -30,8 +26,7 @@ router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], 
             res.status(200).json({ status: 1, message: "updated successfully", data: obj });
         }
     });
-})
-
+});
 
 router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
     Device.findOneAndDelete({ chip_id: req.body.chip_id, user_id: req.id }, (err, obj) => {
@@ -45,6 +40,6 @@ router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
             }
         }
     })
-})
+});
 
 module.exports = router;

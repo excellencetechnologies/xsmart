@@ -34,9 +34,5 @@ router.post("/login", (req, res) => {
     });
 });
 
-router.get("/get", (req, res) => {
-    res.send("sdjhjsdk");
-})
-
 
 module.exports = router;

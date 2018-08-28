@@ -1,10 +1,10 @@
 var User = require("../model/user");
 var jwt = require("jsonwebtoken");
 var Device = require("../model/device");
-module.exports = {
-    checkForAlreadyUser: (req, res, next) => {
 
-        console.log("hjdfhfd");
+module.exports = {
+
+    checkForAlreadyUser: (req, res, next) => {
         let body = req.body;
         User.findOne({ email: body.email }, (err, obj) => {
             if (err) {
