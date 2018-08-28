@@ -33,14 +33,14 @@ module.exports = {
     },
 
     checkForAlreadyDeviceInserted: (req, res, next) => {
-        Device.findOne({ user_id: req.id }, (err, obj) => {
+        Device.findOne({ chip_id: req.body.chip_id }, (err, obj) => {
             if (err) {
                 res.status(500).json({ error: 1, message: "error during authentication for repeat action" });
             } else {
                 if (obj == null) {
                     next();
                 } else {
-                    res.status(200).json({ error: 1, message: "some user can add only one machine" });
+                    res.status(200).json({ error: 1, message: "please provide unique chip id" });
                 }
             }
         })
@@ -55,7 +55,7 @@ module.exports = {
                     req.documentID = obj._id;
                     next();
                 } else {
-                    res.status(400).json({ error: 1, message: "you can not update device because your identity not matched in our db" });
+                    res.status(400).json({ error: 1, message: "you can not update device because your chip id doest not exit " });
                 }
             }
         });
