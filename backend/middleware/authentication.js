@@ -9,12 +9,12 @@ module.exports = {
         let body = req.body;
         User.findOne({ email: body.email }, (err, obj) => {
             if (err) {
-                res.status(500).json({ error: 1, message: "mongo db internel problem while saving the finding the user" });
+                res.status(500).json({ error: 1, message: "mongo db internel problem while finding the user" });
             } else {
                 if (obj == null) {
                     next();
                 } else {
-                    res.status(200).json({ error: 1, message: "please provide unique email name " });
+                    res.status(200).json({ error: 1, message: "please provide unique email id " });
                 }
             }
         })
@@ -32,10 +32,10 @@ module.exports = {
         })
     },
 
-    checkForAlreadyDeviceInserted: (req, res, next) => {
+    checkForUniqueChip: (req, res, next) => {
         Device.findOne({ chip_id: req.body.chip_id }, (err, obj) => {
             if (err) {
-                res.status(500).json({ error: 1, message: "error during authentication for repeat action" });
+                res.status(500).json({ error: 1, message: "mongodb internel problem while finding the device " });
             } else {
                 if (obj == null) {
                     next();
@@ -49,13 +49,13 @@ module.exports = {
     checkChipId: (req, res, next) => {
         Device.findOne({ chip_id: req.body.chip_id }, (err, obj) => {
             if (err) {
-                res.status(500).json({ error: 1, message: "error while checking for updating device" });
+                res.status(500).json({ error: 1, message: "mongodb internel problem while checking the chip id" });
             } else {
                 if (obj != null) {
                     req.documentID = obj._id;
                     next();
                 } else {
-                    res.status(400).json({ error: 1, message: "you can not update device because your chip id doest not exit " });
+                    res.status(400).json({ error: 1, message: "you can not update the device because your chip id doest not exit " });
                 }
             }
         });
