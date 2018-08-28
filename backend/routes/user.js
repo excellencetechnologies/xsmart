@@ -6,7 +6,7 @@ var md5 = require("md5");
 var jwt = require("jsonwebtoken");
 const key = "thanos";
 
-router.post("/register", middleware.checkForAlreadyUser, (req, res) => {
+router.post("/register", middleware.checkForAlreadyRegisterUser, (req, res) => {
     body = req.body;
     let newUser = new User({ name: body.name, password: md5(body.password), email: body.email });
     newUser.save((err, obj) => {
@@ -33,6 +33,5 @@ router.post("/login", (req, res) => {
         }
     });
 });
-
 
 module.exports = router;

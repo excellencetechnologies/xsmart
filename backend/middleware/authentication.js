@@ -1,10 +1,11 @@
 var User = require("../model/user");
 var jwt = require("jsonwebtoken");
 var Device = require("../model/device");
+const key = "thanos";
 
 module.exports = {
 
-    checkForAlreadyUser: (req, res, next) => {
+    checkForAlreadyRegisterUser: (req, res, next) => {
         let body = req.body;
         User.findOne({ email: body.email }, (err, obj) => {
             if (err) {
@@ -21,7 +22,7 @@ module.exports = {
 
     validateToken: (req, res, next) => {
         const token = req.headers.token;
-        jwt.verify(token, "thanos", (err, decoded) => {
+        jwt.verify(token, key, (err, decoded) => {
             if (err) {
                 res.status(400).json({ error: 1, message: err.message });
             } else {
@@ -31,7 +32,7 @@ module.exports = {
         })
     },
 
-    checkForRepeatAction: (req, res, next) => {
+    checkForAlreadyDeviceInserted: (req, res, next) => {
         Device.findOne({ user_id: req.id }, (err, obj) => {
             if (err) {
                 res.status(500).json({ error: 1, message: "error during authentication for repeat action" });
@@ -39,14 +40,14 @@ module.exports = {
                 if (obj == null) {
                     next();
                 } else {
-                    res.status(200).json({ error: 1, message: "you are adding again same machine" });
+                    res.status(200).json({ error: 1, message: "some user can add only one machine" });
                 }
             }
         })
     },
 
     checkChipId: (req, res, next) => {
-        Device.findOne({ chip_id: req.body.chip_id, user_id: req.id }, (err, obj) => {
+        Device.findOne({ chip_id: req.body.chip_id }, (err, obj) => {
             if (err) {
                 res.status(500).json({ error: 1, message: "error while checking for updating device" });
             } else {
@@ -54,7 +55,7 @@ module.exports = {
                     req.documentID = obj._id;
                     next();
                 } else {
-                    res.status(400).json({ error: 1, message: "you can not update device" });
+                    res.status(400).json({ error: 1, message: "you can not update device because your identity not matched in our db" });
                 }
             }
         });

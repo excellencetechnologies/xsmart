@@ -4,22 +4,25 @@ var middleware = require("../middleware/authentication");
 var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
 
-router.post('/addDevice', [middleware.validateToken, middleware.checkForRepeatAction], async(req, res) => {
-    let body = req.body;
-    body.user_id = req.id;
-    let result = await dataValidation.validateDeviceData(req.checkBody, req.validationErrors, body)
-    let newDevice = new Device(result);
-    newDevice.save((err, device) => {
-        if (err) {
-            res.status(500).json({ error: 1, message: "error during saving the device" });
-        } else {
-            res.status(200).json({ status: 1, message: "successfully inserted device", device: device });
-        }
-    })
+router.post('/addDevice', [middleware.validateToken, middleware.checkForAlreadyDeviceInserted], async(req, res) => {
+    let result = await dataValidation.validateDeviceData(req.checkBody, req.validationErrors, req.body);
+    if (result instanceof Error) {
+        res.status(400).json({ error: 1, message: "error during validating the device data" });
+    } else {
+        let newDevice = new Device({ chip_id: result.chip_id, user_id: req.id });
+        newDevice.save((err, device) => {
+            if (err) {
+                res.status(500).json({ error: 1, message: "error during saving the device" });
+            } else {
+                res.status(200).json({ status: 1, message: "successfully inserted device", device: device });
+            }
+        });
+    }
+
 });
 
 router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], (req, res) => {
-    Device.findByIdAndUpdate(req.documentID, { $set: { user_id: req.body.owner_id } }, { new: true }, (err, obj) => {
+    Device.findByIdAndUpdate(req.documentID, { $set: { user_id: req.body.owner_id,meta:req.body.meta } }, { new: true }, (err, obj) => {
         if (err) {
             res.status(500).json({ error: 1, message: "error during updating the user id of device" });
         } else {
