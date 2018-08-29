@@ -1,7 +1,6 @@
 var User = require("../model/user");
 var jwt = require("jsonwebtoken");
 var Device = require("../model/device");
-var config = require("../config");
 
 module.exports = {
 
@@ -22,7 +21,7 @@ module.exports = {
 
     validateToken: (req, res, next) => {
         const token = req.headers.token;
-        jwt.verify(token, config.key, (err, decoded) => {
+        jwt.verify(token, process.env.key, (err, decoded) => {
             if (err) {
                 res.status(400).json({ error: 1, message: err.message });
             } else {

@@ -6,7 +6,7 @@ var http = require("http");
 var userRouter = require("./routes/user");
 var deviceRouter = require("./routes/device");
 var bodyParser = require("body-parser");
-
+require('dotenv').config();
 var expressValidator = require("express-validator");
 const app = express();
 app.use(expressValidator());
