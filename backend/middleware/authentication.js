@@ -1,7 +1,7 @@
 var User = require("../model/user");
 var jwt = require("jsonwebtoken");
 var Device = require("../model/device");
-const key = "thanos";
+var config = require("../config");
 
 module.exports = {
 
@@ -22,7 +22,7 @@ module.exports = {
 
     validateToken: (req, res, next) => {
         const token = req.headers.token;
-        jwt.verify(token, key, (err, decoded) => {
+        jwt.verify(token, config.key, (err, decoded) => {
             if (err) {
                 res.status(400).json({ error: 1, message: err.message });
             } else {
@@ -55,13 +55,10 @@ module.exports = {
                     req.documentID = obj._id;
                     User.findById(req.body.owner_id, (err, obj) => {
                         if (err) {
-                            res.status(500).json({ error: 1, message: "mongodb internel problem while checking the owner id in user db" });
+                            res.status(200).json({ error: 1, message: "you can not update because owner id doest not exist in our user data base" });
                         } else {
-                            if (obj != null) {
-                                next();
-                            } else {
-                                res.status(200).json({ error: 1, message: "you can not update because owner id doest not exist in our user data base" })
-                            }
+                            req.owner_id = obj._id;
+                            next();
                         }
                     })
                 } else {

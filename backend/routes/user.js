@@ -5,7 +5,7 @@ var middleware = require("../middleware/authentication");
 var md5 = require("md5");
 var jwt = require("jsonwebtoken");
 var dataValidation = require("../data_validation/validation");
-const key = "thanos";
+var config = require("../config");
 
 router.post("/register", middleware.checkForAlreadyRegisterUser, async (req, res) => {
     let result = await dataValidation.validateUserRegisterData(req.checkBody, req.validationErrors, req.body);
@@ -33,7 +33,7 @@ router.post("/login", async (req, res) => {
                 res.status(500).json({ error: 1, message: "mongodb internel problem while login the user" });
             } else {
                 if (obj != null) {
-                    const token = jwt.sign({ id: obj._id }, key, { expiresIn: "1h" })
+                    const token = jwt.sign({ id: obj._id }, config.key, { expiresIn: "1h" })
                     res.status(200).json({ status: 1, message: "successfully login", data: obj, token: token });
                 } else {
                     res.status(400).json({ error: 1, message: "please check your detail" });

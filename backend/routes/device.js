@@ -5,11 +5,12 @@ var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
 
 router.post('/addDevice', [middleware.validateToken, middleware.checkForUniqueChip], async (req, res) => {
-    let result = await dataValidation.validateDeviceData(req.checkBody, req.validationErrors, req.body);
+    let body = req.body;
+    let result = await dataValidation.validateDeviceData(req.checkBody, req.validationErrors, body);
     if (result instanceof Error) {
-        res.status(400).json({ error: 1, message: "error during validating the device data" });
+        res.status(400).json({ error: 1, message: result.message });
     } else {
-        let newDevice = new Device({ chip_id: result.chip_id, user_id: req.id, meta: req.body.meta });
+        let newDevice = new Device({ chip_id: result.chip_id, user_id: req.id, meta: body.meta });
         newDevice.save((err, device) => {
             if (err) {
                 res.status(500).json({ error: 1, message: "mongodb internel problem while adding the new device" });
@@ -21,7 +22,8 @@ router.post('/addDevice', [middleware.validateToken, middleware.checkForUniqueCh
 });
 
 router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], (req, res) => {
-    Device.findByIdAndUpdate(req.documentID, { $set: { user_id: req.body.owner_id, meta: req.body.meta } }, { new: true }, (err, obj) => {
+    let body = req.body;
+    Device.findByIdAndUpdate(req.documentID, { $set: { user_id: req.owner_id, meta: body.meta } }, { new: true }, (err, obj) => {
         if (err) {
             res.status(500).json({ error: 1, message: "mongodb internel problem while updating the device" });
         } else {
@@ -31,7 +33,8 @@ router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], 
 });
 
 router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
-    Device.findOneAndDelete({ chip_id: req.body.chip_id, user_id: req.id }, (err, obj) => {
+    let body = req.body;
+    Device.findOneAndDelete({ chip_id: body.chip_id, user_id: req.id }, (err, obj) => {
         if (err) {
             res.status(500).json({ error: 1, message: "mongodb internel problem while deleting the device" });
         } else {
