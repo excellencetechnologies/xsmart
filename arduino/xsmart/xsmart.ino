@@ -6,6 +6,7 @@
 #include <ArduinoJson.h>
 #include <xconfig.h>
 
+
 XConfig xconfig = XConfig("/config.json");
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module

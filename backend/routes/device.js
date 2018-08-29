@@ -4,7 +4,7 @@ var middleware = require("../middleware/authentication");
 var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
 
-router.post('/addDevice', [middleware.validateToken, middleware.checkForUniqueChip], async(req, res) => {
+router.post('/addDevice', [middleware.validateToken, middleware.checkForUniqueChip], async (req, res) => {
     let result = await dataValidation.validateDeviceData(req.checkBody, req.validationErrors, req.body);
     if (result instanceof Error) {
         res.status(400).json({ error: 1, message: "error during validating the device data" });
@@ -18,7 +18,6 @@ router.post('/addDevice', [middleware.validateToken, middleware.checkForUniqueCh
             }
         });
     }
-
 });
 
 router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], (req, res) => {
@@ -39,7 +38,7 @@ router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
             if (obj != null) {
                 res.status(200).json({ message: "successfully deleted", data: obj });
             } else {
-                res.status(400).json({ error: 1, message: "this chip id is not exist" });
+                res.status(400).json({ error: 1, message: "you can not delete the device because the chip id and user id doest not matched" });
             }
         }
     })
