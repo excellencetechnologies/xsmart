@@ -11,7 +11,6 @@ export interface Message {
   providedIn: 'root',
 })
 export class ApiService {
-  token: string;
   // ************************************************************************************************
   base_url: string = "http://192.168.4.1/";
   constructor(private http: HttpClient) { }
@@ -36,9 +35,8 @@ export class ApiService {
     const apidata = { "email": data.email, "password": data.password };
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
-      this.token = data["data"].token;
-      localStorage.setItem("token", this.token);
-      return await data['data'];
+      localStorage.setItem("token", data["data"].token);
+      return data['data'];
     }
     catch (error) {
       throw (error);
