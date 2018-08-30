@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ApiService } from "../api/api.service";
+import { userData } from './../components/model/login';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -10,6 +11,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string;
   loading: boolean;
+  user: userData;
   constructor(public apiServices: ApiService) { }
 
   ngOnInit() {
@@ -25,15 +27,15 @@ export class LoginComponent implements OnInit {
       ])
     });
   }
-  onSubmit(formData) {
+  async onSubmit(formData) {
     this.loading = true;
-    this.apiServices.postlogin(formData.value).then(res => {
+    try {
+      this.user = await this.apiServices.postlogin(formData.value);
       this.loading = false;
       this.loginForm.reset();
-    })
-      .catch(err => {
-        this.loading = false;
-        this.errorMessage = err.message;
-      })
+    } catch (err) {
+      this.loading = false;
+      this.errorMessage = err.message;
+    }
   }
 }

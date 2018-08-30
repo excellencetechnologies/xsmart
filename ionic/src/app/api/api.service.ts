@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Ping, Wifi } from "./api"
 import { environment } from "../../environments/environment";
-import { loginData } from './../components/model/login';
+import { userData } from './../components/model/login';
 
 export interface Message {
   author: string,
@@ -13,9 +13,7 @@ export interface Message {
   providedIn: 'root',
 })
 export class ApiService {
-  apiData: loginData;
   token: string;
-
   // ************************************************************************************************
   base_url: string = "http://192.168.4.1/";
   constructor(private http: HttpClient) { }
@@ -36,22 +34,17 @@ export class ApiService {
     return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
   }
 
-  postlogin(post) {
-    const apidata = { "email": post.email, "password": post.password };
-
-    return new Promise((resolve, reject) => {
-      this.http
-        .post(`${environment["apiBase"]}user/login`, apidata)
-        .subscribe(data => {
-          if (data["error"] && data["error"] === 1) {
-            reject(data);
-          } else {
-            this.token = data["data"].token;
-            localStorage.setItem("token", JSON.stringify(this.token));
-            resolve(data);
-          }
-        });
-    });
+  async postlogin(data) {
+    const apidata = { "email": data.email, "password": data.password };
+    try {
+      const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
+      this.token = data["data"].token;
+      localStorage.setItem("token", JSON.stringify(this.token));
+      return await data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
   }
 
 }
