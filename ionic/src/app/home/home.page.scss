@@ -1,1 +1,30 @@
-
+.Switches{
+    margin:0 auto;
+}
+.title{
+    text-align: center;
+}
+.icon{
+    float: left;
+}
+.grid{
+    border: 1px solid #a2a4ab;
+}
+.grid-item{
+    border-bottom: 1px solid #a2a4ab;
+}
+.grid-item:hover{
+   color:yellow;
+}
+.img{
+    padding-top:5px;
+    padding-right:10px;
+    max-width: 100%;
+    width: 13%;
+}
+.icon{
+    padding-right: 10px;
+}
+.wifiimg{
+    float: right;
+}

@@ -1,0 +1,56 @@
+<ion-header>
+    <ion-toolbar>
+      <ion-title title>Login</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content padding>
+  
+    <div class="login-box">
+      <form *ngIf="loginForm" class="form-horizontal" [formGroup]="loginForm" (ngSubmit)="onSubmit(LoginForm)">
+        <ion-row>
+          <ion-col>
+            <ion-list>
+              
+              <ion-item>
+                <ion-input type="text" placeholder="Email" formControlName="email" name="email" required></ion-input>
+               
+              </ion-item>
+              <div *ngIf="loginForm.controls['email'].errors && !loginForm.controls['email'].pristine" class="alert alert-danger">
+                  <div *ngIf="loginForm.controls['email'].errors.required">
+                      Email is required.
+                  </div>
+                  <div *ngIf="loginForm.controls['email'].errors.pattern">
+                      Email is invalid.
+                  </div>
+                  <div *ngIf="loginForm.controls['email'].errors.minlength">
+                      atleast 8 character required.
+                  </div>
+              </div>
+              <ion-item>
+                <ion-input type="password" placeholder="Password" formControlName="password" name="password"  required></ion-input>
+                
+              </ion-item>
+              <div *ngIf="loginForm.controls['password'].errors && !loginForm.controls['password'].pristine" class="alert alert-danger">
+                  <div *ngIf="loginForm.controls['password'].errors.required">
+                      password is required.
+                  </div>
+                  <div *ngIf="loginForm.controls['password'].errors.minlength">
+                      atleast 4 character required.
+                  </div>
+              </div>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+        
+        <ion-row>
+          <ion-col class="signup-col">
+            <ion-button size="large" class="submit-btn"expand="block" [disabled]="!loginForm.valid">Login</ion-button>
+          </ion-col>
+        </ion-row>
+        
+      </form>
+      
+     
+    </div>
+  </ion-content>
