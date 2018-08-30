@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ApiService } from "../api/api.service";
-import { userData } from './../components/model/login';
+import { User } from './../components/model/user';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -11,7 +11,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string;
   loading: boolean;
-  user: userData;
+  user: User;
   constructor(public apiServices: ApiService) { }
 
   ngOnInit() {

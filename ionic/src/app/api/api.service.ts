@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Ping, Wifi } from "./api"
 import { environment } from "../../environments/environment";
-import { userData } from './../components/model/login';
-
 export interface Message {
   author: string,
   message: string
@@ -39,7 +37,7 @@ export class ApiService {
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
       this.token = data["data"].token;
-      localStorage.setItem("token", JSON.stringify(this.token));
+      localStorage.setItem("token", this.token);
       return await data['data'];
     }
     catch (error) {
