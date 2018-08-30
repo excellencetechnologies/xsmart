@@ -42,6 +42,16 @@ export class ApiService {
       throw (error);
     }
   }
+  async postRegister(data) {
+    const apidata = { "name": data.name, "email": data.email, "password": data.password };
+    try {
+      const data = await this.http.post(`${environment["apiBase"]}user/register`, apidata).toPromise();
+      return data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
 
 }
 

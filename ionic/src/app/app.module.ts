@@ -12,11 +12,17 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
-  declarations: [AppComponent,LoginComponent],
+  declarations: [AppComponent,LoginComponent, RegisterComponent],
   entryComponents: [],
-  imports: [BrowserModule, HttpClientModule,FormsModule,ReactiveFormsModule,IonicModule.forRoot(), AppRoutingModule],
+  imports: [BrowserModule,
+     HttpClientModule,
+     FormsModule,
+     ReactiveFormsModule,
+     IonicModule.forRoot(),
+     AppRoutingModule],
   providers: [
     StatusBar,
     SplashScreen,
