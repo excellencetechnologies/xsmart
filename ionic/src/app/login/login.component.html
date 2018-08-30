@@ -6,7 +6,6 @@
 </ion-header>
 
 <ion-content padding>
-
   <div class="login-box">
     <form *ngIf="loginForm" class="form-horizontal" [formGroup]="loginForm">
       <ion-row>
@@ -31,7 +30,6 @@
           </ion-list>
         </ion-col>
       </ion-row>
-
       <ion-row>
         <div class="error">
           <p *ngIf="errorMessage">{{error}}</p>
@@ -40,7 +38,6 @@
           <ion-button block expand="full" (click)="onSubmit(loginForm)" [disabled]="!loginForm.valid || loading">Login</ion-button>
         </ion-col>
       </ion-row>
-
     </form>
   </div>
 </ion-content>
