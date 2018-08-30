@@ -6,7 +6,7 @@
 </ion-header>
 <ion-content class="register">
 
-  <form [formGroup]="regForm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <form [formGroup]="userRegisterForm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <ion-item>
       <ion-label floating>Name</ion-label>
       <ion-input type="text" id="name" (onReturn)='"Last"' class="uppercase" formControlName="name" autocomplete="off" autocorrect="off"
@@ -27,22 +27,22 @@
       <ion-input type="password" id="Password2" (onReturn)='"btn"' formControlName="conpassword" autocomplete="off" autocorrect="off"
         autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
-    <div *ngIf="regForm.controls['conpassword'].errors && !regForm.controls['conpassword'].pristine" class="alert alert-danger">
-      <div *ngIf=" regForm.controls['conpassword'].errors ||regForm.controls ['password'].errors?.mismatch ">
+    <div *ngIf="userRegisterForm.controls['conpassword'].errors && !userRegisterForm.controls['conpassword'].pristine" class="alert alert-danger">
+      <div *ngIf=" userRegisterForm.controls['conpassword'].errors ||userRegisterForm.controls ['password'].errors?.mismatch ">
         Password not Match
       </div>
     </div>
     <ion-grid>
       <ion-row center>
         <ion-col class="center">
-          <ion-button block expand="full" (click)="onSubmit(regForm)" [disabled]="!regForm.valid || loading">Register</ion-button>
+          <ion-button block expand="full" (click)="onSubmit(userRegisterForm)" [disabled]="!userRegisterForm.valid || loading">Register</ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>
   </form>
   <div class="alreadyaccount">
     <p>Have already account
-      <a routerLink="/login">login</a>here.
+      <a routerLink="/login">login</a>  here.
     </p>
   </div>
 </ion-content>

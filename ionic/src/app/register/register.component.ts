@@ -9,7 +9,7 @@ import { Router } from "@angular/router";
   styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent implements OnInit {
-  regForm: FormGroup;
+  userRegisterForm: FormGroup;
   errorMessage: string;
   loading: boolean;
   user: User;
@@ -18,7 +18,7 @@ export class RegisterComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.regForm = this._fb.group({
+    this.userRegisterForm = this._fb.group({
       name: ['', Validators.required],
       email: ['', Validators.compose([Validators.maxLength(50),])],
       password: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
@@ -26,8 +26,8 @@ export class RegisterComponent implements OnInit {
     }, { validator: this.pwdMatchValidator.bind(this) });
   }
 
-  pwdMatchValidator(frm: FormGroup) {
-    return frm.get("password").value === frm.get("conpassword").value
+  pwdMatchValidator(userRegisterForm: FormGroup) {
+    return userRegisterForm.get("password").value === userRegisterForm.get("conpassword").value
       ? null : { mismatch: true };
   }
 
@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
       this.user = await this.apiServices.postRegister(formData.value);
       this.loading = false;
       this.router.navigate(["/login"]);
-      this.regForm.reset();
+      this.userRegisterForm.reset();
     } catch (err) {
       this.loading = false;
       this.errorMessage = err.message;
