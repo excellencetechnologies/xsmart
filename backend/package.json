@@ -1,7 +1,7 @@
 {
     "name": "xsmart",
     "scripts": {
-        "start": "nodemon websocket.js"
+        "start": "node websocket.js"
     },
     "dependencies": {
         "body-parser": "^1.18.3",
