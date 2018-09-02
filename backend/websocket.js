@@ -200,7 +200,47 @@ ws.on('connection', function (w) {
 
       }
     }
-      else if (obj.type === "device_set_name") {
+
+    else if(obj.type === "device_bulk_pin_name_oper"){
+      // this is when a mobile app, web app is doing a bulk operation to set pin name
+      let chip = obj['chip'];
+      let app_id = obj['app_id'];
+      w.app_id = app_id;
+      let found = false;
+      ws.clients.forEach((client) => {
+        if (client.chip && client.chip === chip) {
+          client.send(JSON.stringify({
+            type: "IO",
+            switches: obj['pinnames']
+          }));
+          found = true;
+        }
+      });
+      w.send(JSON.stringify({
+        type: "device_bulk_pin_name_oper_reply",
+        found: found,
+        chip: chip
+      }));
+    } else if (obj.type === "device_bulk_pin_name_reply") {
+      // this is when a device send back reply after a sucessfuly bulk i/o operation 
+      let chip = obj['chip'];
+      w.chip = chip;
+      if (apps[chip]) {
+        apps[chip].forEach((app) => {
+          ws.clients.forEach((client) => {
+            if (client.app_id && client.app_id == app) {
+              client.send(JSON.stringify({
+                type: "device_bulk_pin_name_notify",
+                pins: obj['PINS'],
+                chip: chip
+              }));
+            }
+          });
+        });
+
+      }
+    
+    }else if (obj.type === "device_set_name") {
         let chip = obj['chip'];
         let app_id = obj['app_id'];
         w.app_id = app_id;

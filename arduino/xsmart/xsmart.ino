@@ -378,6 +378,33 @@ void sendNamePack(String name)
   delay(10);
   ping_packet_count++;
 }
+void sendPinNamePack(){
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_bulk_pin_name_reply";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  JsonArray &pins = root.createNestedArray("PINS");
+
+  StaticJsonBuffer<500> jsonBuffer5;
+  for (int i = 0; i < PIN_SIZE; i++)
+  {
+    JsonObject &pin = jsonBuffer5.createObject();
+    pin["pin"] = PINS[i];
+    pin["status"] = PINS_STATUS[i];
+    pin["name"] = xconfig.getPinName(PINS[i]);
+    pins.add(pin);
+  }
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void sendBulkIOPack()
 {
   ping_packet_count = 0;
@@ -599,7 +626,7 @@ void setup()
   digitalWrite(LEDPIN, LOW);
   xconfig.initConfig();
 
-  // xconfig.setPinName(5," bedroom fan");
+  
   // Serial.println(xconfig.getPinName(5));
 
   Serial.println("device name");
@@ -682,6 +709,15 @@ void loop()
               pinWrite(obj.get<int>("pin"), obj.get<int>("status"));
             }
             sendBulkIOPack();
+          }
+          else if(type == "PIN_NAME"){
+            JsonArray &pinnames = root["pinnames"].as<JsonArray>();
+            for (int i = 0; i < pinnames.size(); i++)
+            {
+              JsonObject &obj = pinnames[i].as<JsonObject>();
+              xconfig.setPinName(obj.get<int>("pin"), obj.get<String>("name"));
+            }
+            sendPinNamePack();
           }
           else if (type == "OK")
           {

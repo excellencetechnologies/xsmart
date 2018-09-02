@@ -82,9 +82,10 @@ export class HomePage implements OnInit {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
         }else if(res.type === "device_bulk_io_notify"){
-          res.PINS.forEach( async (p) => {
+          res.pins.forEach( async (p) => {
             await this.deviceService.updateDevicePin(p.pin, p.status, res.chip);
           })
+          //this is not working. the ui doesn't update all the pin status
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
         } else if (res.type === "device_io_notify") {
