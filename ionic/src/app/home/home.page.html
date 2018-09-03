@@ -29,6 +29,12 @@
               </ion-button>
             </ion-item>
           </ion-card-title>
+<<<<<<< HEAD
+
+
+
+=======
+>>>>>>> ee6d3b17e96ae207c4d183dca856e1762cab3ff7
           <p>Device ID: {{device.device_id}}</p>
           <p>CHIP: {{device.chip}}</p>
           <p>Last Online: {{device.ttl | date:'short'}}</p>
@@ -46,7 +52,15 @@
                 <ion-icon name="power"></ion-icon>
               </ion-button>
             </ion-buttons>
+
+
+            <ion-toggle (ionChange)="deviceBulkIO(device,$event.detail.checked);" slot="end"></ion-toggle>
+
           </ion-toolbar>
+<<<<<<< HEAD
+
+=======
+>>>>>>> ee6d3b17e96ae207c4d183dca856e1762cab3ff7
         </ion-card-content>
       </ion-card>
     </div>
@@ -56,9 +70,15 @@
     <ion-button (click)="scanDevice()" color="primary">Scan For devices</ion-button>
   </div>
   <div *ngIf="mode === 'discovery'">
+<<<<<<< HEAD
+
+    <div *ngIf="!devicePing.isNew">
+      This device was configured previously with name <b>{{devicePing.name}}</b>
+=======
     <div *ngIf="!devicePing.isNew">
       This device was configured previously with name
       <b>{{devicePing.name}}</b>
+>>>>>>> ee6d3b17e96ae207c4d183dca856e1762cab3ff7
       <br/> Do you want keep this name or change it?
       <br/>
       <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Keep</ion-button>
@@ -66,11 +86,19 @@
     </div>
     <div *ngIf="devicePing.isNew">
       This is a new device device, please set name for the device
+<<<<<<< HEAD
+
+=======
+>>>>>>> ee6d3b17e96ae207c4d183dca856e1762cab3ff7
       <ion-item>
         <ion-input [(ngModel)]="devicePing.name" required type="text" placeholder="Device Name.."></ion-input>
         <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Set Name</ion-button>
       </ion-item>
     </div>
+<<<<<<< HEAD
+
+=======
+>>>>>>> ee6d3b17e96ae207c4d183dca856e1762cab3ff7
   </div>
   <div *ngIf="mode === 'scan'">
     <div *ngIf="isScanningDevice">
