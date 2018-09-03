@@ -46,6 +46,10 @@
                 <ion-icon name="power"></ion-icon>
               </ion-button>
             </ion-buttons>
+
+
+            <ion-toggle (ionChange)="deviceBulkIO(device,$event.detail.checked);" slot="end"></ion-toggle>
+
           </ion-toolbar>
         </ion-card-content>
       </ion-card>

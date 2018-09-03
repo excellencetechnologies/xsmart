@@ -369,7 +369,8 @@ void forcePingPacket()
   ping_packet_count = 0;
   pingPacket();
 }
-void sendNamePack(String name){
+void sendNamePack(String name)
+{
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
@@ -378,6 +379,60 @@ void sendNamePack(String name){
   root["version"] = version;
   root["chip"] = device_ssid;
   root["name"] = name;
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendPinNamePack(){
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_bulk_pin_name_reply";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  JsonArray &pins = root.createNestedArray("PINS");
+
+  StaticJsonBuffer<500> jsonBuffer5;
+  for (int i = 0; i < PIN_SIZE; i++)
+  {
+    JsonObject &pin = jsonBuffer5.createObject();
+    pin["pin"] = PINS[i];
+    pin["status"] = PINS_STATUS[i];
+    pin["name"] = xconfig.getPinName(PINS[i]);
+    pins.add(pin);
+  }
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendBulkIOPack()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_bulk_io_reply";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  JsonArray &pins = root.createNestedArray("PINS");
+
+  StaticJsonBuffer<500> jsonBuffer5;
+  for (int i = 0; i < PIN_SIZE; i++)
+  {
+    JsonObject &pin = jsonBuffer5.createObject();
+    pin["pin"] = PINS[i];
+    pin["status"] = PINS_STATUS[i];
+    pins.add(pin);
+  }
+
   String json = "";
   root.printTo(json);
   Serial.println(json);
@@ -539,14 +594,12 @@ void handleInterrupt()
       {
         Serial.println("set ap mode");
         current_wifi_status = WIFI_AP_MODE;
-        
       }
       else
       {
         current_wifi_status = WIFI_CONNECT_MODE;
         Serial.println("set wifi mode");
         AP_STARTED = 0; // so that it comes out of the while loop
-        
       }
     }
     else if (millis() - interruptMills > 5000)
@@ -583,7 +636,7 @@ void setup()
   digitalWrite(LEDPIN, LOW);
   xconfig.initConfig();
 
-  // xconfig.setPinName(5," bedroom fan");
+  
   // Serial.println(xconfig.getPinName(5));
 
   Serial.println("device name");
@@ -632,15 +685,15 @@ void loop()
 
         if (data.length() > 0)
         {
-          StaticJsonBuffer<200> jsonBuffer;
+          StaticJsonBuffer<1024> jsonBuffer;
           JsonObject &root = jsonBuffer.parseObject(data);
           Serial.println("data from socket");
           root.printTo(Serial);
           String type = root["type"];
-          int pin = root["pin"];
 
           if (type == "HIGH")
           {
+            int pin = root["pin"];
             Serial.println("setting hight");
             pinWrite(pin, HIGH);
             delay(10);
@@ -648,14 +701,35 @@ void loop()
           }
           else if (type == "LOW")
           {
+            int pin = root["pin"];
             Serial.println("setting low");
             pinWrite(pin, LOW);
             delay(10);
             sendIOPack(pin, 0);
           }
-          else if(type == "DEVICE_NAME"){
+          else if (type == "DEVICE_NAME")
+          {
             xconfig.setNickName(root.get<String>("name"));
             sendNamePack(root.get<String>("name"));
+          }
+          else if (type == "IO")
+          {
+            JsonArray &pins = root["switches"].as<JsonArray>();
+            for (int i = 0; i < pins.size(); i++)
+            {
+              JsonObject &obj = pins[i].as<JsonObject>();
+              pinWrite(obj.get<int>("pin"), obj.get<int>("status"));
+            }
+            sendBulkIOPack();
+          }
+          else if(type == "PIN_NAME"){
+            JsonArray &pinnames = root["pinnames"].as<JsonArray>();
+            for (int i = 0; i < pinnames.size(); i++)
+            {
+              JsonObject &obj = pinnames[i].as<JsonObject>();
+              xconfig.setPinName(obj.get<int>("pin"), obj.get<String>("name"));
+            }
+            sendPinNamePack();
           }
           else if (type == "OK")
           {
