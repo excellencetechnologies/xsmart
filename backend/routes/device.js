@@ -52,7 +52,7 @@ router.get("/listDevice/",middleware.validateToken, (req, res) => {
         if (err) {
             res.status(500).json({ error: 1, message: "mongodb internel problem while retrieving the device" });
         } else {
-            res.status(200).json({ status: 1, devices: obj });
+            res.status(200).json({ status: 1, devices:obj});
         }
     })
 })
