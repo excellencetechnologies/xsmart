@@ -47,8 +47,8 @@ router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
     })
 });
 
-router.get("/listDevice/:userID", (req, res) => {
-    Device.find({ user_id: req.params.userID }, (err, obj) => {
+router.get("/listDevice/",middleware.validateToken, (req, res) => {
+    Device.find({ user_id: req.id}, (err, obj) => {
         if (err) {
             res.status(500).json({ error: 1, message: "mongodb internel problem while retrieving the device" });
         } else {

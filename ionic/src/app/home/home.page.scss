@@ -1,1 +1,18 @@
-
+.Switches {
+    margin: 0 auto;
+}
+.title {
+    text-align: center;
+}
+.icon {
+    float: left;
+}
+.grid {
+    border: 1px solid #a2a4ab;
+}
+.grid-item {
+    border-bottom: 1px solid #a2a4ab;
+}
+.grid-item:hover {
+    color: yellow;
+}

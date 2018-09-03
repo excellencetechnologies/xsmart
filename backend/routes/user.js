@@ -28,15 +28,19 @@ router.post("/login", async (req, res) => {
     if (result instanceof Error) {
         res.status(400).json({ error: 1, message: result.message });
     } else {
-        User.findOne({ email: result.email, password: md5(result.password) }, (err, obj) => {
+        User.findOne({ email: result.email}, (err, obj) => {
             if (err) {
                 res.status(500).json({ error: 1, message: "mongodb internel problem while login the user" });
             } else {
                 if (obj != null) {
-                    const token = jwt.sign({ id: obj._id }, process.env.key, { expiresIn: "1h" })
-                    res.status(200).json({ status: 1, message: "successfully login", data: obj, token: token });
+                    if(obj.password === md5(result.password)){
+                       const token = jwt.sign({ id: obj._id }, process.env.key, { expiresIn: "1h" })
+                       res.status(200).json({ status: 1, message: "successfully login", data: obj, token: token });    
+                    }else{
+                        res.status(400).json({error:1,message:"your password is not matched"});
+                    }                   
                 } else {
-                    res.status(400).json({ error: 1, message: "please check your detail" });
+                    res.status(400).json({ error: 1, message: "your email id is not matched" });
                 }
             }
         });
