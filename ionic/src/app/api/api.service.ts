@@ -11,6 +11,12 @@ export interface Message {
   providedIn: 'root',
 })
 export class ApiService {
+  httpOptions = {
+    headers: new HttpHeaders({
+      "Content-Type": "application/json",
+      token:localStorage.getItem("token")
+    })
+  };
   // ************************************************************************************************
   base_url: string = "http://192.168.4.1/";
   constructor(private http: HttpClient) { }
@@ -35,7 +41,8 @@ export class ApiService {
     const apidata = { "email": data.email, "password": data.password };
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
-      localStorage.setItem("token", data["data"].token);
+      localStorage.setItem("token", data['token']);   
+        
       return data['data'];
     }
     catch (error) {
@@ -46,6 +53,15 @@ export class ApiService {
     const apidata = { "name": data.name, "email": data.email, "password": data.password };
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/register`, apidata).toPromise();
+      return data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  async deviceList() {
+    try {
+      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`,this.httpOptions).toPromise();
       return data['data'];
     }
     catch (error) {

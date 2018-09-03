@@ -13,9 +13,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
+import { DeviceComponent } from './device/device.component';
+import { ScanDevicesComponent } from './scan-devices/scan-devices.component';
+import { PairDevicesComponent } from './pair-devices/pair-devices.component';
+import { AddDevicesComponent } from './add-devices/add-devices.component';
 
 @NgModule({
-  declarations: [AppComponent,LoginComponent, RegisterComponent],
+  declarations: [AppComponent,LoginComponent, RegisterComponent, DeviceComponent, ScanDevicesComponent, PairDevicesComponent, AddDevicesComponent],
   entryComponents: [],
   imports: [BrowserModule,
      HttpClientModule,

@@ -1,0 +1,27 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-row class="title">
+      <ion-icon class="menu" (click)="backClicked()" name="arrow-back"></ion-icon>Back
+      <ion-title>
+        Pair Devices
+      </ion-title>
+    </ion-row>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <ion-row>
+    <div class="Switches">
+      <h3>Pair Devices</h3>
+    </div>
+  </ion-row>
+  <ion-label>Turn on Access Point on your device!</ion-label>
+  <ion-label>Press the button on your devices for 3 sec
+    <br> and it should turn on the access point mode</ion-label>
+  <ion-label>you Should see he status LED,to start to
+    <br> blink continuesly.</ion-label>
+  <ion-label>This means the pairing model is turned on.</ion-label>
+  <ion-label>Keep your mobile phone close to your device.</ion-label>
+  <ion-item size="12" (click)="pairDevice()" class="next">
+    <ion-col class="nextButton">Next</ion-col>
+  </ion-item>
+</ion-content>

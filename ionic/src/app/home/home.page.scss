@@ -1,18 +1,43 @@
+
 .Switches {
     margin: 0 auto;
 }
-.title {
+.title{
     text-align: center;
+    font-size: 20px;
 }
-.icon {
-    float: left;
+.Switches>h3{
+    font-weight: 800;
 }
 .grid {
-    border: 1px solid #a2a4ab;
+    border: thin solid #a2a4ab;
+    border-bottom: none;
 }
 .grid-item {
-    border-bottom: 1px solid #a2a4ab;
+    border-bottom: thin solid #a2a4ab;
+    padding: 6px;
+   
 }
-.grid-item:hover {
+.list-ios>.item-block:last-child {
+    border-bottom: none;
+}
+
+.grid-item:hover{
     color: yellow;
+}
+.exclemetry{
+    font-family: 'Titillium Web', sans-serif;
+    padding-right: 10px;
+    color:gray;
+    font-size: 20px;
+}
+.wifi{
+    color:gray;
+    transform: scale(0.8);
+}
+.menu{
+    font-family: 'Titillium Web', sans-serif;
+    transform: scale(1.0);
+    padding: 10px;
+    font-size: 1.4em;
 }
