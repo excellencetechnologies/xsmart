@@ -1,7 +1,58 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>About</ion-title>
+    <ion-row class="title" center>
+      <ion-icon class="menu" name="menu"></ion-icon>
+      <ion-title>
+        Devices
+      </ion-title>
+    </ion-row>
   </ion-toolbar>
 </ion-header>
-
-<ion-content></ion-content>
+<ion-content padding>
+  <ion-row>
+    <div class="devices">
+      <h3>Your Devices</h3>
+    </div>
+  </ion-row>
+  <ion-button block expand="full" (click)="scanDevice()">Scan Devices</ion-button>
+  <div class="content">
+    <ion-card>
+      <ion-card-content>
+        <ion-item class="grid-item-header">
+          <ion-icon slot="start" name="swap"></ion-icon>
+          Bedroom Devices 1
+          <ion-icon slot="end" class="wifi" name="wifi"></ion-icon>
+        </ion-item>
+        <ion-item>
+          Device Id:LOLIN32 Wemos v.101
+          <br> Switches:4
+        </ion-item>
+        <ion-item class="grid-item-bulb">
+          <ion-icon slot="start" name="bulb"></ion-icon> Switch 1
+          <span slot="end" class="exclemetry">Pin 5</span>
+        </ion-item>
+        <ion-item class="grid-item-bulb">
+          <ion-icon slot="start" name="bulb"></ion-icon>
+          Bedroom Fan
+          <span slot="end" class="exclemetry">Pin 10</span>
+        </ion-item>
+        <ion-item class="switch">
+          <ion-icon slot="start" name="bulb"></ion-icon>
+          Switch 3
+          <span slot="end" class="exclemetry">Pin 15</span>
+        </ion-item>
+        <ion-item class="icons grid-item" size="12">
+          <ion-col size="4" class="rightborder">
+            <ion-icon name="wifi"></ion-icon> Wifi
+          </ion-col>
+          <ion-col size="4" class="rightborder">
+            <ion-icon name="trash"></ion-icon> Dlete
+          </ion-col>
+          <ion-col size="4" class="qr-scanner">
+            <ion-icon name="qr-scanner"></ion-icon> Name
+          </ion-col>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

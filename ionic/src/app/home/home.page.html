@@ -1,11 +1,9 @@
 <ion-header>
   <ion-toolbar>
-    <ion-row>
-      <ion-title class="title">
-        <span>
-          <i class="fa fa-bars icon"></i>
-        </span>
-        <span class="home">Home</span>
+    <ion-row class="title">
+      <ion-icon class="menu" name="menu"></ion-icon>
+      <ion-title>
+        Home
       </ion-title>
     </ion-row>
   </ion-toolbar>
@@ -116,31 +114,31 @@
     <ion-grid>
       <ion-row align-items-start>
         <ion-col size="12">
-          <ion-list class="grid">
+          <ion-list class="grid" no-lines >
             <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
+              <ion-icon slot="start" name="logo-ionic"></ion-icon>
               Bedroom Fan
-              <ion-icon slot="end" name="wifi"></ion-icon>
+              <ion-icon slot="end" class="wifi" name="wifi"></ion-icon>
             </ion-item>
             <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
+              <ion-icon slot="start" name="logo-ionic"></ion-icon>
               Bedroom Light
-              <ion-icon slot="end" name="wifi"></ion-icon>
+              <ion-icon slot="end" class="wifi" name="wifi"></ion-icon>
             </ion-item>
             <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
+              <ion-icon slot="start" name="logo-ionic"></ion-icon>
               Dinning Fan1
-              <ion-icon slot="end" name="wifi"></ion-icon>
+              <ion-icon slot="end" class="wifi" name="wifi"></ion-icon>
             </ion-item>
             <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
+              <ion-icon slot="start" name="logo-ionic"></ion-icon>
               Dinning Fan2
-              <ion-icon slot="end" name="wifi"></ion-icon>
+              <span slot="end" class="exclemetry">!</span>
             </ion-item>
             <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
+              <ion-icon slot="start" name="logo-ionic"></ion-icon>
               Cabin light
-              <ion-icon slot="end" name="wifi"></ion-icon>
+              <span slot="end" class="exclemetry">!</span>
             </ion-item>
           </ion-list>
         </ion-col>

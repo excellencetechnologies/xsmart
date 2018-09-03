@@ -19,7 +19,6 @@ let wifiCheckInterval = null;
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-
   message: String = "test";
   xSmartConnect: boolean = false;
   wifinetworks: Wifi[] = [];
@@ -114,6 +113,8 @@ export class HomePage implements OnInit {
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
+      console.log(this.devices);
+      
       this.keepCheckingDeviceOnline();
     }
   }
@@ -198,6 +199,7 @@ export class HomePage implements OnInit {
     } catch (e) {
       console.log(e)
       this.isScanningDevice = true;
+      
     }
   }
   async pingDevices() {

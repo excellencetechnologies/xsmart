@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-row class="title">
+      <ion-icon class="menu" (click)="backClicked()" name="arrow-back"></ion-icon>Devices
+      <ion-title>
+        Scan Devices
+      </ion-title>
+    </ion-row>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <ion-row>
+    <div class="Switches">
+      <h3>Connect To Devices</h3>
+    </div>
+  </ion-row>
+  <ion-label>Once the pair mode starts on the devices,</ion-label>
+  <ion-label>connect to device wifi network.</ion-label>
+  <ion-label>xSmart-xxxxxxxxxxxx</ion-label>
+  <ion-label>Should show up.Connect to this wifi network with password</ion-label>
+  <ion-label>password</ion-label>
+  <ion-item>
+    <ion-label class="wating" (click)="addDevices()"> Wating...</ion-label>
+  </ion-item>
+</ion-content>
