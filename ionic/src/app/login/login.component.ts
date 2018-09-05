@@ -14,7 +14,8 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   loading: boolean;
   user: User;
-  constructor(public apiServices: ApiService,
+  constructor(
+    public apiServices: ApiService,
     private router: Router,
     private nativeStorage: NativeStorage
   ) { }
@@ -42,8 +43,9 @@ export class LoginComponent implements OnInit {
       this.router.navigate(["/tabs"]);
 
     } catch (err) {
+      console.log("err",err)
       this.loading = false;
-      this.errorMessage = err.message;
+      this.errorMessage = err['error'].message;
     }
   }
 

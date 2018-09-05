@@ -1,14 +1,4 @@
 
-.Switches {
-    margin: 0 auto;
-}
-.title{
-    text-align: center;
-    font-size: 20px;
-}
-.Switches>h3{
-    font-weight: 800;
-}
 .grid {
     border: thin solid #a2a4ab;
     border-bottom: none;
@@ -40,4 +30,7 @@
     transform: scale(1.0);
     padding: 10px;
     font-size: 1.4em;
+}
+.Switches>h3{
+    margin-left: 20px;
 }

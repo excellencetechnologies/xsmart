@@ -70,9 +70,7 @@ export class ApiService {
   }
   async addDevices(body) {
     try {
-      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise();
-
-      return data['data'];
+      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise();    return data['data'];
     }
     catch (error) {
       throw (error);

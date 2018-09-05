@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { Router } from '@angular/router';
-
+import { Device } from './../components/model/device';
 @Component({
   selector: 'app-about',
   templateUrl: 'about.page.html',
@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 })
 export class AboutPage {
   loading: boolean;
-  user: any;
+  device: Device;
   errorMessage: string;
   ngOnInit() {
     this.getDevice();
@@ -18,7 +18,7 @@ export class AboutPage {
   async getDevice() {
     this.loading = true;
     try {
-      this.user = await this.apiServices.deviceList();
+      this.device = await this.apiServices.deviceList();
       this.loading = false;
     } catch (err) {
       this.loading = false;

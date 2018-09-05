@@ -44,21 +44,5 @@ import { DeviceService } from './api/device.service';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-  deviceid: string;
-  constructor(public deviceServices: DeviceService,
-    public pltform: Platform,
-    private nativeStorage: NativeStorage
-  ) {
-    this.deviceId();
-   
-    
-  }
-  deviceId() {
-    if (this.pltform.is('cordova')) {
-      this.deviceServices.getAppID().then((res)=>{
-        this.nativeStorage.setItem('id', res)
-      })
-    }
-  }
+export class AppModule { 
 }

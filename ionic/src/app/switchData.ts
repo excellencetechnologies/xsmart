@@ -1,4 +1,4 @@
-export const switchData = [
+export const switches= [
     {
         id: "1",
         switchName: "Bedroom Fan",

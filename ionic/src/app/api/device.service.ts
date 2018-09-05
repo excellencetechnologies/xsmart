@@ -18,7 +18,6 @@ export class DeviceService {
     }
     //random id to identify the current app
     async getAppID() {
-        console.log(this.platform)
         if (this.platform.is("cordova")) {
             return await this.uniqueDeviceID.get()
         } else {

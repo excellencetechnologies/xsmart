@@ -40,7 +40,7 @@ export class RegisterComponent implements OnInit {
       this.userRegisterForm.reset();
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err.message;
+      this.errorMessage = err['error'].message;
     }
   }
 }

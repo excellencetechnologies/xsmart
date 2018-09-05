@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {Location} from '@angular/common';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-scan-devices',
@@ -8,14 +7,13 @@ import { Router } from '@angular/router';
 })
 export class ScanDevicesComponent implements OnInit {
 
-  constructor(private _location: Location,private router: Router) { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
   }
-  backClicked() {
-    this._location.back();
-   }
+ 
    pairDevice(){
     this.router.navigate(["/pairDevices"]);
   }
+  
 }

@@ -34,6 +34,9 @@
     </div>
     <ion-grid>
       <ion-row center>
+          <div class="error">
+              <p *ngIf="errorMessage">{{errorMessage}}</p>
+            </div>
         <ion-col class="center">
           <ion-button block expand="full" (click)="onSubmit(userRegisterForm)" [disabled]="!userRegisterForm.valid || loading">Register</ion-button>
         </ion-col>

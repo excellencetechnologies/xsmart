@@ -1,11 +1,9 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-row class="title" center>
-      <ion-icon class="menu" name="menu"></ion-icon>
-      <ion-title>
-        Devices
-      </ion-title>
-    </ion-row>
+  <ion-toolbar mode="ios">
+    <ion-icon slot="start" class="menu" name="menu"></ion-icon>
+    <ion-title>
+      Devices
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
@@ -14,9 +12,9 @@
       <h3>Your Devices</h3>
     </div>
   </ion-row>
-  <ion-button block expand="full" class="scan-devices"(click)="scanDevice()">Scan Devices</ion-button>
+  <ion-button block expand="full" class="scan-devices" (click)="scanDevice()">Scan Devices</ion-button>
   <div class="content">
-    <ion-card *ngFor="let chipId of user">
+    <ion-card *ngFor="let device of device">
       <ion-card-content>
         <ion-item class="grid-item-header">
           <ion-icon slot="start" name="swap"></ion-icon>
@@ -24,11 +22,11 @@
           <ion-icon slot="end" class="wifi" name="wifi"></ion-icon>
         </ion-item>
         <ion-item>
-          Device Id:{{chipId.chip_id}}
+          Device Id:{{device.chip_id}}
           <br> Switches:4
         </ion-item>
-        <ion-item class="grid-item-bulb">
-          <ion-icon slot="start" name="bulb"></ion-icon> Switch 1
+        <ion-item class="grid-item-bulb" mod="ios">
+          <ion-icon slot="start" mod="ios" name="bulb"></ion-icon> Switch 1
           <span slot="end" class="exclemetry">Pin 5</span>
         </ion-item>
         <ion-item class="grid-item-bulb">
