@@ -18,7 +18,7 @@ export class ApiService {
     })
   };
   // ************************************************************************************************
-  base_url: string = "http://192.168.4.1/";
+  base_url: string =environment['base_url'];
   constructor(private http: HttpClient) { }
 
   async checkPing() {

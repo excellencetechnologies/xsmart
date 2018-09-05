@@ -14,7 +14,7 @@
   </ion-row>
   <ion-button block expand="full" class="scan-devices" (click)="scanDevice()">Scan Devices</ion-button>
   <div class="content">
-    <ion-card *ngFor="let device of device">
+    <ion-card *ngFor="let switch of device">
       <ion-card-content>
         <ion-item class="grid-item-header">
           <ion-icon slot="start" name="swap"></ion-icon>
@@ -22,7 +22,7 @@
           <ion-icon slot="end" class="wifi" name="wifi"></ion-icon>
         </ion-item>
         <ion-item>
-          Device Id:{{device.chip_id}}
+          Device Id:{{switch.chip_id}}
           <br> Switches:4
         </ion-item>
         <ion-item class="grid-item-bulb" mod="ios">

@@ -10,6 +10,7 @@ import { DeviceService } from './api/device.service';
   templateUrl: 'app.component.html'
 })
 export class AppComponent {
+  errorMessage: string;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -28,11 +29,14 @@ export class AppComponent {
       this.splashScreen.hide();
     });
   }
-  deviceId() {
+  async deviceId() {
     if (this.pltform.is('cordova')) {
-      this.deviceServices.getAppID().then((res)=>{
-        this.nativeStorage.setItem('id', res)
-      })
+      try {
+        const deviceId = await this.deviceServices.getAppID();
+        this.nativeStorage.setItem('id', deviceId)
+      } catch (err) {
+        this.errorMessage = err.message;
+      }
     }
   }
 }

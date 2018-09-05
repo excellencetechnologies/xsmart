@@ -55,6 +55,7 @@ export class LoginComponent implements OnInit {
       const res = this.apiServices.addDevices({ 'chip_id': deviceId })
     }
     catch (err) {
+      this.errorMessage = err['error'].message;
     }
   }
 
