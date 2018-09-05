@@ -14,7 +14,7 @@ export class ApiService {
   httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json",
-      token:localStorage.getItem("token")
+      token: localStorage.getItem("token")
     })
   };
   // ************************************************************************************************
@@ -41,8 +41,8 @@ export class ApiService {
     const apidata = { "email": data.email, "password": data.password };
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
-      localStorage.setItem("token", data['token']);   
-        
+      localStorage.setItem("token", data['token']);
+
       return data['data'];
     }
     catch (error) {
@@ -61,13 +61,24 @@ export class ApiService {
   }
   async deviceList() {
     try {
-      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`,this.httpOptions).toPromise();
+      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`, this.httpOptions).toPromise();
+      return data['devices'];
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  async addDevices(body) {
+    try {
+      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise();
+
       return data['data'];
     }
     catch (error) {
       throw (error);
     }
   }
+
 
 }
 

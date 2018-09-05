@@ -5,6 +5,9 @@ import { TabsPage } from './tabs.page';
 import { HomePage } from '../home/home.page';
 import { AboutPage } from '../about/about.page';
 import { ContactPage } from '../contact/contact.page';
+// import { PairDevicesComponent } from '../pair-devices/pair-devices.component';
+// import { ScanDevicesComponent } from '../scan-devices/scan-devices.component';
+// import { AddDevicesComponent } from '../add-devices/add-devices.component';
 
 const routes: Routes = [
   {
@@ -26,6 +29,28 @@ const routes: Routes = [
         outlet: 'about',
         component: AboutPage
       },
+      // {
+      //   path: 'about',
+      //   redirectTo: '/tabs/(about:about)',
+      //   component: AboutPage,
+      //   children: [
+      //     {
+      //       path: 'pairDevices',
+      //       outlet: 'pairDevices',
+      //       component: PairDevicesComponent
+      //     },
+      //     {
+      //       path: 'scanDevices',
+      //       outlet: 'ScanDevices',
+      //       component: ScanDevicesComponent
+      //     },
+      //     {
+      //       path: 'addDevices',
+      //       outlet: 'addDevices',
+      //       component: AddDevicesComponent
+      //     }
+      //   ]
+      // },
       {
         path: 'contact',
         outlet: 'contact',
@@ -43,4 +68,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }

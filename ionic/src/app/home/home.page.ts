@@ -7,7 +7,8 @@ import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
-
+import { switchData } from '../switchData'
+import { data } from '../components/model/switchData'
 
 let socket = null;
 
@@ -19,6 +20,7 @@ let wifiCheckInterval = null;
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
+  SwitchData: Array<data>;
   message: String = "test";
   xSmartConnect: boolean = false;
   wifinetworks: Wifi[] = [];
@@ -41,6 +43,7 @@ export class HomePage implements OnInit {
     private notifyService: NotifyService) { }
 
   ngOnInit() {
+    this.SwitchData = switchData;
     this.platform.ready().then(() => {
       this.message = "platform ready";
       // this.keepCheckingWifiConnected();
@@ -48,6 +51,7 @@ export class HomePage implements OnInit {
     });
   }
   sendMessageToSocket(msg) {
+
     if (this.isSocketConnected) {
       console.log("socket msg send to", msg);
       socket.send(JSON.stringify(msg));
@@ -114,7 +118,7 @@ export class HomePage implements OnInit {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
       console.log(this.devices);
-      
+
       this.keepCheckingDeviceOnline();
     }
   }
@@ -166,8 +170,8 @@ export class HomePage implements OnInit {
     this.devicePing.name = "";
     this.devicePing.isNew = true;
   }
-  async askDeviceName(){
-    
+  async askDeviceName() {
+
   }
   async setDeviceName(name: String) {
     try {
@@ -199,7 +203,7 @@ export class HomePage implements OnInit {
     } catch (e) {
       console.log(e)
       this.isScanningDevice = true;
-      
+
     }
   }
   async pingDevices() {
@@ -215,7 +219,7 @@ export class HomePage implements OnInit {
     setTimeout(async () => {
       this.pingDevices();
       console.log(this.isSocketConnected);
-      this.keepCheckingDeviceOnline();  
+      this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {

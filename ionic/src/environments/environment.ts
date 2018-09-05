@@ -4,7 +4,7 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 export const environment = {
   production: false,
-  apiBase: "http://5.9.144.226:9030/"
+  apiBase: "http://192.168.1.114:9030/"
 };
 /*
  * In development mode, to ignoreyyyyyyyyyy zone related error stack frames such as

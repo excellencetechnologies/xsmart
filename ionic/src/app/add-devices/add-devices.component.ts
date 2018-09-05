@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-add-devices',
   templateUrl: './add-devices.component.html',
@@ -8,11 +8,12 @@ import { Component, OnInit } from '@angular/core';
 export class AddDevicesComponent implements OnInit {
 
   [x: string]: any;
-  constructor() { }
+  constructor(private _location: Location) { }
 
   ngOnInit() {
   }
+
   backClicked() {
     this._location.back();
-   }
+  }
 }

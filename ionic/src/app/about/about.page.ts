@@ -13,9 +13,8 @@ export class AboutPage {
   errorMessage: string;
   ngOnInit() {
     this.getDevice();
-    console.log(this.getDevice());
   }
-  constructor(public apiServices: ApiService,private router: Router) { }
+  constructor(public apiServices: ApiService, private router: Router) { }
   async getDevice() {
     this.loading = true;
     try {
@@ -26,7 +25,8 @@ export class AboutPage {
       this.errorMessage = err.message;
     }
   }
-  scanDevice(){
+  scanDevice() {
     this.router.navigate(["/scanDevices"]);
   }
+
 }
