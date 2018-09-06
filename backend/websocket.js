@@ -5,6 +5,7 @@ var WebSocket = require("ws");
 var http = require("http");
 var userRouter = require("./routes/user");
 var deviceRouter = require("./routes/device");
+var deviceSimulatorRouter = require('./routes/deviceSimulator');
 var bodyParser = require("body-parser");
 require('dotenv').config();
 var cors = require('cors');
@@ -22,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use('/user', userRouter);
 app.use('/device', deviceRouter);
-
+app.use('/deviceSimulator',deviceSimulatorRouter);
 const server = http.createServer(app);
 server.listen(process.env.PORT || 9030, () => {
   console.log('Server started on port ', server.address().port);;
