@@ -21,8 +21,8 @@ app.use(function (req, res, next) {
 });
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/user', userRouter);
-app.use('/device', deviceRouter);
+app.use('/user',userRouter);
+app.use('/device',deviceRouter);
 app.use('/deviceSimulator',deviceSimulatorRouter);
 const server = http.createServer(app);
 server.listen(process.env.PORT || 9030, () => {
