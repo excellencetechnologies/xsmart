@@ -4,7 +4,18 @@ var data = require("../device_data/data");
 var getDevice = require("../getDeviceData/data");
 router.get('/checkPing', (req, res) => {
     let index = Math.floor((Math.random() * 3));
-    res.status(200).json({ status: 1, message: "OK", data: data.checkPing[index] });
+    let ping = {
+        webid: "1234",
+        chip: data.Device[index].chip,
+        name: data.Device[index].name,
+    };
+    if (ping.name == null) {
+        ping.name = "new-device";
+        ping.isNew = true;
+    } else {
+        ping.isNew = false;
+    }
+    res.status(200).json({ status: 1, message: "OK", data: ping });
 });
 
 router.get('/scanWifi', (req, res) => {

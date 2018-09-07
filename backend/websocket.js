@@ -138,7 +138,8 @@ ws.on('connection', function (w) {
           if (client.chip && client.chip === chip) {
             client.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
-              pin: obj['pin']
+              pin: obj['pin'],
+              chip:obj['chip']
             }));
             found = true;
           }

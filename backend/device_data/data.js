@@ -1,23 +1,4 @@
 module.exports = {
-    checkPing: [{
-        webid: "1234",
-        chip: "chip1",
-        name: "fan-switch",
-        isNew: false
-    },
-    {
-        webid: "1234",
-        chip: "chip2",
-        name: "bedroom light",
-        isNew: false
-    },
-    {
-        webid: "1234",
-        chip: "chip3",
-        name: "cabin light",
-        isNew: false
-    }],
-
     Wifi: [{
         ENC: 'encryp',
         RSSI: 100,
@@ -34,11 +15,6 @@ module.exports = {
         SSID: 'etech3'
     }],
 
-    Switch: {
-        pin: 1,
-        status: 1
-    },
-
     Device: [{
         name: 'fan-switch',
         device_id: 'd1',
@@ -53,6 +29,10 @@ module.exports = {
             {
                 pin: 2,
                 status: 0
+            },
+            {
+                pin: 3,
+                status: 1
             },
             {
                 pin: 3,
@@ -74,6 +54,23 @@ module.exports = {
             {
                 pin: 2,
                 status: 0
+            }
+        ]
+    },
+    {
+        name: null,
+        device_id: 'd3',
+        chip: 'chip3',
+        ttl: 101,
+        online: true,
+        switches: [
+            {
+                pin: 1,
+                status: 1
+            },
+            {
+                pin: 2,
+                status: 0
             },
             {
                 pin: 3,
@@ -82,7 +79,7 @@ module.exports = {
         ]
     },
     {
-        name: 'cabin light',
+        name: "laptop",
         device_id: 'd3',
         chip: 'chip3',
         ttl: 101,
