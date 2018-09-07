@@ -7,8 +7,6 @@ import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
-import { switches } from '../switchData'
-import { switchDevice } from '../components/model/switchData'
 
 let socket = null;
 
@@ -20,7 +18,6 @@ let wifiCheckInterval = null;
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-  SwitchData: Array<switchDevice>;
   message: String = "test";
   xSmartConnect: boolean = false;
   wifinetworks: Wifi[] = [];
@@ -43,7 +40,6 @@ export class HomePage implements OnInit {
     private notifyService: NotifyService) { }
 
   ngOnInit() {
-    this.SwitchData = switches;
     this.platform.ready().then(() => {
       this.message = "platform ready";
       // this.keepCheckingWifiConnected();
@@ -193,7 +189,7 @@ export class HomePage implements OnInit {
         const deviceData = await this.deviceService.getDevices();
         deviceData.forEach((value, key) => {
           if (value.chip === this.devicePing.chip) {
-            deviceData.splice(key,1)
+            deviceData.splice(key, 1)
             deviceData.push(newdevice);
           }
         })
