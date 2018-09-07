@@ -1,5 +1,5 @@
 var WebSocket = require('ws');
-var deviceWS = new WebSocket('http://localhost:9030');
+var deviceWS = new WebSocket('http://5.9.144.226:9030');
 var getDevice = require("./getDeviceData/data");
 var data = require("./device_data/data");
 deviceWS.onerror = (e) => {
