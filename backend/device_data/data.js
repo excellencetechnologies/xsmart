@@ -21,6 +21,8 @@ module.exports = {
         chip: 'chip1',
         ttl: 0,
         online: true,
+        WEBID:'W101',
+        version:'1.0.2',
         switches: [
             {
                 pin: 1,
@@ -35,7 +37,7 @@ module.exports = {
                 status: 1
             },
             {
-                pin: 3,
+                pin: 4,
                 status: 1
             },
         ]
@@ -46,6 +48,8 @@ module.exports = {
         chip: 'chip2',
         ttl: 101,
         online: true,
+        WEBID:'W102',
+        version:'1.0.3',
         switches: [
             {
                 pin: 1,
@@ -63,6 +67,8 @@ module.exports = {
         chip: 'chip3',
         ttl: 101,
         online: true,
+        WEBID:'W103',
+        version:'1.0.4',
         switches: [
             {
                 pin: 1,
@@ -81,9 +87,11 @@ module.exports = {
     {
         name: "laptop",
         device_id: 'd3',
-        chip: 'chip3',
+        chip: 'chip4',
         ttl: 101,
         online: true,
+        WEBID:'W107',
+        version:'1.0.2.7',
         switches: [
             {
                 pin: 1,
