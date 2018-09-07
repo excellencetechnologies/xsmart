@@ -21,8 +21,8 @@ app.use(function (req, res, next) {
 });
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/user', userRouter);
-app.use('/device', deviceRouter);
+app.use('/user',userRouter);
+app.use('/device',deviceRouter);
 app.use('/deviceSimulator',deviceSimulatorRouter);
 const server = http.createServer(app);
 server.listen(process.env.PORT || 9030, () => {
@@ -138,7 +138,8 @@ ws.on('connection', function (w) {
           if (client.chip && client.chip === chip) {
             client.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
-              pin: obj['pin']
+              pin: obj['pin'],
+              chip:obj['chip']
             }));
             found = true;
           }
