@@ -69,3 +69,6 @@
   --ion-color-dark-tint: #383838;
 }
 
+.bulb::before {
+  content: "\f2a7";
+}

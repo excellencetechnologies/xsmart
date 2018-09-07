@@ -22,19 +22,49 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   async checkPing() {
-    return await this.http.get<Ping>(this.base_url).toPromise();
+    // return await this.http.get<Ping>(this.base_url).toPromise();
+    try {
+          const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();  
+            return data['data'];
+        }
+        catch (error) {
+          throw (error);
+        }
   }
 
   async getScanWifi() {
-    return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
+    // return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
+    try {
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/scanWifi`).toPromise();  
+        return data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
   }
 
   async setWifiPassword(ssid, password) {
-    return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
+    // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
+    try {
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setWifiPassword/${ssid}/${password}`).toPromise();  
+        return data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
   }
 
-  async setDeviceNickName(name: String) {
-    return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
+  async setDeviceNickName(name: String,chip:string) {
+    // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
+    try {
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setDeviceNickName/${name}/${chip}`).toPromise();  
+      console.log(data);
+       
+      return data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
   }
 
   async postlogin(data) {
@@ -62,7 +92,10 @@ export class ApiService {
   async deviceList() {
     try {
       const data = await this.http.get(`${environment["apiBase"]}device/listDevice`, this.httpOptions).toPromise();
+      console.log(data);
       return data['devices'];
+     
+      
     }
     catch (error) {
       throw (error);
@@ -70,12 +103,31 @@ export class ApiService {
   }
   async addDevices(body) {
     try {
-      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise();    return data['data'];
+      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise(); 
+       return data['data'];
     }
     catch (error) {
       throw (error);
     }
   }
+  // async deleteDevices(body) {
+  //   try {
+  //     const data = await this.http.delete(`${environment["apiBase"]}device/deleteDevice/${body}`,this.httpOptions).toPromise();  
+  //       return data['data'];
+  //   }
+  //   catch (error) {
+  //     throw (error);
+  //   }
+  // }
+  // async deviceSimulator() {
+  //   try {
+  //     const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();  
+  //       return data['data'];
+  //   }
+  //   catch (error) {
+  //     throw (error);
+  //   }
+  // }
 
 
 }

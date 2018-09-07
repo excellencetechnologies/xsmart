@@ -57,7 +57,9 @@ export class HomePage implements OnInit {
       socket.send(JSON.stringify(msg));
 
     } else {
-      socket = new WebSocket('ws://5.9.144.226:9030');
+      // 5.9.144.226:9030
+      // http://192.168.1.114:9030/
+      socket = new WebSocket('ws://192.168.1.114:9030');
       // Connection opened
       socket.addEventListener('open', (event) => {
         console.log("socket connected");
@@ -173,20 +175,31 @@ export class HomePage implements OnInit {
   async askDeviceName() {
 
   }
-  async setDeviceName(name: String) {
+  async setDeviceName(name: String, chip: string) {
     try {
-      await this.api.setDeviceNickName(name);
+      await this.api.setDeviceNickName(name, chip);
+      let newdevice: Device = {
+        name: name,
+        device_id: this.devicePing.webid,
+        chip: this.devicePing.chip,
+        ttl: 0,
+        online: false,
+        switches: []
+      };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        let newdevice: Device = {
-          name: name,
-          device_id: this.devicePing.webid,
-          chip: this.devicePing.chip,
-          ttl: 0,
-          online: false,
-          switches: []
-        };
         this.deviceService.addDevice(newdevice);
+      } else {
+        this.deviceService.updateDevice(newdevice);
+        const deviceData = await this.deviceService.getDevices();
+        deviceData.forEach((value, key) => {
+          if (value.chip === this.devicePing.chip) {
+            deviceData.splice(key,1)
+            deviceData.push(newdevice);
+          }
+        })
+        this.deviceService.setDevices(deviceData)
       }
+      this.checkExistingDevice();
       this.mode = "scan";
       this.xSmartConnect = true;
       this.scanWifi();
@@ -231,6 +244,8 @@ export class HomePage implements OnInit {
           type: 'text',
         }
       ],
+
+
       buttons: [
         {
           text: 'Cancel',

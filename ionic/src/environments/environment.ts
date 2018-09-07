@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   apiBase: "http://192.168.1.114:9030/",
-  base_url: "http://192.168.4.1/"
+  base_url: "http://5.9.144.226:9030/"
+  // base_url: "http://192.168.4.1/"
 };
 /*
  * In development mode, to ignoreyyyyyyyyyy zone related error stack frames such as

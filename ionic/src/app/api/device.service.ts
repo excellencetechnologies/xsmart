@@ -26,7 +26,7 @@ export class DeviceService {
     }
     async getDevices(): Promise<Device[]> {
         if (this.platform.is("cordova"))
-            return await this.nativeStorage.getItem('devices') as Device[]
+            return await this.nativeStorage.getItem('devices') as Device[];
         else {
             if (localStorage.getItem('devices')) {
                 return JSON.parse(localStorage.getItem('devices')) as Device[];
@@ -34,6 +34,7 @@ export class DeviceService {
                 return [];
             }
         }
+        
     }
     async checkDeviceExists(chipid: String) {
         let devices = await this.getDevices();
@@ -48,6 +49,8 @@ export class DeviceService {
     async setDevices(devices: Device[]) {
         if (this.platform.is("cordova"))
             await this.nativeStorage.setItem('devices', devices);
+            
+            
         else {
             localStorage.setItem('devices', JSON.stringify(devices));
 
