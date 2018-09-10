@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ApiService } from "../api/api.service";
 import { User } from './../components/model/user';
 import { Router } from "@angular/router";
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -13,7 +14,11 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   loading: boolean;
   user: User;
-  constructor(public apiServices: ApiService,private router: Router) { }
+  constructor(
+    public apiServices: ApiService,
+    private router: Router,
+    private nativeStorage: NativeStorage
+  ) { }
 
   ngOnInit() {
     this.createLoginForm();
@@ -34,10 +39,24 @@ export class LoginComponent implements OnInit {
       this.user = await this.apiServices.postlogin(formData.value);
       this.loading = false;
       this.loginForm.reset();
+      this.addDevice();
       this.router.navigate(["/tabs"]);
+
     } catch (err) {
+      console.log("err",err)
       this.loading = false;
-      this.errorMessage = err.message;
+      this.errorMessage = err['error'].message;
     }
   }
+
+  async addDevice() {
+    try {
+      const deviceId = await this.nativeStorage.getItem('id')
+      const res = this.apiServices.addDevices({ 'chip_id': deviceId })
+    }
+    catch (err) {
+      // this.errorMessage = err['error'].message;
+    }
+  }
+
 }

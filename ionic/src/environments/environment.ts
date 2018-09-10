@@ -4,11 +4,12 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 export const environment = {
   production: false,
-  apiBase: "http://5.9.144.226:9030/"
+  apiBase: "http://192.168.1.114:9030/",
+  base_url: "http://5.9.144.226:9030/"
+  // base_url: "http://192.168.4.1/"
 };
-
 /*
- * In development mode, to ignore zone related error stack frames such as
+ * In development mode, to ignoreyyyyyyyyyy zone related error stack frames such as
  * `zone.run`, `zoneDelegate.invokeTask` for easier debugging, you can
  * import the following file, but please comment it out in production mode
  * because it will have performance impact when throw error

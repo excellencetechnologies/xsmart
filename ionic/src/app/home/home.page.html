@@ -1,18 +1,15 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-row>
-      <ion-title class="title">
-        <span>
-          <i class="fa fa-bars icon"></i>
-        </span>
-        <span class="home">Home</span>
-      </ion-title>
-    </ion-row>
+<ion-header translucent>
+  <ion-toolbar mode="ios">
+    <ion-icon slot="start" color="secondry" class="menu" name="menu">
+  </ion-icon>
+    <ion-title>
+      Home
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
 <!-- Old Code -->
-<!-- <ion-content padding>
+<ion-content padding>
   <div>
     Platform: {{message}}
   </div>
@@ -61,14 +58,14 @@
       <b>{{devicePing.name}}</b>
       <br/> Do you want keep this name or change it?
       <br/>
-      <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Keep</ion-button>
+      <ion-button (click)="setDeviceName(devicePing.name,devicePing.chip)" color="primary">Keep</ion-button>
       <ion-button (click)="freshDevice()" color="primary">Start New</ion-button>
     </div>
     <div *ngIf="devicePing.isNew">
       This is a new device device, please set name for the device
       <ion-item>
         <ion-input [(ngModel)]="devicePing.name" required type="text" placeholder="Device Name.."></ion-input>
-        <ion-button (click)="setDeviceName(devicePing.name)" color="primary">Set Name</ion-button>
+        <ion-button (click)="setDeviceName(devicePing.name,devicePing.chip)" color="primary">Set Name</ion-button>
       </ion-item>
     </div>
   </div>
@@ -103,10 +100,10 @@
       </ion-list>
     </div>
   </div>
-</ion-content> -->
+</ion-content>
 <!-- --------------------------------------------new code---------------------- -->
 
-<ion-content>
+<!-- <ion-content>
   <ion-row>
     <div class="Switches">
       <h3>Your Switches</h3>
@@ -116,35 +113,16 @@
     <ion-grid>
       <ion-row align-items-start>
         <ion-col size="12">
-          <ion-list class="grid">
-            <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
-              Bedroom Fan
-              <ion-icon slot="end" name="wifi"></ion-icon>
-            </ion-item>
-            <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
-              Bedroom Light
-              <ion-icon slot="end" name="wifi"></ion-icon>
-            </ion-item>
-            <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
-              Dinning Fan1
-              <ion-icon slot="end" name="wifi"></ion-icon>
-            </ion-item>
-            <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
-              Dinning Fan2
-              <ion-icon slot="end" name="wifi"></ion-icon>
-            </ion-item>
-            <ion-item class="grid-item">
-              <ion-icon slot="start" name="analytics"></ion-icon>
-              Cabin light
-              <ion-icon slot="end" name="wifi"></ion-icon>
+          <ion-list class="grid" no-lines>
+            <ion-item class="grid-item" *ngFor="let switch of SwitchData">
+              <ion-icon slot="start" name="logo-ionic"></ion-icon>
+              {{switch.switchName}}
+              <ion-icon *ngIf="switch.icon != 'exclamatory'" slot="end" class="{{switch.icon}}" name="{{switch.icon}}"></ion-icon>
+              <span *ngIf="switch.icon == 'exclamatory'" slot="end" class="exclamatory">!</span>
             </ion-item>
           </ion-list>
         </ion-col>
       </ion-row>
     </ion-grid>
   </div>
-</ion-content>
+</ion-content> -->

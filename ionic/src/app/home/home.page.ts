@@ -8,7 +8,6 @@ import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
 
-
 let socket = null;
 
 let wifiCheckInterval = null;
@@ -19,7 +18,6 @@ let wifiCheckInterval = null;
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-
   message: String = "test";
   xSmartConnect: boolean = false;
   wifinetworks: Wifi[] = [];
@@ -49,12 +47,15 @@ export class HomePage implements OnInit {
     });
   }
   sendMessageToSocket(msg) {
+
     if (this.isSocketConnected) {
       console.log("socket msg send to", msg);
       socket.send(JSON.stringify(msg));
 
     } else {
-      socket = new WebSocket('ws://5.9.144.226:9030');
+      // 5.9.144.226:9030
+      // http://192.168.1.114:9030/
+      socket = new WebSocket('ws://192.168.1.114:9030');
       // Connection opened
       socket.addEventListener('open', (event) => {
         console.log("socket connected");
@@ -114,6 +115,8 @@ export class HomePage implements OnInit {
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
+      console.log(this.devices);
+
       this.keepCheckingDeviceOnline();
     }
   }
@@ -165,23 +168,34 @@ export class HomePage implements OnInit {
     this.devicePing.name = "";
     this.devicePing.isNew = true;
   }
-  async askDeviceName(){
-    
+  async askDeviceName() {
+
   }
-  async setDeviceName(name: String) {
+  async setDeviceName(name: String, chip: string) {
     try {
-      await this.api.setDeviceNickName(name);
+      await this.api.setDeviceNickName(name, chip);
+      let newdevice: Device = {
+        name: name,
+        device_id: this.devicePing.webid,
+        chip: this.devicePing.chip,
+        ttl: 0,
+        online: false,
+        switches: []
+      };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        let newdevice: Device = {
-          name: name,
-          device_id: this.devicePing.webid,
-          chip: this.devicePing.chip,
-          ttl: 0,
-          online: false,
-          switches: []
-        };
         this.deviceService.addDevice(newdevice);
+      } else {
+        this.deviceService.updateDevice(newdevice);
+        const deviceData = await this.deviceService.getDevices();
+        deviceData.forEach((value, key) => {
+          if (value.chip === this.devicePing.chip) {
+            deviceData.splice(key, 1)
+            deviceData.push(newdevice);
+          }
+        })
+        this.deviceService.setDevices(deviceData)
       }
+      this.checkExistingDevice();
       this.mode = "scan";
       this.xSmartConnect = true;
       this.scanWifi();
@@ -198,6 +212,7 @@ export class HomePage implements OnInit {
     } catch (e) {
       console.log(e)
       this.isScanningDevice = true;
+
     }
   }
   async pingDevices() {
@@ -213,7 +228,7 @@ export class HomePage implements OnInit {
     setTimeout(async () => {
       this.pingDevices();
       console.log(this.isSocketConnected);
-      this.keepCheckingDeviceOnline();  
+      this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
@@ -225,6 +240,8 @@ export class HomePage implements OnInit {
           type: 'text',
         }
       ],
+
+
       buttons: [
         {
           text: 'Cancel',

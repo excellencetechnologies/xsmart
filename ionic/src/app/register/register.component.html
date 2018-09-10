@@ -4,7 +4,7 @@
     <ion-spinner slot="end" *ngIf="loading" name="bubbles"></ion-spinner>
   </ion-toolbar>
 </ion-header>
-<ion-content class="register">
+<ion-content padding class="register">
 
   <form [formGroup]="userRegisterForm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <ion-item>
@@ -34,6 +34,9 @@
     </div>
     <ion-grid>
       <ion-row center>
+          <div class="error">
+              <p *ngIf="errorMessage">{{errorMessage}}</p>
+            </div>
         <ion-col class="center">
           <ion-button block expand="full" (click)="onSubmit(userRegisterForm)" [disabled]="!userRegisterForm.valid || loading">Register</ion-button>
         </ion-col>

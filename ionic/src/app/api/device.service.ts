@@ -18,15 +18,15 @@ export class DeviceService {
     }
     //random id to identify the current app
     async getAppID() {
-        if (this.platform.is("mobile")) {
+        if (this.platform.is("cordova")) {
             return await this.uniqueDeviceID.get()
         } else {
             return await Promise.resolve("!23");;
         }
     }
     async getDevices(): Promise<Device[]> {
-        if (this.platform.is("mobile"))
-            return await this.nativeStorage.getItem('devices') as Device[]
+        if (this.platform.is("cordova"))
+            return await this.nativeStorage.getItem('devices') as Device[];
         else {
             if (localStorage.getItem('devices')) {
                 return JSON.parse(localStorage.getItem('devices')) as Device[];
@@ -34,6 +34,7 @@ export class DeviceService {
                 return [];
             }
         }
+        
     }
     async checkDeviceExists(chipid: String) {
         let devices = await this.getDevices();
@@ -46,8 +47,10 @@ export class DeviceService {
         return device;
     }
     async setDevices(devices: Device[]) {
-        if (this.platform.is("mobile"))
+        if (this.platform.is("cordova"))
             await this.nativeStorage.setItem('devices', devices);
+            
+            
         else {
             localStorage.setItem('devices', JSON.stringify(devices));
 
@@ -106,7 +109,7 @@ export class DeviceService {
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
         devices.push(device);
-        if (this.platform.is("mobile")) {
+        if (this.platform.is("cordova")) {
             return await this.nativeStorage.setItem("devices", devices)
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
