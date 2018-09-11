@@ -26,19 +26,23 @@ module.exports = {
         switches: [
             {
                 pin: 1,
-                status: 1
+                status: 1,
+                name: "switch1"
             },
             {
                 pin: 2,
-                status: 0
+                status: 0,
+                name: "switch2"
             },
             {
                 pin: 3,
-                status: 1
+                status: 1,
+                name: "switch3"
             },
             {
                 pin: 4,
-                status: 1
+                status: 1,
+                name: "switch4"
             },
         ]
     },
@@ -53,11 +57,13 @@ module.exports = {
         switches: [
             {
                 pin: 1,
-                status: 1
+                status: 1,
+                name: "bedroom1"
             },
             {
                 pin: 2,
-                status: 0
+                status: 0,
+                name: "bedroom2"
             }
         ]
     },
@@ -72,15 +78,18 @@ module.exports = {
         switches: [
             {
                 pin: 1,
-                status: 1
+                status: 1,
+                name: "abcd1"
             },
             {
                 pin: 2,
-                status: 0
+                status: 0,
+                name: "abccd2"
             },
             {
                 pin: 3,
-                status: 1
+                status: 1,
+                name: "abcd3"
             }
         ]
     },
@@ -95,15 +104,18 @@ module.exports = {
         switches: [
             {
                 pin: 1,
-                status: 1
+                status: 1,
+                name: "laptop1"
             },
             {
                 pin: 2,
-                status: 0
+                status: 0,
+                name: "laptop2"
             },
             {
                 pin: 3,
-                status: 1
+                status: 1,
+                name: "laptop3"
             }
         ]
     }
