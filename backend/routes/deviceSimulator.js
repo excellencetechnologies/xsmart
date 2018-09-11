@@ -15,11 +15,11 @@ router.get('/checkPing', (req, res) => {
     } else {
         ping.isNew = false;
     }
-    res.status(200).json(ping );
+    res.status(200).json({ status: 1, message: "OK", data: ping });
 });
 
 router.get('/scanWifi', (req, res) => {
-    res.status(200).json(data: data.Wifi);
+    res.status(200).json({ data: data.Wifi });
 });
 
 router.get('/setWifiPassword/:SSID/:password', (req, res) => {
@@ -40,7 +40,7 @@ router.get('/setDeviceNickName/:name/:chip', async (req, res) => {
     if (result == null) {
         res.status(400).json({ error: 1, message: "not found" })
     } else {
-        res.status(200).json(result);
+        res.status(200).json({ status: 1, data: result });
     }
 });
 
