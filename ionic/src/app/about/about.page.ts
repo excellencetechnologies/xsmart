@@ -5,6 +5,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { HttpClient } from '@angular/common/http';
 import { AlertController, MenuController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
+import {  Device } from "../api/api"
 @Component({
   selector: 'app-about',
   templateUrl: 'about.page.html',
@@ -12,7 +13,7 @@ import { DeviceService } from '../api/device.service';
 })
 export class AboutPage {
   loading: boolean;
-  device: any;
+  device: Device[] = [];
   errorMessage: string;
   ngOnInit() {
     this.getDevice();
