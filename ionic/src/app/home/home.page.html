@@ -1,56 +1,94 @@
 <ion-header translucent>
   <ion-toolbar mode="ios">
-    <ion-icon slot="start" color="secondry" class="menu" name="menu">
-  </ion-icon>
+    <ion-icon slot="start" menuToggle (click)="menu()" color="secondry" mode="md" class="menu" name="menu">
+    </ion-icon>
     <ion-title>
-      Home
+      Devices
     </ion-title>
   </ion-toolbar>
 </ion-header>
-
 <!-- Old Code -->
 <ion-content padding>
+  <div *ngIf="!devices.length">
+    No Devices Found!
+  </div>
+  <ion-button (click)="scanDevice()" class="scanDevices" block expand="full" color="primary">
+    <span class="scan">Scan For devices</span>
+  </ion-button>
   <div>
     Platform: {{message}}
   </div>
   <div *ngIf="mode === 'device'">
     <div *ngIf="devices.length">
       <ion-card *ngFor="let device of devices; trackBy: trackByDevice">
-        <ion-img src="/assets/myImg.png"></ion-img>
-        <ion-card-content>
-          <ion-card-title>
+        <ion-item class="grid-item-header" [ngClass]="{'yellow':device.online}">
+          <ion-icon slot="start" name="swap"></ion-icon>
+          <ion-label (click)="askDeviceName(device);">{{device.name}}</ion-label>
+          <ion-icon slot="end" mode="md" class="wifi" name="wifi"></ion-icon>
+        </ion-item>
+        <ion-card-content class="card_content">
+          <!-- <ion-card-title>
             <ion-item>
               <ion-label (click)="askDeviceName(device);">{{device.name}}</ion-label>
               <ion-button (click)="deleteDevice(device)" fill="outline" slot="end">
                 <ion-icon name="trash"></ion-icon>
               </ion-button>
             </ion-item>
-          </ion-card-title>
-          <p>Device ID: {{device.device_id}}</p>
-          <p>CHIP: {{device.chip}}</p>
-          <p>Last Online: {{device.ttl | date:'short'}}</p>
-          <p>
-            <ion-badge *ngIf="device.online" color="secondary">Online</ion-badge>
-            <ion-badge *ngIf="!device.online" color="warning">Offline</ion-badge>
-          </p>
-          <p *ngIf="device.switches.length > 0"> Switches In Device </p>
-          <ion-toolbar>
-            <ion-buttons slot="start" *ngFor="let switch of device.switches; trackBy: trackBySwitch">
-              <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
-                <ion-icon name="power"></ion-icon>
-              </ion-button>
-              <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="dark">
-                <ion-icon name="power"></ion-icon>
-              </ion-button>
-            </ion-buttons>
-          </ion-toolbar>
+          </ion-card-title> -->
+          <div class="content">
+            <p size="12">
+              <span size="4" class="device-ID">Device ID:</span>
+              <span class="device_device_id">{{device.device_id}}</span>
+
+            </p>
+            <p>
+              <span size="4" class="device-ID">CHIP:</span>
+              <span class="device_device_id">{{device.chip}}</span>
+            </p>
+            <!-- <p>
+              <span size="4" class="device-ID">Last Online:</span>
+              <span class="device_device_id">{{device.ttl | date:'short'}}</span>
+            </p> -->
+            <!-- <p>
+              <ion-badge *ngIf="device.online" color="secondary">Online</ion-badge>
+              <ion-badge *ngIf="!device.online" color="warning">Offline</ion-badge>
+            </p> -->
+            <p *ngIf="device.switches.length > 0">
+              <span size="4" class="device-ID"> Switches In Device </span>
+            </p>
+          </div>
+
+          <!-- <ion-toolbar> -->
+          <ion-list>
+            <ion-item *ngFor="let switch of device.switches; trackBy: trackBySwitch">
+              <ion-icon [ngClass]="{'blue' : switch.status}" slot="start" mode="ios" name="bulb"></ion-icon>
+              <span (click)="setSwitchName(switch, device)" [ngClass]="{'blue' : switch.status}">{{switch.name}}</span>
+              <ion-buttons slot="start">
+                <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
+                  <ion-icon name="power" mod="md"></ion-icon>
+                </ion-button>
+                <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switch.status === 1" color="dark">
+                  <ion-icon name="power" mod="ios"></ion-icon>
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+          <!-- </ion-toolbar> -->
+          <ion-item class="icons grid-item" size="12">
+            <ion-col class="rightborder" (click)="askWifiPassword(wifi)">
+              <ion-icon mode="ios" name="wifi"></ion-icon> Wifi
+            </ion-col>
+            <ion-col class="rightborder" (click)="deleteDevice(device)">
+              <ion-icon mode="md" name="trash"></ion-icon> Dlete
+            </ion-col>
+            <ion-col size="4" class="qr-scanner">
+              <ion-icon name="qr-scanner"></ion-icon> Name
+            </ion-col>
+          </ion-item>
         </ion-card-content>
       </ion-card>
     </div>
-    <div *ngIf="!devices.length">
-      No Devices Found!
-    </div>
-    <ion-button (click)="scanDevice()" color="primary">Scan For devices</ion-button>
+
   </div>
   <div *ngIf="mode === 'discovery'">
     <div *ngIf="!devicePing.isNew">
@@ -79,50 +117,40 @@
       <ion-spinner></ion-spinner>
     </div>
     <div *ngIf="xSmartConnect">
-      {{devicePing.webid}}
-      <br/> {{devicePing.chip}}
-      <br/> {{devicePing.name}}
+      <!-- {{devicePing.webid}} -->
+      <p size="12">
+        <span size="4" class="device-ID">Device ID:</span>
+        <span class="device_device_id"> {{devicePing.chip}}</span>
+      </p>
+      <p size="12">
+        <span size="4" class="device-ID">Device Chip:</span>
+        <span class="device_device_id"> {{devicePing.chip}}</span>
+      </p>
+      <p size="12">
+        <span size="4" class="device-ID">Device Name:</span>
+        <span class="device_device_id"> {{devicePing.name}}</span>
+      </p>
       <br/>
-      <ion-button (click)="scanWifi()" color="primary">Scan Wifi Networks</ion-button>
+      <ion-button (click)="scanWifi()" color="primary">Getting Wifi Networks</ion-button>
       <Br/>
-      <ion-list *ngFor="let wifi of wifinetworks">
-        <ion-item (click)="askWifiPassword(wifi)">
-          <ion-avatar slot="start">
-            <ion-icon slot="start" name="wifi"></ion-icon>
-          </ion-avatar>
-          <ion-label>
-            <h2>{{wifi.SSID}}</h2>
-            <div>
-              {{wifi.RSSI}} -- {{wifi.ENC}}
-            </div>
-          </ion-label>
-        </ion-item>
-      </ion-list>
+      <br>
+      <div class="networkList">
+        <ion-list *ngFor="let wifi of wifinetworks">
+          <ion-item class="network" (click)="askWifiPassword(wifi)">
+            <ion-item slot="start">
+              <ion-icon slot="start" mode="ios" name="wifi"></ion-icon>
+              <span>Network</span>
+            </ion-item>
+            <ion-label>
+              <h2>{{wifi.SSID}}</h2>
+              <div>
+                {{wifi.RSSI}} -- {{wifi.ENC}}
+              </div>
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </div>
     </div>
   </div>
 </ion-content>
 <!-- --------------------------------------------new code---------------------- -->
-
-<!-- <ion-content>
-  <ion-row>
-    <div class="Switches">
-      <h3>Your Switches</h3>
-    </div>
-  </ion-row>
-  <div class="content">
-    <ion-grid>
-      <ion-row align-items-start>
-        <ion-col size="12">
-          <ion-list class="grid" no-lines>
-            <ion-item class="grid-item" *ngFor="let switch of SwitchData">
-              <ion-icon slot="start" name="logo-ionic"></ion-icon>
-              {{switch.switchName}}
-              <ion-icon *ngIf="switch.icon != 'exclamatory'" slot="end" class="{{switch.icon}}" name="{{switch.icon}}"></ion-icon>
-              <span *ngIf="switch.icon == 'exclamatory'" slot="end" class="exclamatory">!</span>
-            </ion-item>
-          </ion-list>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-  </div>
-</ion-content> -->

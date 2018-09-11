@@ -56,16 +56,17 @@ export class DeviceService {
 
         }
     }
-    async updateDevicePin(pin: number, status: number, chip: string) {
+    async updateDevicePin(pin: number, status: number, chip: string,name:string) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
             if (device.chip === chip) {
                 device.switches = device.switches.map((s: Switch) => {
                     if (s.pin === pin) {
-                        s.status = status;
+                        s.status = status,
+                        s.name=name;             
                     }
                     return s;
-                })
+                })   
             }
             return device;
         })
@@ -96,9 +97,11 @@ export class DeviceService {
                 data.pins.forEach((pin: Switch) => {
                     let swtich: Switch = {
                         "status": pin.status,
-                        "pin": pin.pin
+                        "pin": pin.pin,
+                        "name":pin.name
                     }
                     device.switches.push(swtich);
+                    
                 })
 
             }

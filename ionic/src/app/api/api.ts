@@ -13,6 +13,7 @@ export class Wifi {
 export class Switch {
     pin : number;
     status: number; //0 for off and 1 for on
+    name:string;
 }
 
 export class Device {

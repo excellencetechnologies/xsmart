@@ -1,36 +1,73 @@
-
-.grid {
-    border: thin solid #a2a4ab;
-    border-bottom: none;
-}
-.grid-item {
-    border-bottom: thin solid #a2a4ab;
-    padding: 6px;
-   
-}
-.list-ios>.item-block:last-child {
-    border-bottom: none;
-}
-
-.grid-item:hover{
-    color: yellow;
-}
-.exclamatory{
-    font-family: 'Titillium Web', sans-serif;
-    padding-right: 10px;
-    color:gray;
-    font-size: 20px;
-}
-.wifi{
-    color:gray;
-    transform: scale(0.8);
-}
 .menu{
     font-family: 'Titillium Web', sans-serif;
     transform: scale(1.0);
     padding: 10px;
     font-size: 1.4em;
 }
-.Switches>h3{
-    margin-left: 20px;
+.grid-item-header{
+    border-bottom: thin solid #a2a4ab78;
+    font-size:20px;
+}
+.yellow{
+    color:yellow;
+}
+.wifi{
+    transform: scale(0.6);
+    color: gray;
+}
+.device-ID{
+    font-weight: 800;
+    font-size:16px; 
+}
+.device_device_id{
+   font-weight: 100;
+    font-size: 16px;
+}
+.card_content{
+    padding: 10px 0px 0px 0px;
+}
+.content{
+    padding-left: 14px;
+}
+.rightborder {
+    border-right: 2px solid blue;
+    color: blue;
+    transform: scale(1.0);
+    font-size: 20px;
+    padding: 18px 0px 13px 2px;
+}
+
+.qr-scanner{
+    color: blue;
+    transform: scale(1.0);
+    padding: 18px 0px 13px 19px;
+    font-size: 18px;
+    
+}
+.icons {
+    border: 2px solid blue;
+    margin-bottom: 13px;
+    border-radius: 5px;
+}
+.blue{
+    color:#00c1ff; 
+}
+.lightSwitches{
+    padding:0px 10px 10px 0px;
+    border-bottom:thin solid #a2a4ab78;
+    font-size: 18px;
+    color:gray;
+}
+.scanDevices{
+    padding:5px 0px 15px 0px;
+}
+.scan{
+    padding: 25px;
+    font-size: 16px;
+}
+.networkList{
+    border:thin solid #a2a4ab78;
+}
+.network{
+    border-bottom:thin solid #a2a4ab78;
 }

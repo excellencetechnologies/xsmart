@@ -1,6 +1,6 @@
 
 .grid {
-    border: thin solid #a2a4ab;
+    border: thin solid #a2a4ab78;
     border-bottom: none;
 }
 
@@ -15,20 +15,6 @@
     padding: 10px;
     font-size: 1.4em;
 }
-.grid-item-header:active {
-    color: yellow;
-}
-
-.grid-item-header:hover {
-    color: yellow;
-}
-
-.grid-item-bulb {
-    color:#71c3ed;
-    border-bottom: thin solid #a2a4ab78;
-    padding: 6px;
-}
-
 .grid-item {
     border-bottom: thin solid #a2a4ab78;
 }
@@ -36,12 +22,15 @@
 .list-ios>.item-block:last-child {
     border-bottom: none;
 }
-
-.card-content-md {
-    padding: unset;
-    font-size: 14px;
-    line-height: 1.5;
+.devices{
+   margin:0 auto;
+   
 }
+.devices>h3{
+    font-weight: 800;
+    font-size: 26px;
+}
+
 .wifi{
     color:gray;
     transform: scale(0.6);
@@ -50,28 +39,4 @@
     color: gray;
 }
 
-.icons {
-    border: 2px solid blue;
-    margin-bottom: 13px;
-    border-radius: 5px;
-}
 
-.rightborder {
-    border-right: 2px solid blue;
-    color: blue;
-    transform: scale(1.0);
-    padding: 18px 0px 13px 19px;
-}
-
-.qr-scanner{
-    color: blue;
-    transform: scale(1.0);
-    padding: 18px 0px 13px 19px;
-}
-.switch{
-    margin-bottom: 20px;
-}
-.scan-devices{
-    border-radius: 4px;
-    font-size: 18px;
-}

@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { DeviceService } from './api/device.service';
+import { MenuController } from '@ionic/angular'
 
 @Component({
   selector: 'app-root',
@@ -17,10 +18,12 @@ export class AppComponent {
     private statusBar: StatusBar,
     public deviceServices: DeviceService,
     public pltform: Platform,
-    private nativeStorage: NativeStorage
+    private nativeStorage: NativeStorage,
+    private menuControler:MenuController
   ) {
     this.initializeApp();
     this.deviceId();
+    this.menuControler.enable(true);
   }
 
   initializeApp() {

@@ -53,7 +53,7 @@ export class ApiService {
       throw (error);
     }
   }
-
+  
   async setDeviceNickName(name: String,chip:string) {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
@@ -110,24 +110,7 @@ export class ApiService {
       throw (error);
     }
   }
-  // async deleteDevices(body) {
-  //   try {
-  //     const data = await this.http.delete(`${environment["apiBase"]}device/deleteDevice/${body}`,this.httpOptions).toPromise();  
-  //       return data['data'];
-  //   }
-  //   catch (error) {
-  //     throw (error);
-  //   }
-  // }
-  // async deviceSimulator() {
-  //   try {
-  //     const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();  
-  //       return data['data'];
-  //   }
-  //   catch (error) {
-  //     throw (error);
-  //   }
-  // }
+
 
 
 }

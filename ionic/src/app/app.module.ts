@@ -15,9 +15,9 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { ScanDevicesComponent } from './scan-devices/scan-devices.component';
 import { PairDevicesComponent } from './pair-devices/pair-devices.component';
-import { AddDevicesComponent } from './add-devices/add-devices.component';
 import { ApiService } from './api/api.service';
 import { DeviceService } from './api/device.service';
+import { SidemenuComponent } from './sidemenu/sidemenu.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,7 @@ import { DeviceService } from './api/device.service';
     RegisterComponent,
     ScanDevicesComponent,
     PairDevicesComponent,
-    AddDevicesComponent],
+    SidemenuComponent],
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,
