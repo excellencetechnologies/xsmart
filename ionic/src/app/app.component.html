@@ -1,30 +1,37 @@
 <ion-app>
   <ion-menu>
     <ion-content>
-      <ion-row>
-        <ion-col>
-          <ion-list padding>
-            <ion-item>
-              Name
-            </ion-item>
-            <ion-item>
-              About US
-            </ion-item>
-            <ion-item>
-              Privacy
-            </ion-item>
-            <ion-item>
-              Support
-            </ion-item>
-            <ion-item>
-              Logout
-            </ion-item>
-          </ion-list>
-        </ion-col>
-      </ion-row>
+      <ion-grid no-padding>
+        <ion-row>
+          <ion-col no-padding>
+            <ion-list class="sidemenulist">
+              <ion-item>
+                <ion-avatar slot="start" *ngIf="image">
+                  <img src="{{image}}">
+                </ion-avatar>
+                <ion-label>{{name}}</ion-label>
+              </ion-item>
+              <ion-item class="border-bottom"> Devices:{{devices}}</ion-item>
+              <ion-item class="border-bottom">
+                About US
+              </ion-item>
+              <ion-item class="border-bottom">
+                Privacy</ion-item>
+              <ion-item class="border-bottom">
+                Support
+              </ion-item>
+              <ion-item class="border-bottom" (click)="profile()">
+                Profile
+              </ion-item>
+              <ion-item class="border-bottom color" (click)="logout()">
+                Logout
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
 
+      </ion-grid>
     </ion-content>
   </ion-menu>
-
   <ion-router-outlet main></ion-router-outlet>
 </ion-app>

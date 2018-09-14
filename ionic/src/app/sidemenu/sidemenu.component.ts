@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MenuController } from '@ionic/angular';
 
 @Component({
   selector: 'app-sidemenu',
@@ -7,9 +8,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SidemenuComponent implements OnInit {
 
-  constructor() { }
+  constructor( private menuControler:MenuController) { }
 
   ngOnInit() {
   }
-
+  menu() {
+    this.menuControler.toggle()
+  }
 }

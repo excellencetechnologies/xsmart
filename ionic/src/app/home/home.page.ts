@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { Platform, MenuController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-
 import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
-
+import { EventHandlerService } from '../api/event-handler.service'
 let socket = null;
 
 let wifiCheckInterval = null;
@@ -304,7 +303,6 @@ export class HomePage implements OnInit {
           text: 'Ok',
           handler: async (data) => {
             console.log('Confirm Ok')
-            console.log(data.name);
             try {
               s['name'] = data.name;
               d.switches.forEach(value => {
@@ -337,7 +335,6 @@ export class HomePage implements OnInit {
     await alert.present();
   }
   menu() {
-
     this.menuController.toggle()
   }
 }

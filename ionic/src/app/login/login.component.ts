@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter} from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ApiService } from "../api/api.service";
 import { User } from './../components/model/user';
 import { Router } from "@angular/router";
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { EventHandlerService } from '../api/event-handler.service'
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -17,7 +18,8 @@ export class LoginComponent implements OnInit {
   constructor(
     public apiServices: ApiService,
     private router: Router,
-    private nativeStorage: NativeStorage
+    private nativeStorage: NativeStorage,
+    private _event:EventHandlerService
   ) { }
 
   ngOnInit() {
@@ -38,9 +40,10 @@ export class LoginComponent implements OnInit {
     try {
       this.user = await this.apiServices.postlogin(formData.value);
       this.loading = false;
+      this._event.setLoginEvent(this.user.name)
       this.loginForm.reset();
       this.addDevice();
-      this.router.navigate(["/tabs"]);
+      this.router.navigate(["/existing-devices"]);
 
     } catch (err) {
       console.log("err",err)

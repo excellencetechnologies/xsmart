@@ -18,6 +18,13 @@ import { PairDevicesComponent } from './pair-devices/pair-devices.component';
 import { ApiService } from './api/api.service';
 import { DeviceService } from './api/device.service';
 import { SidemenuComponent } from './sidemenu/sidemenu.component';
+import { ExistingDevicesComponent } from './existing-devices/existing-devices.component';
+import { SlidesComponent } from './slides/slides.component';
+import { AuthGuard } from './auth.guard';
+import { ProfileComponent } from './profile/profile.component';
+import { File } from '@ionic-native/file/ngx';
+import { FileTransfer, FileTransferObject} from '@ionic-native/file-transfer/ngx';
+import { Camera } from '@ionic-native/camera/ngx';
 
 @NgModule({
   declarations: [
@@ -26,7 +33,10 @@ import { SidemenuComponent } from './sidemenu/sidemenu.component';
     RegisterComponent,
     ScanDevicesComponent,
     PairDevicesComponent,
-    SidemenuComponent],
+    SidemenuComponent,
+    ExistingDevicesComponent,
+    SlidesComponent,
+    ProfileComponent],
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,
@@ -40,9 +50,14 @@ import { SidemenuComponent } from './sidemenu/sidemenu.component';
     SplashScreen,
     NativeStorage,
     UniqueDeviceID,
+    AuthGuard,
+    File,
+    FileTransfer,
+    Camera,
+    FileTransferObject,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { 
+export class AppModule {
 }

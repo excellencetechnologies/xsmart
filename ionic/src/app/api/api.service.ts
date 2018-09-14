@@ -11,6 +11,7 @@ export interface Message {
   providedIn: 'root',
 })
 export class ApiService {
+  images:any;
   httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json",
@@ -18,25 +19,25 @@ export class ApiService {
     })
   };
   // ************************************************************************************************
-  base_url: string =environment['base_url'];
+  base_url: string = environment['base_url'];
   constructor(private http: HttpClient) { }
 
   async checkPing() {
     // return await this.http.get<Ping>(this.base_url).toPromise();
     try {
-          const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();  
-            return data['data'];
-        }
-        catch (error) {
-          throw (error);
-        }
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();
+      return data['data'];
+    }
+    catch (error) {
+      throw (error);
+    }
   }
 
   async getScanWifi() {
     // return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
     try {
-      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/scanWifi`).toPromise();  
-        return data['data'];
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/scanWifi`).toPromise();
+      return data['data'];
     }
     catch (error) {
       throw (error);
@@ -46,20 +47,20 @@ export class ApiService {
   async setWifiPassword(ssid, password) {
     // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
     try {
-      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setWifiPassword/${ssid}/${password}`).toPromise();  
-        return data['data'];
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setWifiPassword/${ssid}/${password}`).toPromise();
+      return data['data'];
     }
     catch (error) {
       throw (error);
     }
   }
-  
-  async setDeviceNickName(name: String,chip:string) {
+
+  async setDeviceNickName(name: String, chip: string) {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
-      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setDeviceNickName/${name}/${chip}`).toPromise();  
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setDeviceNickName/${name}/${chip}`).toPromise();
       console.log(data);
-       
+
       return data['data'];
     }
     catch (error) {
@@ -72,7 +73,7 @@ export class ApiService {
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
       localStorage.setItem("token", data['token']);
-
+      localStorage.setItem("username", data["data"].name);
       return data['data'];
     }
     catch (error) {
@@ -92,10 +93,9 @@ export class ApiService {
   async deviceList() {
     try {
       const data = await this.http.get(`${environment["apiBase"]}device/listDevice`, this.httpOptions).toPromise();
-      console.log(data);
       return data['devices'];
-     
-      
+
+
     }
     catch (error) {
       throw (error);
@@ -103,12 +103,30 @@ export class ApiService {
   }
   async addDevices(body) {
     try {
-      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise(); 
-       return data['data'];
+      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise();
+      return data['data'];
     }
     catch (error) {
       throw (error);
     }
+  }
+  async listDevices() {
+    try {
+      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`, this.httpOptions).toPromise();
+      return data;
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  getImage() {
+    if (JSON.parse(localStorage.getItem("image"))) {
+    this.images = JSON.parse(localStorage.getItem("image"));
+     }
+     return this.images;
+  }
+  setImage() {
+    localStorage.setItem("image", JSON.stringify(this.images));
   }
 
 

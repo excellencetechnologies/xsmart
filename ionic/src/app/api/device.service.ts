@@ -1,8 +1,7 @@
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Platform, Img } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
-
 import { Device, Switch } from "./api"
 import { stat } from 'fs';
 
@@ -18,14 +17,14 @@ export class DeviceService {
     }
     //random id to identify the current app
     async getAppID() {
-        if (this.platform.is("cordova")) {
+        if (this.platform.is("mobile")) {
             return await this.uniqueDeviceID.get()
         } else {
             return await Promise.resolve("!23");;
         }
     }
     async getDevices(): Promise<Device[]> {
-        if (this.platform.is("cordova"))
+        if (this.platform.is("mobile"))
             return await this.nativeStorage.getItem('devices') as Device[];
         else {
             if (localStorage.getItem('devices')) {
@@ -34,8 +33,9 @@ export class DeviceService {
                 return [];
             }
         }
-        
+
     }
+
     async checkDeviceExists(chipid: String) {
         let devices = await this.getDevices();
         let device: Device = devices.find((device: Device) => {
@@ -47,26 +47,24 @@ export class DeviceService {
         return device;
     }
     async setDevices(devices: Device[]) {
-        if (this.platform.is("cordova"))
+        if (this.platform.is("mobile")) {
+            console.log('devices', devices)
             await this.nativeStorage.setItem('devices', devices);
-            
-            
-        else {
+        } else {
             localStorage.setItem('devices', JSON.stringify(devices));
-
         }
     }
-    async updateDevicePin(pin: number, status: number, chip: string,name:string) {
+    async updateDevicePin(pin: number, status: number, chip: string, name: string) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
             if (device.chip === chip) {
                 device.switches = device.switches.map((s: Switch) => {
                     if (s.pin === pin) {
                         s.status = status,
-                        s.name=name;             
+                            s.name = name;
                     }
                     return s;
-                })   
+                })
             }
             return device;
         })
@@ -98,10 +96,10 @@ export class DeviceService {
                     let swtich: Switch = {
                         "status": pin.status,
                         "pin": pin.pin,
-                        "name":pin.name
+                        "name": pin.name
                     }
                     device.switches.push(swtich);
-                    
+
                 })
 
             }
@@ -112,7 +110,7 @@ export class DeviceService {
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
         devices.push(device);
-        if (this.platform.is("cordova")) {
+        if (this.platform.is("mobile")) {
             return await this.nativeStorage.setItem("devices", devices)
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));

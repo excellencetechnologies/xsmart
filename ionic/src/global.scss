@@ -10,9 +10,21 @@
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
 
-
-.tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
-    color: red;
-  }
-  $tabs-md-background: red;
-  
+.border-bottom{
+  border-bottom: thin solid #a2a4ab78;
+  padding: 5px;
+}
+.color{
+  color: red;
+}
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50px;
+  overflow: hidden
+ }
+ 
+ .avatar img {
+  width: 100%;
+  height: auto;
+ }
