@@ -577,10 +577,10 @@ void pingPacket()
     root["version"] = version;
     root["chip"] = device_ssid;
 #ifdef ISACCESS
-    root["type"] = "access";
+    root["device_type"] = "access";
 #endif
 #ifdef ISSWITCH
-    root["type"] = "switch";
+    root["device_type"] = "switch";
 #endif
     JsonArray &pins = root.createNestedArray("PINS");
 

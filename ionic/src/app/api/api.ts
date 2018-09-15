@@ -22,4 +22,5 @@ export class Device {
     ttl: number;
     online: boolean;
     switches: Switch[];
+    type : String; 
 }

@@ -292,4 +292,16 @@ export class HomePage implements OnInit {
 
     await alert.present();
   }
+
+  /** 
+   * new test code by manish for access card
+   */
+
+   async addEmployee(device :Device){
+    this.sendMessageToSocket({
+      type: "device_set_add_employee",
+      chip: device.chip,
+      app_id: await this.deviceService.getAppID()
+    })
+   }
 }

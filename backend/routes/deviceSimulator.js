@@ -8,6 +8,7 @@ router.get('/checkPing', (req, res) => {
         webid: "1234",
         chip: data.Device[index].chip,
         name: data.Device[index].name,
+        type: data.Device[index].type
     };
     if (ping.name == null) {
         ping.name = "new-device";
@@ -22,7 +23,7 @@ router.get('/scanWifi', (req, res) => {
     res.status(200).json({ data: data.Wifi });
 });
 
-router.get('/setWifiPassword/:SSID/:password', (req, res) => {
+router.get('/setWifiPassword/:ssid/:password', (req, res) => {
     data.Wifi.forEach((wifi) => {
         if (wifi.SSID == req.params.SSID) {
             if (req.params.password == 'ruchi') {

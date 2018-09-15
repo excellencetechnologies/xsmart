@@ -8,42 +8,17 @@ deviceWS.onerror = (e) => {
 deviceWS.onopen = () => {
     console.log("connection opend");
     try {
-        if (process.argv[2] != 2) {
-            setInterval(() => {
-                let ping = {
-                    type: "device_ping",
-                    WEBID: data.Device[process.argv[2]].WEBID,
-                    version: data.Device[process.argv[2]].version,
-                    chip: data.Device[process.argv[2]].chip,
-                    PINS: data.Device[process.argv[2]].switches,
-                };
-                deviceWS.send(JSON.stringify(ping));
-            }, 1000);
-        } else {
-            if ((new Date()).getHours() % 2 == 0) {
-                setInterval(() => {
-                    let ping = {
-                        type: "device_ping",
-                        WEBID: data.Device[process.argv[2]].WEBID,
-                        version: data.Device[process.argv[2]].version,
-                        chip: data.Device[process.argv[2]].chip,
-                        PINS: data.Device[process.argv[2]].switches,
-                    };
-                    deviceWS.send(JSON.stringify(ping));
-                }, 60 * 30 * 1000);
-            } else {
-                setInterval(() => {
-                    let ping = {
-                        type: "device_ping",
-                        WEBID: data.Device[process.argv[2]].WEBID,
-                        version: data.Device[process.argv[2]].version,
-                        chip: data.Device[process.argv[2]].chip,
-                        PINS: data.Device[process.argv[2]].switches,
-                    };
-                    deviceWS.send(JSON.stringify(ping));
-                }, 1000);
-            }
-        }
+        setInterval(() => {
+            let ping = {
+                type: "device_ping",
+                WEBID: data.Device[process.argv[2]].WEBID,
+                version: data.Device[process.argv[2]].version,
+                chip: data.Device[process.argv[2]].chip,
+                PINS: data.Device[process.argv[2]].switches,
+                device_type: data.Device[process.argv[2]].type
+            };
+            deviceWS.send(JSON.stringify(ping));
+        }, 1000);
     } catch (err) {
         console.log("error in sending the data");
     }
@@ -65,7 +40,8 @@ deviceWS.on("message", async (msg) => {
             WEBID: dbDevice.WEBID,
             version: dbDevice.version,
             chip: dbDevice.chip,
-            PINS: switches
+            PINS: switches,
+            device_type: dbDevice.type
         };
         try {
             console.log(devicePingSend);
