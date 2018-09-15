@@ -35,7 +35,7 @@ const ws = new WebSocket.Server({ server });
 //var port = process.env.PORT || 9030;
 //var ws = new Server({ port: port });
 
-var Card = require("../model/card");
+var Card = require("./model/card");
 
 let devices = {};
 let apps = {};
