@@ -24,7 +24,7 @@ export class ApiService {
   }
 
   async setWifiPassword(ssid, password) {
-    return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
+    return await this.http.get<Wifi[]>(this.base_url + "wifisave?ssid=" + ssid + "&password=" + password).toPromise();
   }
 
   async setDeviceNickName(name: String) {

@@ -1,8 +1,26 @@
+#define ESP8266
+//#define ESP32
+
+#define ISACCESS 1
+// #define ISSWITCH 1
+
+#ifdef ESP8266
+#include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
+#include <ESP8266WebServer.h>
+#include <ESP8266mDNS.h>
+#define ESP_getChipId() (ESP.getChipId())
+#endif
+
+#ifdef ESP32
 #include <WiFi.h>
 #include <WiFiMulti.h>
-#include <WebSocketClient.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#define ESP_getChipId() ((uint32_t)ESP.getEfuseMac())
+#endif
+
+#include <WebSocketClient.h>
 #include <ArduinoJson.h>
 #include <xconfig.h>
 #include <ota.h>
@@ -12,9 +30,54 @@ OTA update = OTA();
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module
 
-#define LEDPIN 12
+#ifdef ESP8266
+#define LEDPIN LED_BUILTIN
+// String webID = "LOLIN32-LITE"; //this should be some no to identify device type
+//this pins for lolin32 large device
+//  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+//String version = "0.0.1";
 
-#define ESP_getChipId() ((uint32_t)ESP.getEfuseMac())
+String version = "0.0.1";
+String webID = "ESP8266"; //this should be some no to identify device type
+
+#ifdef ISACCESS
+#include "MFRC522.h"
+#define RST_PIN D3                // RST-PIN for RC522 - RFID - SPI - Modul GPIO5
+#define SS_PIN D0                 // SDA-PIN for RC522 - RFID - SPI - Modul GPIO4
+MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
+const int PINS[] = {};            // these are pins from nodemcu we are using
+const int PIN_SIZE = 0;
+int delay_socket = 0;
+const int delay_socket_max = 1000;
+#define ACCESS_MODE_ADD_EMPLOYEE 0
+#define ACCESS_MODE_READ 1
+int access_mode = ACCESS_MODE_READ;
+int access_mode_timeout = 0;
+const int access_mode_timeout_max = 5000;
+#endif
+#ifdef ISSWITCH
+const int PINS[] = {5, 4, 2, 15}; // these are pins from nodemcu we are using
+const int PIN_SIZE = 4;
+#endif
+
+const byte interruptPin = 19;
+#endif
+
+#ifdef ESP32
+#define LEDPIN 12
+// String webID = "LOLIN32-LITE"; //this should be some no to identify device type
+//this pins for lolin32 large device
+//  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+//String version = "0.0.1";
+
+String version = "0.0.1";
+String webID = "ESP32"; //this should be some no to identify device type
+//this pint for lolin32 mini
+const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
+const int PIN_SIZE = 7;
+
+const byte interruptPin = 19;
+#endif
 
 int current_wifi_status = WIFI_CONNECT_MODE;
 int previous_wifi_status = current_wifi_status; //this used to detect change
@@ -22,26 +85,21 @@ int previous_wifi_status = current_wifi_status; //this used to detect change
 char path[] = "/";
 char host[] = "5.9.144.226";
 
-WebSocketClient webSocketClient;            // Use WiFiClient class to create TCP connections
-WiFiClient client;                          //this client is used to make tcp connection
-WiFiMulti wifiMulti;                        // connecting to multiple wifi networks
+WiFiClient client;               //this client is used to make tcp connection
+WebSocketClient webSocketClient; // Use WiFiClient class to create TCP connections
+#ifdef ESP32
+WiFiMulti wifiMulti; // connecting to multiple wifi networks
+WebServer server(80);
+#endif
+
+#ifdef ESP8266
+ESP8266WiFiMulti wifiMulti;
+ESP8266WebServer server(80);
+#endif
+
 String device_ssid = "xSmart-" + String(ESP_getChipId());
 
-// String webID = "LOLIN32-LITE"; //this should be some no to identify device type
-//this pins for lolin32 large device
-//  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
-//String version = "0.0.1";
-
-
-String version = "0.0.1";
-String webID = "LOLIN32-LITE"; //this should be some no to identify device type
-//this pint for lolin32 mini
-const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
-
-const byte interruptPin = 19;
-
 int PINS_STATUS[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW}; //default status of all pins
-const int PIN_SIZE = 7;
 
 int delay_connect_wifi = 5000;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
 const int max_delay_connect_wifi = delay_connect_wifi * 3; //this is the max time we try to connect.
@@ -62,8 +120,6 @@ int store_wifi_api_connect_result = -1;
 IPAddress ip(192, 168, 1, 99);       // where xx is the desired IP Address
 IPAddress gateway(192, 168, 1, 254); // set gateway to match your wifi network
 IPAddress subnet(255, 255, 255, 0);  // set subnet mask to match your wifi network
-
-WebServer server(80);
 
 int AP_STARTED = 0; //this is mainly used to set when AP mode is started because in loop, we cannot start ap again and again
 
@@ -101,12 +157,18 @@ void startWifiAP()
       Serial.println("ping");
       String name = xconfig.getNickName();
 
-      StaticJsonBuffer<1024> jsonBuffer;
+      StaticJsonBuffer<512> jsonBuffer;
       JsonObject &root = jsonBuffer.createObject();
       root["webid"] = webID;
       root["chip"] = device_ssid;
       root["name"] = name;
       root["version"] = version;
+#ifdef ISACCESS
+      root["type"] = "access";
+#endif
+#ifdef ISSWITCH
+      root["type"] = "switch";
+#endif
 
       JsonArray &pins = root.createNestedArray("pins");
       for (int i = 0; i < PIN_SIZE; i++)
@@ -119,8 +181,7 @@ void startWifiAP()
 
       String response = "";
       root.printTo(response);
-      Serial.println();
-      root.printTo(Serial);
+      Serial.println(response);
       server.sendHeader("Access-Control-Allow-Origin", "*");
       server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", response);
@@ -147,7 +208,14 @@ void startWifiAP()
         for (int i = 0; i < n; ++i)
         {
           JsonObject &wifi = jsonBuffer.createObject();
+#ifdef ESP32
           String auth = (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? "OPEN" : "AUTH";
+#endif
+
+#ifdef ESP8266
+          String auth = (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? "OPEN" : "AUTH";
+#endif
+
           wifi["SSID"] = WiFi.SSID(i);
           wifi["RSSI"] = WiFi.RSSI(i);
           wifi["auth"] = auth;
@@ -183,7 +251,7 @@ void startWifiAP()
       if (server.args() == 0)
         return server.send(500, "text/plain", "BAD ARGS");
 
-      String ssid = server.arg("SSID");
+      String ssid = server.arg("ssid");
       String password = server.arg("password");
       Serial.println("wifi save called");
 
@@ -265,10 +333,11 @@ void startWifiAP()
     {
       server.handleClient();
       yield();
-      // Serial.print(".");
       ledToggle++;
       if (ledToggle > 4000)
       {
+        // Serial.print(".");
+
         if (ledPinVal == HIGH)
         {
           ledPinVal = LOW;
@@ -277,9 +346,12 @@ void startWifiAP()
         {
           ledPinVal = HIGH;
         }
+        // Serial.print(LEDPIN);
+        // Serial.print(ledPinVal);
         digitalWrite(LEDPIN, ledPinVal);
         ledToggle = 0;
       }
+      delay(1);
     }
     Serial.println("ap while loop stopped");
   }
@@ -386,7 +458,42 @@ void sendNamePack(String name)
   delay(10);
   ping_packet_count++;
 }
-void sendPinNamePack(){
+void sendAccessMode()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_add_employee_success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendCardDataAddEmployee(byte *buffer, byte bufferSize)
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<500> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_add_card";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+  root["data"] = buffer;
+  root["size"] = bufferSize;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendPinNamePack()
+{
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
@@ -469,6 +576,12 @@ void pingPacket()
     root["WEBID"] = webID;
     root["version"] = version;
     root["chip"] = device_ssid;
+#ifdef ISACCESS
+    root["type"] = "access";
+#endif
+#ifdef ISSWITCH
+    root["type"] = "switch";
+#endif
     JsonArray &pins = root.createNestedArray("PINS");
 
     StaticJsonBuffer<500> jsonBuffer5;
@@ -550,11 +663,22 @@ void initIOPins()
   }
 
   JsonArray &pins = xconfig.getPinConfig();
-  for (int i = 0; i < pins.size(); i++)
+  if (pins.size() > 0)
   {
-    JsonObject &obj = pins[i].as<JsonObject>();
-    PINS_STATUS[i] = obj.get<int>("status");
-    digitalWrite(obj.get<int>("pin"), obj.get<int>("status"));
+    for (int i = 0; i < pins.size(); i++)
+    {
+      JsonObject &obj = pins[i].as<JsonObject>();
+      PINS_STATUS[i] = obj.get<int>("status");
+      digitalWrite(obj.get<int>("pin"), obj.get<int>("status"));
+    }
+  }
+  else
+  {
+    //one new device no pins will be set
+    for (int i = 0; i < PIN_SIZE; i++)
+    {
+      pinWrite(PINS[i], PINS_STATUS[i]); // on new device setting all pins to low
+    }
   }
 }
 
@@ -632,11 +756,15 @@ void setup()
 {
   Serial.begin(115200);
   delay(10);
+#ifdef ISACCESS
+  SPI.begin();        // Init SPI bus
+  mfrc522.PCD_Init(); // Init MFRC522
+#endif
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
   xconfig.initConfig();
+  xconfig.deletePinConfig();
 
-  
   // Serial.println(xconfig.getPinName(5));
 
   Serial.println("device name");
@@ -652,6 +780,46 @@ void setup()
 void loop()
 {
   detectInterruptChange();
+
+#ifdef ISACCESS
+  // Look for new cards
+  if (access_mode == ACCESS_MODE_READ)
+  {
+    if (mfrc522.PICC_IsNewCardPresent())
+    {
+      if (mfrc522.PICC_ReadCardSerial())
+      {
+        // Show some details of the PICC (that is: the tag/card)
+        Serial.print(F("read Card UID:"));
+        dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
+        Serial.println();
+      }
+    }
+  }
+  else if (access_mode == ACCESS_MODE_ADD_EMPLOYEE)
+  {
+    if (mfrc522.PICC_IsNewCardPresent())
+    {
+      if (mfrc522.PICC_ReadCardSerial())
+      {
+        // Show some details of the PICC (that is: the tag/card)
+        Serial.print(F("adding new  Card UID:"));
+        dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
+        sendCardDataAddEmployee(mfrc522.uid.uidByte,mfrc522.uid.size);
+      }
+    }
+    if (access_mode_timeout < access_mode_timeout_max)
+    {
+      access_mode_timeout++;
+      delay(1);
+    }
+    else
+    {
+      access_mode = ACCESS_MODE_READ;
+    }
+  }
+
+#endif
 
   if (current_wifi_status == WIFI_CONNECT_MODE)
   {
@@ -676,16 +844,23 @@ void loop()
       if (client.connected())
       {
 
-        update.checkUpdate();
-
-        //      Serial.println("websocket connected");
-        //      Serial.println("my id" + webID);
+#ifdef ISACCESS
+        //in access card mode, we want to keep checking for access instantly
+        //but socket io should only work every 1sec
+        if (delay_socket < delay_socket_max)
+        {
+          delay_socket++;
+          delay(1);
+          return;
+        }
+#endif
+        // update.checkUpdate(); cannot check for update ever 1sec
 
         webSocketClient.getData(data);
 
         if (data.length() > 0)
         {
-          StaticJsonBuffer<1024> jsonBuffer;
+          StaticJsonBuffer<512> jsonBuffer;
           JsonObject &root = jsonBuffer.parseObject(data);
           Serial.println("data from socket");
           root.printTo(Serial);
@@ -722,7 +897,8 @@ void loop()
             }
             sendBulkIOPack();
           }
-          else if(type == "PIN_NAME"){
+          else if (type == "PIN_NAME")
+          {
             JsonArray &pinnames = root["pinnames"].as<JsonArray>();
             for (int i = 0; i < pinnames.size(); i++)
             {
@@ -734,6 +910,15 @@ void loop()
           else if (type == "OK")
           {
             ok_ping_not_recieved_count = 0;
+          }
+          else if (type == "ADD_EMPLOYEE")
+          {
+            access_mode = ACCESS_MODE_ADD_EMPLOYEE;
+            sendAccessMode();
+          }
+          else if (type == "NORMAL_CARD_MODE")
+          {
+            access_mode = ACCESS_MODE_READ;
           }
           data = "";
         }
@@ -765,4 +950,14 @@ void loop()
     startWifiAP();
   }
   delay(1000);
+}
+
+// Helper routine to dump a byte array as hex values to Serial
+void dump_byte_array(byte *buffer, byte bufferSize)
+{
+  for (byte i = 0; i < bufferSize; i++)
+  {
+    Serial.print(buffer[i] < 0x10 ? " 0" : " ");
+    Serial.print(buffer[i], HEX);
+  }
 }

@@ -21,9 +21,9 @@ app.use(function (req, res, next) {
 });
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/user',userRouter);
-app.use('/device',deviceRouter);
-app.use('/deviceSimulator',deviceSimulatorRouter);
+app.use('/user', userRouter);
+app.use('/device', deviceRouter);
+app.use('/deviceSimulator', deviceSimulatorRouter);
 const server = http.createServer(app);
 server.listen(process.env.PORT || 9030, () => {
   console.log('Server started on port ', server.address().port);;
@@ -34,6 +34,8 @@ const ws = new WebSocket.Server({ server });
 //var Server = require('ws').Server;
 //var port = process.env.PORT || 9030;
 //var ws = new Server({ port: port });
+
+var Card = require("../model/card");
 
 let devices = {};
 let apps = {};
@@ -58,7 +60,8 @@ ws.on('connection', function (w) {
           id: obj["WEBID"],
           pins: obj['PINS'],
           chip: obj['chip'],
-          time: time
+          time: time,
+          type: obj["type"] ? obj["type"] : "switch"
         };
         w.chip = chip;
 
@@ -139,7 +142,7 @@ ws.on('connection', function (w) {
             client.send(JSON.stringify({
               type: obj['status'] == 0 ? 'LOW' : 'HIGH',
               pin: obj['pin'],
-              chip:obj['chip']
+              chip: obj['chip']
             }));
             found = true;
           }
@@ -248,6 +251,80 @@ ws.on('connection', function (w) {
           });
 
         }
+      } else if (obj.type === "device_set_add_employee") {
+        let chip = obj['chip'];
+        let app_id = obj['app_id'];
+        w.app_id = app_id;
+        let found = false;
+        ws.clients.forEach((client) => {
+          if (client.chip && client.chip === chip) {
+            client.send(JSON.stringify({
+              type: "ADD_EMPLOYEE"
+            }));
+            found = true;
+          }
+        });
+        w.send(JSON.stringify({
+          type: "device_set_add_employee_reply",
+          found: found,
+          chip: chip
+        }));
+      } else if (obj.type === "device_set_add_employee_success") {
+
+        let chip = obj['chip'];
+        w.chip = chip;
+        if (apps[chip]) {
+          apps[chip].forEach((app) => {
+            ws.clients.forEach((client) => {
+              if (client.app_id && client.app_id == app) {
+                client.send(JSON.stringify({
+                  type: "device_set_add_employee_notify"
+                }));
+              }
+            });
+          });
+
+        }
+
+      } else if (obj.type === "device_add_card") {
+
+        let chip = obj['chip'];
+        Card.findOneAndUpdate({
+          chip: chip,
+          data: obj['data']
+        },
+          {
+            chip: chip,
+            data: obj['data'],
+            meta: {
+              size: obj['size']
+            }
+          },
+          { upsert: true, new: true },
+          () => {
+            w.chip = chip;
+            if (apps[chip]) {
+              apps[chip].forEach((app) => {
+                ws.clients.forEach((client) => {
+                  if (client.app_id && client.app_id == app) {
+                    client.send(JSON.stringify({
+                      type: "device_add_card_notify",
+                      data: obj["data"],
+                      size: obj["size"]
+                    }));
+                  }
+                });
+              });
+
+            }
+
+            w.send(JSON.stringify({
+              type: "NORMAL_CARD_MODE"
+            }));
+          }
+        )
+
+
       }
 
 
