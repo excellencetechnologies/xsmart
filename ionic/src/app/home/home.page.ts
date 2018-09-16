@@ -168,7 +168,8 @@ export class HomePage implements OnInit {
       name: "",
       chip: "",
       webid: "",
-      isNew: false
+      isNew: false,
+      type: ""
     }
     this.keepCheckingWifiConnected();
   }
@@ -211,7 +212,8 @@ export class HomePage implements OnInit {
           chip: this.devicePing.chip,
           ttl: 0,
           online: false,
-          switches: []
+          switches: [],
+          type: this.devicePing.type
         };
         this.deviceService.addDevice(newdevice);
       } else {
@@ -258,7 +260,6 @@ export class HomePage implements OnInit {
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
-    console.log("123123");
     const alert = await this.alertController.create({
       header: 'Enter Wifi Password',
       inputs: [
@@ -298,10 +299,36 @@ export class HomePage implements OnInit {
    */
 
    async addEmployee(device :Device){
-    this.sendMessageToSocket({
-      type: "device_set_add_employee",
-      chip: device.chip,
-      app_id: await this.deviceService.getAppID()
-    })
+
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_add_employee",
+              chip: device.chip,
+              app_id: await this.deviceService.getAppID(),
+              emp_id : data.emp_id
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
+    
    }
 }

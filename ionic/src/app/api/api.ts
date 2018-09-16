@@ -3,6 +3,7 @@ export class Ping {
     chip: string;
     name: string;
     isNew?: boolean;
+    type: string;
 }
 
 export class Wifi {

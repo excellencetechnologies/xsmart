@@ -259,7 +259,8 @@ ws.on('connection', function (w) {
         ws.clients.forEach((client) => {
           if (client.chip && client.chip === chip) {
             client.send(JSON.stringify({
-              type: "ADD_EMPLOYEE"
+              type: "ADD_EMPLOYEE",
+              emp_id: obj["emp_id"]
             }));
             found = true;
           }
@@ -269,35 +270,19 @@ ws.on('connection', function (w) {
           found: found,
           chip: chip
         }));
-      } else if (obj.type === "device_set_add_employee_success") {
-
-        let chip = obj['chip'];
-        w.chip = chip;
-        if (apps[chip]) {
-          apps[chip].forEach((app) => {
-            ws.clients.forEach((client) => {
-              if (client.app_id && client.app_id == app) {
-                client.send(JSON.stringify({
-                  type: "device_set_add_employee_notify"
-                }));
-              }
-            });
-          });
-
-        }
-
       } else if (obj.type === "device_add_card") {
 
         let chip = obj['chip'];
         Card.findOneAndUpdate({
           chip: chip,
-          data: obj['data']
+          emp_id: obj['emp_id'],
         },
           {
             chip: chip,
-            data: obj['data'],
+            emp_id: obj['emp_id'],
             meta: {
-              size: obj['size']
+              size: obj['size'],
+              data: obj['data']
             }
           },
           { upsert: true, new: true },
@@ -325,7 +310,13 @@ ws.on('connection', function (w) {
         )
 
 
+      } else if (obj.type === "device_card_read") {
+        let chip = obj['chip'];
+        let app_id = obj['app_id'];
+        w.app_id = app_id;
+        // do something when card is read successfully
       }
+
 
 
     } catch (e) {

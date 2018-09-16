@@ -42,6 +42,8 @@ String webID = "ESP8266"; //this should be some no to identify device type
 
 #ifdef ISACCESS
 #include "MFRC522.h"
+#include <access.h>
+Access access = Access("/access.json");
 #define RST_PIN D3                // RST-PIN for RC522 - RFID - SPI - Modul GPIO5
 #define SS_PIN D0                 // SDA-PIN for RC522 - RFID - SPI - Modul GPIO4
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
@@ -54,6 +56,7 @@ const int delay_socket_max = 1000;
 int access_mode = ACCESS_MODE_READ;
 int access_mode_timeout = 0;
 const int access_mode_timeout_max = 5000;
+String emp_id = "";
 #endif
 #ifdef ISSWITCH
 const int PINS[] = {5, 4, 2, 15}; // these are pins from nodemcu we are using
@@ -458,6 +461,7 @@ void sendNamePack(String name)
   delay(10);
   ping_packet_count++;
 }
+#ifdef ISACCESS
 void sendAccessMode()
 {
   ping_packet_count = 0;
@@ -476,6 +480,7 @@ void sendAccessMode()
 }
 void sendCardDataAddEmployee(byte *buffer, byte bufferSize)
 {
+  access.addUID(String(buffer), emp_id);
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
@@ -484,6 +489,7 @@ void sendCardDataAddEmployee(byte *buffer, byte bufferSize)
   root["chip"] = device_ssid;
   root["data"] = buffer;
   root["size"] = bufferSize;
+  root["emp_id"] = emp_id;
 
   String json = "";
   root.printTo(json);
@@ -492,6 +498,31 @@ void sendCardDataAddEmployee(byte *buffer, byte bufferSize)
   delay(10);
   ping_packet_count++;
 }
+String checkCardEmployee(String uid)
+{
+  String emp_id = access.checkUID(uid);
+  if (emp_id != "-")
+  {
+    Serial.print("emp id");
+    Serial.println(emp_id);
+    ping_packet_count = 0;
+    StaticJsonBuffer<500> jsonBuffer;
+    JsonObject &root = jsonBuffer.createObject();
+    root["type"] = "device_card_read";
+    root["WEBID"] = webID;
+    root["chip"] = device_ssid;
+    root["uid"] = uid;
+    root["emp_id"] = emp_id;
+
+    String json = "";
+    root.printTo(json);
+    Serial.println(json);
+    webSocketClient.sendData(json);
+    delay(10);
+    ping_packet_count++;
+  }
+}
+#endif
 void sendPinNamePack()
 {
   ping_packet_count = 0;
@@ -759,6 +790,7 @@ void setup()
 #ifdef ISACCESS
   SPI.begin();        // Init SPI bus
   mfrc522.PCD_Init(); // Init MFRC522
+  access.initConfig();
 #endif
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
@@ -792,7 +824,7 @@ void loop()
         // Show some details of the PICC (that is: the tag/card)
         Serial.print(F("read Card UID:"));
         dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-        Serial.println();
+        checkCardEmployee(String(mfrc522.uid.uidByte))
       }
     }
   }
@@ -805,7 +837,7 @@ void loop()
         // Show some details of the PICC (that is: the tag/card)
         Serial.print(F("adding new  Card UID:"));
         dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-        sendCardDataAddEmployee(mfrc522.uid.uidByte,mfrc522.uid.size);
+        sendCardDataAddEmployee(mfrc522.uid.uidByte, mfrc522.uid.size);
       }
     }
     if (access_mode_timeout < access_mode_timeout_max)
@@ -914,6 +946,7 @@ void loop()
           else if (type == "ADD_EMPLOYEE")
           {
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
+            emp_id = obj.get<String>("emp_id");
             sendAccessMode();
           }
           else if (type == "NORMAL_CARD_MODE")

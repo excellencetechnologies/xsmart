@@ -16,14 +16,6 @@ module.exports = {
     }],
 
     Device: [{
-        name: 'access control',
-        device_id: 'access1',
-        chip: 'chip1',
-        WEBID: 'W101',
-        version: '1.0.2',
-        type: "access",
-        switches: []
-    }, {
         name: 'fan-switch',
         device_id: 'd1',
         chip: 'chip1',
@@ -72,6 +64,36 @@ module.exports = {
                 name: "bedroom2"
             }
         ]
+    },
+    {
+        name: 'dinning room',
+        device_id: 'd3',
+        chip: 'chip3',
+        WEBID: 'W103',
+        version: '1.0.3',
+        type: "switch",
+        switches: [
+            {
+                pin: 1,
+                status: 1,
+                name: "bedroom1"
+            },
+            {
+                pin: 2,
+                status: 0,
+                name: "bedroom2"
+            }
+        ]
     }
-    ]
+    ],
+    Access: {
+
+        name: 'access control',
+        device_id: 'access1',
+        chip: 'chip1',
+        WEBID: 'W101',
+        version: '1.0.2',
+        type: "access",
+        switches: []
+    }
 }
