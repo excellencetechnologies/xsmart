@@ -23,7 +23,7 @@ void OTA::checkUpdate(void)
     Serial.print("[HTTP] begin...\n");
 
     // configure server and url
-    http.begin("https://raw.githubusercontent.com/excellencetechnologies/xsmart/master/arduino/xsmart/xsmart.ino");
+    http.begin("http://excellencetechnologies.co.in/xsmart.ino.bin");
     //http.begin("192.168.1.12", 80, "/test.html");
 
     Serial.print("[HTTP] GET...\n");
@@ -54,7 +54,7 @@ void OTA::checkUpdate(void)
             }
 
             // create buffer for read
-            uint8_t buff[128] = {0};
+            uint8_t buff[1024] = {0};
 
             // get tcp stream
             WiFiClient *stream = http.getStreamPtr();
@@ -75,15 +75,17 @@ void OTA::checkUpdate(void)
 
                     if (Update.write(buff, c) != c)
                     {
-                        Update.printError(Serial);
+                          Update.printError(Serial);
                     }
-
+                    Serial.println(len);
+                    Serial.println(c);
+                    Serial.println(".");
                     if (len > 0)
                     {
                         len -= c;
                     }
                 }
-                delay(1);
+                yield();
             }
 
             if (Update.end(true))

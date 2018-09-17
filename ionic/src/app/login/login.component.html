@@ -11,8 +11,8 @@
       <ion-row>
         <ion-col>
           <ion-list>
-            <ion-item>
-              <ion-input type="email" placeholder="Email" formControlName="email" name="email" required></ion-input>
+         <ion-item>
+              <ion-input type="email" placeholder="email" formControlName="email" name="email" required></ion-input>
             </ion-item>
             <div *ngIf="loginForm.controls['email'].errors && !loginForm.controls['email'].pristine" class="alert alert-danger">
               <div *ngIf="loginForm.controls['email'].errors.required">
@@ -32,7 +32,7 @@
       </ion-row>
       <ion-row>
         <div class="error">
-          <p *ngIf="errorMessage">{{error}}</p>
+          <p *ngIf="errorMessage">{{errorMessage}}</p>
         </div>
         <ion-col class="signup-col">
           <ion-button block expand="full" (click)="onSubmit(loginForm)" [disabled]="!loginForm.valid || loading">Login</ion-button>

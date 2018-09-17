@@ -1,0 +1,18 @@
+.imagePreview {
+    border: 1px solid black;
+    border-radius: 50px;
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    margin: auto;
+}
+.imagePreview img{
+    width: 100%;
+    height: auto;
+}
+
+.image{
+    margin: auto;
+    text-align: center;
+    padding: 10px;
+}

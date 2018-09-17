@@ -1,14 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Platform, MenuController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
-import { AlertController, ToastController } from '@ionic/angular';
-
+import { AlertController } from '@ionic/angular';
 import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
-
-
+import { EventHandlerService } from '../api/event-handler.service'
 let socket = null;
 
 let wifiCheckInterval = null;
@@ -19,7 +17,6 @@ let wifiCheckInterval = null;
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-
   message: String = "test";
   xSmartConnect: boolean = false;
   wifinetworks: Wifi[] = [];
@@ -39,8 +36,8 @@ export class HomePage implements OnInit {
     private api: ApiService,
     public alertController: AlertController,
     private deviceService: DeviceService,
-    private notifyService: NotifyService,
-    private toastController: ToastController) { }
+    private menuController: MenuController,
+    private notifyService: NotifyService) { }
 
   ngOnInit() {
     this.platform.ready().then(() => {
@@ -49,11 +46,14 @@ export class HomePage implements OnInit {
     });
   }
   sendMessageToSocket(msg) {
+
     if (this.isSocketConnected) {
       console.log("socket msg send to", msg);
       socket.send(JSON.stringify(msg));
 
     } else {
+      // 5.9.144.226:9030
+      // http://192.168.1.114:9030/
       socket = new WebSocket('ws://5.9.144.226:9030');
       // Connection opened
       socket.addEventListener('open', (event) => {
@@ -83,13 +83,13 @@ export class HomePage implements OnInit {
           }
         }else if(res.type === "device_bulk_io_notify"){
           res.pins.forEach( async (p) => {
-            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip);
+            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip,res.name);
           })
           //this is not working. the ui doesn't update all the pin status
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
         } else if (res.type === "device_io_notify") {
-          await this.deviceService.updateDevicePin(res.pin, res.status, res.chip);
+          await this.deviceService.updateDevicePin(res.pin, res.status, res.chip, res.name);
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
         } else if (res.type === "device_bulk_pin_oper_reply") {
@@ -99,15 +99,20 @@ export class HomePage implements OnInit {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
         }
+        else if (res.type === "device_online_check_reply") {
+          this.notifyService.alertUser("name sent to device");
+        }
       });
     }
   }
+
   async switchOff(s: Switch, d: Device) {
     this.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
       status: 0,
+      name: s.name,
       app_id: await this.deviceService.getAppID()
     })
   }
@@ -117,25 +122,20 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       status: 1,
+      name: s.name,
       app_id: await this.deviceService.getAppID()
     })
   }
-  async deviceBulkIO(d: Device, isChecked: boolean) {
-
-    let io = [];
-    d.switches.forEach((s: Switch) => {
-      io.push({
-        pin: s.pin,
-        status: isChecked ? 1 : 0
-      })
-    })
+  async setSwitchNamee(s: Switch, d: Device) {
     this.sendMessageToSocket({
-      type: "device_bulk_pin_oper",
+      type: "set_switch_name",
       chip: d.chip,
-      switches: io,
+      pin: s.pin,
+      name: s.name,
       app_id: await this.deviceService.getAppID()
     })
   }
+
   async updateDeviceStatus(data) {
     if (data.found) {
       await this.deviceService.updateDevice(data);
@@ -147,6 +147,8 @@ export class HomePage implements OnInit {
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
+      console.log(this.devices);
+
       this.keepCheckingDeviceOnline();
     }
   }
@@ -202,29 +204,32 @@ export class HomePage implements OnInit {
   async askDeviceName() {
 
   }
-  async setDeviceName(name: String) {
+  async setDeviceName(name: String, chip: string) {
     try {
-      await this.api.setDeviceNickName(name);
+      await this.api.setDeviceNickName(name, chip);
+      let newdevice: Device = {
+        name: name,
+        device_id: this.devicePing.webid,
+        chip: this.devicePing.chip,
+        ttl: 0,
+        online: false,
+        switches: [],
+        type: ''
+      };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        let newdevice: Device = {
-          name: name,
-          device_id: this.devicePing.webid,
-          chip: this.devicePing.chip,
-          ttl: 0,
-          online: false,
-          switches: [],
-          type: this.devicePing.type
-        };
         this.deviceService.addDevice(newdevice);
       } else {
-
-        const toast = await this.toastController.create({
-          message: 'This device already exists!.',
-          duration: 2000
-        });
-        toast.present();
-
+        this.deviceService.updateDevice(newdevice);
+        const deviceData = await this.deviceService.getDevices();
+        deviceData.forEach((value, key) => {
+          if (value.chip === this.devicePing.chip) {
+            deviceData.splice(key, 1)
+            deviceData.push(newdevice);
+          }
+        })
+        this.deviceService.setDevices(deviceData)
       }
+      this.checkExistingDevice();
       this.mode = "scan";
       this.xSmartConnect = true;
       this.scanWifi();
@@ -234,6 +239,7 @@ export class HomePage implements OnInit {
     }
   }
 
+
   async scanWifi() {
     try {
       this.wifinetworks = await this.api.getScanWifi();
@@ -241,6 +247,7 @@ export class HomePage implements OnInit {
     } catch (e) {
       console.log(e)
       this.isScanningDevice = true;
+
     }
   }
   async pingDevices() {
@@ -252,6 +259,7 @@ export class HomePage implements OnInit {
       });
     });
   }
+
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
@@ -268,6 +276,8 @@ export class HomePage implements OnInit {
           type: 'text',
         }
       ],
+
+
       buttons: [
         {
           text: 'Cancel',
@@ -293,18 +303,12 @@ export class HomePage implements OnInit {
 
     await alert.present();
   }
-
-  /** 
-   * new test code by manish for access card
-   */
-
-   async addEmployee(device :Device){
-
+  async setSwitchName(s, d) {
     const alert = await this.alertController.create({
-      header: 'Enter Employee ID',
+      header: 'Enter Switch Name',
       inputs: [
         {
-          name: 'emp_id',
+          name: 'name',
           type: 'text',
         }
       ],
@@ -316,19 +320,39 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            this.sendMessageToSocket({
-              type: "device_set_add_employee",
-              chip: device.chip,
-              app_id: await this.deviceService.getAppID(),
-              emp_id : data.emp_id
-            })
+            console.log('Confirm Ok')
+            try {
+              s['name'] = data.name;
+              d.switches.forEach(value => {
+                if (value.pin === s.pin) {
+                  value = s;
+                }
+              })
+              this.setSwitchNamee(s, d);
+              const allDevices = await this.deviceService.getDevices();
+              allDevices.forEach(value => {
+                if (value['chip'] === d['chip']) {
+                  value.switches.forEach((value1, key) => {
+                    if (value1.pin == s.pin) {
+                      value1.name = data.name
+                    }
+                  })
+                }
+              })
+              this.deviceService.setDevices(allDevices);
+            } catch (e) {
+              console.log(e);
+            }
+            this.keepCheckingDeviceOnline();
+            this.mode = "device";
           }
         }
       ]
     });
 
     await alert.present();
-
-    
-   }
+  }
+  menu() {
+    this.menuController.toggle()
+  }
 }
