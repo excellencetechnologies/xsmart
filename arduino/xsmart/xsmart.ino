@@ -5,8 +5,10 @@
 #include <ESPmDNS.h>
 #include <ArduinoJson.h>
 #include <xconfig.h>
+#include <ota.h>
 
 XConfig xconfig = XConfig("/config.json");
+OTA update = OTA();
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module
 
@@ -23,13 +25,16 @@ char host[] = "5.9.144.226";
 WebSocketClient webSocketClient;            // Use WiFiClient class to create TCP connections
 WiFiClient client;                          //this client is used to make tcp connection
 WiFiMulti wifiMulti;                        // connecting to multiple wifi networks
-String webID = "LOLIN32-LITE-code-v.0.0.1"; //this should be some random no, we assigned to each device. ;
 String device_ssid = "xSmart-" + String(ESP_getChipId());
 
-
+// String webID = "LOLIN32-LITE"; //this should be some no to identify device type
 //this pins for lolin32 large device
-// const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+//  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
+//String version = "0.0.1";
 
+
+String version = "0.0.1";
+String webID = "LOLIN32-LITE"; //this should be some no to identify device type
 //this pint for lolin32 mini
 const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
 
@@ -38,7 +43,7 @@ const byte interruptPin = 19;
 int PINS_STATUS[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW}; //default status of all pins
 const int PIN_SIZE = 7;
 
-int delay_connect_wifi = 5000;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
+int delay_connect_wifi = 0;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
 const int max_delay_connect_wifi = delay_connect_wifi * 3; //this is the max time we try to connect.
 
 int ping_packet_count = 0; //ping packet is also variable only after 10 times do we second another package
@@ -101,6 +106,7 @@ void startWifiAP()
       root["webid"] = webID;
       root["chip"] = device_ssid;
       root["name"] = name;
+      root["version"] = version;
 
       JsonArray &pins = root.createNestedArray("pins");
       for (int i = 0; i < PIN_SIZE; i++)
@@ -369,6 +375,7 @@ void sendNamePack(String name){
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_set_name_success";
   root["WEBID"] = webID;
+  root["version"] = version;
   root["chip"] = device_ssid;
   root["name"] = name;
   String json = "";
@@ -385,6 +392,7 @@ void sendIOPack(int pin, int status)
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_io_reply";
   root["WEBID"] = webID;
+  root["version"] = version;
   root["chip"] = device_ssid;
   root["pin"] = pin;
   root["status"] = status;
@@ -404,6 +412,7 @@ void pingPacket()
     JsonObject &root = jsonBuffer.createObject();
     root["type"] = "device_ping";
     root["WEBID"] = webID;
+    root["version"] = version;
     root["chip"] = device_ssid;
     JsonArray &pins = root.createNestedArray("PINS");
 
@@ -606,6 +615,7 @@ void loop()
       Serial.print("some issue with wifi trying again in ");
       Serial.println(delay_connect_wifi);
       delay(delay_connect_wifi);
+      delay_connect_wifi = 5000; //only for the first time its zero. this way wifi connects fast first time on boot.
       connectWifi();
     }
     else
@@ -613,6 +623,8 @@ void loop()
       digitalWrite(LEDPIN, HIGH);
       if (client.connected())
       {
+
+        update.checkUpdate();
 
         //      Serial.println("websocket connected");
         //      Serial.println("my id" + webID);
