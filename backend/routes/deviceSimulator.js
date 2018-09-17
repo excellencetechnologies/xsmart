@@ -53,7 +53,7 @@ router.get('/setWifiPassword/:ssid/:password', (req, res) => {
 
 });
 
-router.get('/setDeviceNickName/:name/:chip', async (req, res) => {
+router.get('/setDeviceNickName/:name/:chip', (req, res) => {
     let result = await getDevice.getDevicePing(req.params.name, req.params.chip);
     if (result == null) {
         res.status(400).json({ error: 1, message: "not found" })

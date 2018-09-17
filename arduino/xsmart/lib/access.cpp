@@ -1,5 +1,4 @@
-#include "xconfig.h"
-#include "HardwareSerial.h"
+#include "access.h"
 #include <FS.h>
 #ifdef ESP32
 #include <SPIFFS.h>
@@ -18,12 +17,12 @@
 
 #define JSON_SIZE 1024
 
-Access::Access(char *filename)
+XAccess::XAccess(char *filename)
 {
     configfile = filename;
 }
 
-void Access::initConfig(void)
+void XAccess::initConfig(void)
 {
 #ifdef ESP32
     if (!SPIFFS.begin(true))
@@ -47,7 +46,7 @@ void Access::initConfig(void)
 #endif
 }
 
-String Access::loadConfigFile(void)
+String XAccess::loadConfigFile(void)
 {
     P("load config file");
     P(configfile);
@@ -66,7 +65,7 @@ String Access::loadConfigFile(void)
     return data;
 }
 
-void XConfig::saveConfigFile(const char *message)
+void XAccess::saveConfigFile(const char *message)
 {
   P("saving config file ");
   P(message);
@@ -86,10 +85,10 @@ void XConfig::saveConfigFile(const char *message)
   }
 }
 
-String Access::checkUID(String uid)
+String XAccess::checkUID(String uid)
 {
     String file = loadConfigFile();
-    DynamicJsonBuffer jsonBuffer(JSON_SIZE);
+    StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
     String emp_id = root.get<String>(uid);
     if(emp_id){
@@ -99,10 +98,10 @@ String Access::checkUID(String uid)
     }
 }
 
-void Access::addUID(String uid, String emp_id)
+void XAccess::addUID(String uid, String emp_id)
 {
     String file = loadConfigFile();
-    DynamicJsonBuffer jsonBuffer(JSON_SIZE);
+    StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
     root.set("uid", emp_id);
 
@@ -112,7 +111,7 @@ void Access::addUID(String uid, String emp_id)
     saveConfigFile(file.c_str());
 }
 
-void Access::P(String msg)
+void XAccess::P(String msg)
 {
     Serial.println(msg);
 }

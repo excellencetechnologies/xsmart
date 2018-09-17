@@ -43,7 +43,7 @@ String webID = "ESP8266"; //this should be some no to identify device type
 #ifdef ISACCESS
 #include "MFRC522.h"
 #include <access.h>
-Access access = Access("/access.json");
+XAccess access = XAccess("/access.json");
 #define RST_PIN D3                // RST-PIN for RC522 - RFID - SPI - Modul GPIO5
 #define SS_PIN D0                 // SDA-PIN for RC522 - RFID - SPI - Modul GPIO4
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
@@ -354,7 +354,7 @@ void startWifiAP()
         digitalWrite(LEDPIN, ledPinVal);
         ledToggle = 0;
       }
-      delay(1);
+      // delay(1);
     }
     Serial.println("ap while loop stopped");
   }
@@ -447,7 +447,7 @@ void forcePingPacket()
 void sendNamePack(String name)
 {
   ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
+  StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_set_name_success";
   root["WEBID"] = webID;
@@ -465,7 +465,7 @@ void sendNamePack(String name)
 void sendAccessMode()
 {
   ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
+  StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_set_add_employee_success";
   root["WEBID"] = webID;
@@ -478,17 +478,16 @@ void sendAccessMode()
   delay(10);
   ping_packet_count++;
 }
-void sendCardDataAddEmployee(byte *buffer, byte bufferSize)
+void sendCardDataAddEmployee(String rfid)
 {
-  access.addUID(String(buffer), emp_id);
+  access.addUID(rfid, emp_id);
   ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
+  StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_add_card";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
-  root["data"] = buffer;
-  root["size"] = bufferSize;
+  root["data"] = rfid;
   root["emp_id"] = emp_id;
 
   String json = "";
@@ -501,12 +500,12 @@ void sendCardDataAddEmployee(byte *buffer, byte bufferSize)
 String checkCardEmployee(String uid)
 {
   String emp_id = access.checkUID(uid);
-  if (emp_id != "-")
+  if (emp_id != "")
   {
     Serial.print("emp id");
     Serial.println(emp_id);
     ping_packet_count = 0;
-    StaticJsonBuffer<500> jsonBuffer;
+    StaticJsonBuffer<200> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["type"] = "device_card_read";
     root["WEBID"] = webID;
@@ -534,7 +533,7 @@ void sendPinNamePack()
 
   JsonArray &pins = root.createNestedArray("PINS");
 
-  StaticJsonBuffer<500> jsonBuffer5;
+  StaticJsonBuffer<200> jsonBuffer5;
   for (int i = 0; i < PIN_SIZE; i++)
   {
     JsonObject &pin = jsonBuffer5.createObject();
@@ -562,7 +561,7 @@ void sendBulkIOPack()
 
   JsonArray &pins = root.createNestedArray("PINS");
 
-  StaticJsonBuffer<500> jsonBuffer5;
+  StaticJsonBuffer<200> jsonBuffer5;
   for (int i = 0; i < PIN_SIZE; i++)
   {
     JsonObject &pin = jsonBuffer5.createObject();
@@ -581,7 +580,7 @@ void sendBulkIOPack()
 void sendIOPack(int pin, int status)
 {
   ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
+  StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_io_reply";
   root["WEBID"] = webID;
@@ -601,7 +600,7 @@ void pingPacket()
   if (ping_packet_count == 0)
   {
     randomSeed(analogRead(0));
-    StaticJsonBuffer<1000> jsonBuffer;
+    StaticJsonBuffer<500> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["type"] = "device_ping";
     root["WEBID"] = webID;
@@ -615,7 +614,7 @@ void pingPacket()
 #endif
     JsonArray &pins = root.createNestedArray("PINS");
 
-    StaticJsonBuffer<500> jsonBuffer5;
+    StaticJsonBuffer<200> jsonBuffer5;
     for (int i = 0; i < PIN_SIZE; i++)
     {
       JsonObject &pin = jsonBuffer5.createObject();
@@ -795,7 +794,7 @@ void setup()
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
   xconfig.initConfig();
-  xconfig.deletePinConfig();
+  // xconfig.deletePinConfig(); //only if we change pins
 
   // Serial.println(xconfig.getPinName(5));
 
@@ -823,8 +822,8 @@ void loop()
       {
         // Show some details of the PICC (that is: the tag/card)
         Serial.print(F("read Card UID:"));
-        dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-        checkCardEmployee(String(mfrc522.uid.uidByte))
+        String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
+        checkCardEmployee(rfid);
       }
     }
   }
@@ -836,8 +835,8 @@ void loop()
       {
         // Show some details of the PICC (that is: the tag/card)
         Serial.print(F("adding new  Card UID:"));
-        dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-        sendCardDataAddEmployee(mfrc522.uid.uidByte, mfrc522.uid.size);
+        String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
+        sendCardDataAddEmployee(rfid);
       }
     }
     if (access_mode_timeout < access_mode_timeout_max)
@@ -946,7 +945,7 @@ void loop()
           else if (type == "ADD_EMPLOYEE")
           {
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
-            emp_id = obj.get<String>("emp_id");
+            emp_id = root.get<String>("emp_id");
             sendAccessMode();
           }
           else if (type == "NORMAL_CARD_MODE")
@@ -986,11 +985,14 @@ void loop()
 }
 
 // Helper routine to dump a byte array as hex values to Serial
-void dump_byte_array(byte *buffer, byte bufferSize)
+String dump_byte_array(byte *buffer, byte bufferSize)
 {
+  String rfid = "";
   for (byte i = 0; i < bufferSize; i++)
   {
-    Serial.print(buffer[i] < 0x10 ? " 0" : " ");
-    Serial.print(buffer[i], HEX);
+    rfid += buffer[i] < 0x10 ? " 0" : " ";
+    rfid += String(buffer[i], HEX);
   }
+  Serial.println(rfid);
+  return rfid;
 }

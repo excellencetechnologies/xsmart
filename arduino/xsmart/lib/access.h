@@ -1,15 +1,15 @@
-#ifndef Access_h
-#define Access_h
+#ifndef XAccess_h
+#define XAccess_h
 
 #include <String>
 #include <ArduinoJson.h>
 
 // library interface description
-class Access
+class XAccess
 {
   // user-accessible "public" interface
   public:
-    Access(char * configfile);
+    XAccess(char * configfile);
     void initConfig(void);
     String checkUID(String);
     void addUID(String, String);
