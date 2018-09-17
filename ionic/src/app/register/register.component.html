@@ -8,24 +8,20 @@
 
   <form [formGroup]="userRegisterForm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <ion-item>
-      <ion-label floating>Name</ion-label>
-      <ion-input type="text" id="name" (onReturn)='"Last"' class="uppercase" formControlName="name" autocomplete="off" autocorrect="off"
-        autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="text" placeholder="name" id="name" (onReturn)='"Last"' class="uppercase" formControlName="name" autocomplete="off"
+        autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label floating>Email</ion-label>
-      <ion-input type="email" id="Email" (onReturn)='"Password1"' formControlName="email" autocomplete="off" autocorrect="off"
-        autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="email" placeholder="email" id="Email" (onReturn)='"Password1"' formControlName="email" autocomplete="off"
+        autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label floating>Password</ion-label>
-      <ion-input type="password" id="Password1" (onReturn)='"btn"' formControlName="password" autocomplete="off" autocorrect="off"
-        autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="password" id="Password1" placeholder="password" id="Email" (onReturn)='"btn"' formControlName="password"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <ion-item>
-      <ion-label floating>ConPassword</ion-label>
-      <ion-input type="password" id="Password2" (onReturn)='"btn"' formControlName="conpassword" autocomplete="off" autocorrect="off"
-        autocapitalize="off" spellcheck="false"></ion-input>
+      <ion-input type="password" id="Password2" placeholder="confirm password" id="Email" (onReturn)='"btn"' formControlName="conpassword"
+        autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></ion-input>
     </ion-item>
     <div *ngIf="userRegisterForm.controls['conpassword'].errors && !userRegisterForm.controls['conpassword'].pristine" class="alert alert-danger">
       <div *ngIf=" userRegisterForm.controls['conpassword'].errors ||userRegisterForm.controls ['password'].errors?.mismatch ">
@@ -34,9 +30,9 @@
     </div>
     <ion-grid>
       <ion-row center>
-          <div class="error">
-              <p *ngIf="errorMessage">{{errorMessage}}</p>
-            </div>
+        <div class="error">
+          <p *ngIf="errorMessage">{{errorMessage}}</p>
+        </div>
         <ion-col class="center">
           <ion-button block expand="full" (click)="onSubmit(userRegisterForm)" [disabled]="!userRegisterForm.valid || loading">Register</ion-button>
         </ion-col>
@@ -45,7 +41,7 @@
   </form>
   <div class="alreadyaccount">
     <p>Have already account
-      <a routerLink="/login">login</a>  here.
+      <a routerLink="/login">login</a> here.
     </p>
   </div>
 </ion-content>

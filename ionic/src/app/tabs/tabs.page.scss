@@ -1,11 +1,2 @@
 
 
-:host {
-    --color: var(--ion-tabbar-text-color, var(--ion-text-color-step-400, #666666));
-}
-.tabs-md .tab-button[aria-selected=true] {
-    color: #fff; /*your  text color */
-    background: red; /* your background color*/
-}
-$tabs-md-tab-icon-color-active: red;
-

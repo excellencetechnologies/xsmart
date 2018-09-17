@@ -9,7 +9,7 @@
     font-size:20px;
 }
 .yellow{
-    color:yellow;
+    color:#ffc900;
 }
 .wifi{
     transform: scale(0.6);
@@ -30,36 +30,33 @@
     padding-left: 14px;
 }
 .rightborder {
-    border-right: 2px solid blue;
-    color: blue;
+    border-right: 2px solid #387ef5;
+    color: #387ef5;
     transform: scale(1.0);
     font-size: 20px;
     padding: 18px 0px 13px 2px;
 }
 
 .qr-scanner{
-    color: blue;
+    color: #387ef5;
     transform: scale(1.0);
     padding: 18px 0px 13px 19px;
     font-size: 18px;
     
 }
 .icons {
-    border: 2px solid blue;
+    border: 2px solid #387ef5;
     margin-bottom: 13px;
     border-radius: 5px;
 }
 .blue{
-    color:#00c1ff; 
+    color:#11c1f3; 
 }
 .lightSwitches{
     padding:0px 10px 10px 0px;
     border-bottom:thin solid #a2a4ab78;
     font-size: 18px;
     color:gray;
-}
-.scanDevices{
-    padding:5px 0px 15px 0px;
 }
 .scan{
     padding: 25px;
@@ -70,4 +67,10 @@
 }
 .network{
     border-bottom:thin solid #a2a4ab78;
+}
+.devicess>h3{
+    font-weight: 800; 
+}
+.devicess{
+    margin: 0 auto;
 }

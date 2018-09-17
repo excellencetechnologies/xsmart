@@ -13,11 +13,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
-import { ScanDevicesComponent } from './scan-devices/scan-devices.component';
-import { PairDevicesComponent } from './pair-devices/pair-devices.component';
 import { ApiService } from './api/api.service';
 import { DeviceService } from './api/device.service';
-import { SidemenuComponent } from './sidemenu/sidemenu.component';
 import { ExistingDevicesComponent } from './existing-devices/existing-devices.component';
 import { SlidesComponent } from './slides/slides.component';
 import { AuthGuard } from './auth.guard';
@@ -31,9 +28,6 @@ import { Camera } from '@ionic-native/camera/ngx';
     AppComponent,
     LoginComponent,
     RegisterComponent,
-    ScanDevicesComponent,
-    PairDevicesComponent,
-    SidemenuComponent,
     ExistingDevicesComponent,
     SlidesComponent,
     ProfileComponent],

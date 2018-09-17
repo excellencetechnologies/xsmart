@@ -11,7 +11,6 @@ export interface Message {
   providedIn: 'root',
 })
 export class ApiService {
-  images:any;
   httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json",
@@ -119,17 +118,5 @@ export class ApiService {
       throw (error);
     }
   }
-  getImage() {
-    if (JSON.parse(localStorage.getItem("image"))) {
-    this.images = JSON.parse(localStorage.getItem("image"));
-     }
-     return this.images;
-  }
-  setImage() {
-    localStorage.setItem("image", JSON.stringify(this.images));
-  }
-
-
-
 }
 
