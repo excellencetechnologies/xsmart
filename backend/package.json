@@ -1,6 +1,22 @@
 {
     "name": "xsmart",
     "scripts": {
-      "start" : "node websocket.js"
+        "start": "node websocket.js",
+        "simulateSwitch1" : "node deviceSimulator 0",
+        "simulateSwitch2" : "node deviceSimulator 1",
+        "simulateSwitch3" : "node deviceSimulator 2",
+        "simulateAccess" : "node accessSimulator"
+    },
+    "dependencies": {
+        "body-parser": "^1.18.3",
+        "cors": "^2.8.4",
+        "dotenv": "^6.0.0",
+        "express": "^4.16.3",
+        "express-validator": "^5.3.0",
+        "jsonwebtoken": "^8.3.0",
+        "md5": "^2.2.1",
+        "mongoose": "^5.2.9",
+        "nodemon": "^1.18.3",
+        "ws": "^6.0.0"
     }
-} 
+}

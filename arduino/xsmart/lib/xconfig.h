@@ -21,6 +21,7 @@ class XConfig
     void testConfig(void);
     JsonArray& getPinConfig();
     void setPinConfig(JsonArray&);
+    void deletePinConfig(void);
     String getPinName(int);
     void setPinName(int, String);
 

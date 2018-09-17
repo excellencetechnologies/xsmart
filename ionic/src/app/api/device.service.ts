@@ -60,7 +60,7 @@ export class DeviceService {
                 device.switches = device.switches.map((s: Switch) => {
                     if (s.pin === pin) {
                         s.status = status,
-                            s.name = name;
+                        s.name = name;
                     }
                     return s;
                 })

@@ -1,6 +1,15 @@
 #include <ota.h>
+
+#ifdef ESP8266
+#include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
+#endif
+
+
+#ifdef ESP32
 #include <HTTPClient.h>
 #include <Update.h>
+#endif
 
 OTA::OTA()
 {
@@ -8,6 +17,7 @@ OTA::OTA()
 
 void OTA::checkUpdate(void)
 {
+    #ifdef ESP32
     HTTPClient http;
 
     Serial.print("[HTTP] begin...\n");
@@ -99,4 +109,5 @@ void OTA::checkUpdate(void)
     http.end();
 
     delay(1000 * 100); //temp
+    #endif
 }

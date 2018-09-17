@@ -42,7 +42,6 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
-      // this.keepCheckingWifiConnected();
       this.checkExistingDevice();
     });
   }
@@ -77,11 +76,28 @@ export class HomePage implements OnInit {
         if (res.type === "device_online_check_reply") {
           this.updateDeviceStatus(res);
         } else if (res.type === "device_pin_oper_reply") {
-          this.notifyService.alertUser("operation sent to device");
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        }else if(res.type === "device_bulk_io_notify"){
+          res.pins.forEach( async (p) => {
+            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip,res.name);
+          })
+          //this is not working. the ui doesn't update all the pin status
+          this.devices = await this.deviceService.getDevices();
+          this.notifyService.alertUser("device performed the action!");
         } else if (res.type === "device_io_notify") {
           await this.deviceService.updateDevicePin(res.pin, res.status, res.chip, res.name);
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
+        } else if (res.type === "device_bulk_pin_oper_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
         }
         else if (res.type === "device_online_check_reply") {
           this.notifyService.alertUser("name sent to device");
@@ -154,7 +170,8 @@ export class HomePage implements OnInit {
       name: "",
       chip: "",
       webid: "",
-      isNew: false
+      isNew: false,
+      type: ""
     }
     this.keepCheckingWifiConnected();
   }
@@ -196,7 +213,8 @@ export class HomePage implements OnInit {
         chip: this.devicePing.chip,
         ttl: 0,
         online: false,
-        switches: []
+        switches: [],
+        type: ''
       };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
         this.deviceService.addDevice(newdevice);

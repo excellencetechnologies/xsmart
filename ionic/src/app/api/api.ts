@@ -3,6 +3,7 @@ export class Ping {
     chip: string;
     name: string;
     isNew?: boolean;
+    type: string;
 }
 
 export class Wifi {
@@ -23,4 +24,5 @@ export class Device {
     ttl: number;
     online: boolean;
     switches: Switch[];
+    type : String; 
 }
