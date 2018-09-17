@@ -1,4 +1,4 @@
-import { Component, OnInit, EventEmitter} from '@angular/core';
+import { Component, OnInit, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { ApiService } from "../api/api.service";
 import { User } from './../components/model/user';
@@ -19,11 +19,12 @@ export class LoginComponent implements OnInit {
     public apiServices: ApiService,
     private router: Router,
     private nativeStorage: NativeStorage,
-    private _event:EventHandlerService
+    private _event: EventHandlerService,
   ) { }
 
   ngOnInit() {
     this.createLoginForm();
+    this.addDevice();
   }
   createLoginForm() {
     this.loginForm = new FormGroup({
@@ -42,11 +43,9 @@ export class LoginComponent implements OnInit {
       this.loading = false;
       this._event.setLoginEvent(this.user.name)
       this.loginForm.reset();
-      this.addDevice();
+      await this.addDevice();
       this.router.navigate(["/existing-devices"]);
-
     } catch (err) {
-      console.log("err",err)
       this.loading = false;
       this.errorMessage = err['error'].message;
     }
@@ -54,11 +53,16 @@ export class LoginComponent implements OnInit {
 
   async addDevice() {
     try {
-      const deviceId = await this.nativeStorage.getItem('id')
-      const res = this.apiServices.addDevices({ 'chip_id': deviceId })
+      let body = {};
+      body['chip_id'] = "chip1"
+      body['meta'] = { "name": "device" };
+      body['deviceId'] = await this.nativeStorage.getItem('id')
+      body['userId'] = localStorage.getItem("userId")
+      this.user = await this.apiServices.addDevices(body);
+      return;
     }
+
     catch (err) {
-      // this.errorMessage = err['error'].message;
     }
   }
 

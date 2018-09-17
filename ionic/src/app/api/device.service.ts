@@ -16,7 +16,9 @@ export class DeviceService {
     }
     //random id to identify the current app
     async getAppID() {
-        if (this.platform.is("mobile")) {
+        console.log("devicesID");
+        
+        if (this.platform.is("cordova")) {
             return await this.uniqueDeviceID.get()
         } else {
             return await Promise.resolve("!23");;
@@ -114,6 +116,8 @@ export class DeviceService {
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
         }
+       
+        
     }
     async deleteDevice(deleteDevice: Device) {
         let devices = await this.getDevices();

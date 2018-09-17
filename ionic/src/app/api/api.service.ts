@@ -73,6 +73,7 @@ export class ApiService {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
       localStorage.setItem("token", data['token']);
       localStorage.setItem("username", data["data"].name);
+      localStorage.setItem("userId", data["data"]._id); 
       return data['data'];
     }
     catch (error) {
@@ -102,7 +103,7 @@ export class ApiService {
   }
   async addDevices(body) {
     try {
-      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body, this.httpOptions).toPromise();
+      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body,this.httpOptions).toPromise();
       return data['data'];
     }
     catch (error) {

@@ -62,6 +62,7 @@ export class AppComponent implements OnDestroy {
       try {
         const deviceId = await this.deviceServices.getAppID();
         this.nativeStorage.setItem('id', deviceId)
+        localStorage.getItem("userID")
       } catch (err) {
         this.errorMessage = err.message;
       }

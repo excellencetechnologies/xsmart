@@ -4,7 +4,6 @@ import { LoginComponent } from './login/login.component';
 import { RegisterComponent } from './register/register.component';
 import { ExistingDevicesComponent } from './existing-devices/existing-devices.component';
 import { SlidesComponent } from './slides/slides.component';
-import { SidemenuComponent } from './sidemenu/sidemenu.component';
 import { AuthGuard } from "./auth.guard";
 import { ProfileComponent } from './profile/profile.component';
 const routes: Routes = [
