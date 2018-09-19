@@ -259,6 +259,7 @@ export class HomePage implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
+      console.log("pinging device" , device.chip);
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
@@ -363,4 +364,41 @@ export class HomePage implements OnInit {
   menu() {
     this.menuController.toggle()
   }
+  /** 
+   * new test code by manish for access card
+   */
+
+  async addEmployee(device :Device){
+
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_add_employee",
+              chip: device.chip,
+              app_id: await this.deviceService.getAppID(),
+              emp_id : data.emp_id
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
+    
+   }
 }

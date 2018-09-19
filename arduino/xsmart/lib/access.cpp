@@ -5,7 +5,7 @@
 #endif
 #include <ArduinoJson.h>
 
-#define JSON_SIZE 512
+#define JSON_SIZE 100
 
 #ifndef FILE_WRITE
 #define FILE_WRITE "w"
@@ -90,9 +90,9 @@ String XAccess::checkUID(String uid)
     String file = loadConfigFile();
     StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
-    String emp_id = root.get<String>(uid);
-    if(emp_id){
-        return emp_id;
+    root.printTo(Serial);
+    if(root.containsKey(uid)){
+        return root.get<String>(uid);
     }else{
         return "";
     }
@@ -103,6 +103,7 @@ void XAccess::addUID(String uid, String emp_id)
     String file = loadConfigFile();
     StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
+    
     root.set("uid", emp_id);
 
     root.printTo(Serial);
