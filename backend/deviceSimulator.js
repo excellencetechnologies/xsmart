@@ -18,7 +18,7 @@ deviceWS.onopen = () => {
                 device_type: data.Device[process.argv[2]].type
             };
             deviceWS.send(JSON.stringify(ping));
-        }, 1000);
+        }, 5000);
     } catch (err) {
         console.log("error in sending the data");
     }

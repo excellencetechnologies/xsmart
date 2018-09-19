@@ -245,6 +245,7 @@ export class HomePage implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
+      console.log("pinging device" , device.chip);
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
@@ -299,7 +300,7 @@ export class HomePage implements OnInit {
    */
 
    async addEmployee(device :Device){
-
+    device = this.devices[0];
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',
       inputs: [

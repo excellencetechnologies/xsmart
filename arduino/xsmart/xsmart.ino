@@ -39,6 +39,7 @@ OTA update = OTA();
 
 String version = "0.0.1";
 String webID = "ESP8266"; //this should be some no to identify device type
+const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
 #ifdef ISACCESS
 #include "MFRC522.h"
@@ -394,7 +395,7 @@ void connectWifi()
   }
 
   int tries = 0;
-  while (wifiMulti.run() != WL_CONNECTED)
+  while (wifiMulti.run() != WL_CONNECTED && !canWorkWithoutWifi)
   {
     delay(500);
     Serial.print(".");
@@ -497,10 +498,28 @@ void sendCardDataAddEmployee(String rfid)
   delay(10);
   ping_packet_count++;
 }
-String checkCardEmployee(String uid)
+void sendCardDataAddEmployeeFailed(message)
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_add_card";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+  root["data"] = "-1";
+  root["message"] = message;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void checkCardEmployee(String uid)
 {
   String emp_id = access.checkUID(uid);
-  if (emp_id != "")
+  if (emp_id.length() > 0)
   {
     Serial.print("emp id");
     Serial.println(emp_id);
@@ -519,6 +538,8 @@ String checkCardEmployee(String uid)
     webSocketClient.sendData(json);
     delay(10);
     ping_packet_count++;
+  }else{
+    Serial.println("not match found");
   }
 }
 #endif
@@ -824,11 +845,13 @@ void loop()
         Serial.print(F("read Card UID:"));
         String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
         checkCardEmployee(rfid);
+        Serial.println("DDDDDDDDDDDDDD");
       }
     }
   }
   else if (access_mode == ACCESS_MODE_ADD_EMPLOYEE)
   {
+    Serial.println("access model waiting for add employee");
     if (mfrc522.PICC_IsNewCardPresent())
     {
       if (mfrc522.PICC_ReadCardSerial())
@@ -846,6 +869,7 @@ void loop()
     }
     else
     {
+      sendCardDataAddEmployeeFailed("timeout");
       access_mode = ACCESS_MODE_READ;
     }
   }
@@ -858,16 +882,29 @@ void loop()
     if (WiFi.status() != WL_CONNECTED)
     {
       digitalWrite(LEDPIN, LOW);
-      Serial.println("wifi disconnected, connecting again.");
 
-      if (delay_connect_wifi < max_delay_connect_wifi)
-      {
-        delay_connect_wifi += delay_connect_wifi;
+      if(canWorkWithoutWifi){
+        if (delay_socket < max_delay_connect_wifi)
+        {
+          delay_socket++;
+          delay(1);
+          return;
+        }else{
+          Serial.println("wifi disconnected, connecting again.");
+          connectWifi();
+        }
+      }else{
+        Serial.println("wifi disconnected, connecting again.");
+
+        if (delay_connect_wifi < max_delay_connect_wifi)
+        {
+          delay_connect_wifi += delay_connect_wifi;
+        }
+        Serial.print("some issue with wifi trying again in ");
+        Serial.println(delay_connect_wifi);
+        delay(delay_connect_wifi);
+        connectWifi();
       }
-      Serial.print("some issue with wifi trying again in ");
-      Serial.println(delay_connect_wifi);
-      delay(delay_connect_wifi);
-      connectWifi();
     }
     else
     {
@@ -990,7 +1027,7 @@ String dump_byte_array(byte *buffer, byte bufferSize)
   String rfid = "";
   for (byte i = 0; i < bufferSize; i++)
   {
-    rfid += buffer[i] < 0x10 ? " 0" : " ";
+    rfid += buffer[i] < 0x10 ? " 0" : "";
     rfid += String(buffer[i], HEX);
   }
   Serial.println(rfid);

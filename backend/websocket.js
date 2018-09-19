@@ -40,10 +40,10 @@ ws.on('connection', function (w) {
     try {
       console.log('message from client', msg);
       let obj = JSON.parse(msg);
+      console.log("device ping", obj);
       if (obj.type === "device_ping") {
         //this is basically the event which a device like esp32, 8266 
         // send every 1sec. this is ping from the device.
-        console.log("device ping", obj);
         let chip = obj['chip'];
         let offset = new Date().getTimezoneOffset();
         let time = new Date().getTime() + offset * 60 * 1000;
@@ -267,41 +267,62 @@ ws.on('connection', function (w) {
       } else if (obj.type === "device_add_card") {
 
         let chip = obj['chip'];
-        Card.findOneAndUpdate({
-          chip: chip,
-          emp_id: obj['emp_id'],
-        },
-          {
+        if (obj["data"] * 1 === -1) {
+          w.send(JSON.stringify({
+            type: "NORMAL_CARD_MODE"
+          }));
+          w.chip = chip;
+          if (apps[chip]) {
+            apps[chip].forEach((app) => {
+              ws.clients.forEach((client) => {
+                if (client.app_id && client.app_id == app) {
+                  client.send(JSON.stringify({
+                    type: "device_add_card_notify",
+                    data: obj["data"],
+                    message: obj["message"]
+                  }));
+                }
+              });
+            });
+
+          }
+        } else {
+          Card.findOneAndUpdate({
             chip: chip,
             emp_id: obj['emp_id'],
-            meta: {
-              size: obj['size'],
-              data: obj['data']
-            }
           },
-          { upsert: true, new: true },
-          () => {
-            w.chip = chip;
-            if (apps[chip]) {
-              apps[chip].forEach((app) => {
-                ws.clients.forEach((client) => {
-                  if (client.app_id && client.app_id == app) {
-                    client.send(JSON.stringify({
-                      type: "device_add_card_notify",
-                      data: obj["data"],
-                      size: obj["size"]
-                    }));
-                  }
+            {
+              chip: chip,
+              emp_id: obj['emp_id'],
+              meta: {
+                size: obj['size'],
+                data: obj['data']
+              }
+            },
+            { upsert: true, new: true },
+            () => {
+              w.chip = chip;
+              if (apps[chip]) {
+                apps[chip].forEach((app) => {
+                  ws.clients.forEach((client) => {
+                    if (client.app_id && client.app_id == app) {
+                      client.send(JSON.stringify({
+                        type: "device_add_card_notify",
+                        data: obj["data"],
+                        size: obj["size"]
+                      }));
+                    }
+                  });
                 });
-              });
 
+              }
+
+              w.send(JSON.stringify({
+                type: "NORMAL_CARD_MODE"
+              }));
             }
-
-            w.send(JSON.stringify({
-              type: "NORMAL_CARD_MODE"
-            }));
-          }
-        )
+          )
+        }
 
 
       } else if (obj.type === "device_card_read") {
