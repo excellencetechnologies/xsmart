@@ -2,7 +2,6 @@
   <ion-toolbar>
     <ion-title text-center>
       Login
-      <ion-spinner slot="end" *ngIf="loading" name="bubbles"></ion-spinner>
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -38,7 +37,9 @@
         <p *ngIf="errorMessage">{{errorMessage}}</p>
       </div>
       <ion-col class="signup-col">
-        <ion-button expand="block" (click)="onSubmit(loginForm)" [disabled]="!loginForm.valid || loading" color="light">Log in</ion-button>
+        <ion-button expand="block" (click)="onSubmit(loginForm)" [disabled]="!loginForm.valid || loading" color="light">{{loading ? '' : 'Log in'}}
+          <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+        </ion-button>
       </ion-col>
     </form>
     <ion-row class="alreadyaccount" center>

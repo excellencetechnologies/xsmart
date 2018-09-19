@@ -24,7 +24,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.createLoginForm();
-    this.addDevice();
   }
   createLoginForm() {
     this.loginForm = new FormGroup({
@@ -54,11 +53,19 @@ export class LoginComponent implements OnInit {
   async addDevice() {
     try {
       let body = {};
-      body['chip_id'] = "chip1"
-      body['meta'] = { "name": "device" };
+      body['chip_id'] = "123456"
+      body['meta'] = {
+        "name": "Access Control",
+        "device_id": "1234",
+        "chip": "devicePing",
+        "ttl": "0",
+        "switches": [],
+        "type": "access"
+      }
       body['deviceId'] = await this.nativeStorage.getItem('id')
       body['userId'] = localStorage.getItem("userId")
-      this.user = await this.apiServices.addDevices(body);
+      console.log("body")
+      await this.apiServices.addDevices(body);
       return;
     }
 

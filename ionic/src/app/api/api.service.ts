@@ -73,7 +73,7 @@ export class ApiService {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
       localStorage.setItem("token", data['token']);
       localStorage.setItem("username", data["data"].name);
-      localStorage.setItem("userId", data["data"]._id); 
+      localStorage.setItem("userId", data["data"]._id);
       return data['data'];
     }
     catch (error) {
@@ -90,20 +90,16 @@ export class ApiService {
       throw (error);
     }
   }
-  async deviceList() {
-    try {
-      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`, this.httpOptions).toPromise();
-      return data['devices'];
-
-
-    }
-    catch (error) {
-      throw (error);
-    }
-  }
   async addDevices(body) {
+    let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body,this.httpOptions).toPromise();
+      console.log(body);
+
+      const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body,
+        {
+          headers: header
+        }
+      ).toPromise();
       return data['data'];
     }
     catch (error) {
@@ -111,8 +107,13 @@ export class ApiService {
     }
   }
   async listDevices() {
+    let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`, this.httpOptions).toPromise();
+      const data = await this.http.get(`${environment["apiBase"]}device/listDevice`,
+        {
+          headers: header
+        }
+      ).toPromise();
       return data;
     }
     catch (error) {

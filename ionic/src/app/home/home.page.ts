@@ -25,6 +25,8 @@ export class HomePage implements OnInit {
   isScanningDevice: boolean = false;
   mode: String = "device";
   isSocketConnected: boolean = false;
+  loading:boolean=false;
+  loader:boolean;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -163,6 +165,7 @@ export class HomePage implements OnInit {
     this.checkExistingDevice();
   }
   scanDevice() {
+    this.loading=true;
     this.mode = "scan";
     this.isScanningDevice = true;
     this.wifinetworks = [];
@@ -190,6 +193,7 @@ export class HomePage implements OnInit {
         this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
         this.mode = "discovery";
+        this.loading = false;
       } catch (e) {
         console.log(e)
         this.isScanningDevice = true;
@@ -241,10 +245,13 @@ export class HomePage implements OnInit {
 
 
   async scanWifi() {
+    this.loader=true;
     try {
       this.wifinetworks = await this.api.getScanWifi();
+      this.loader=false
       console.log(this.wifinetworks);
     } catch (e) {
+      this.loader=false;
       console.log(e)
       this.isScanningDevice = true;
 
@@ -296,6 +303,7 @@ export class HomePage implements OnInit {
             }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
+            this.checkExistingDevice(); 
           }
         }
       ]
