@@ -38,7 +38,7 @@ OTA update = OTA();
 //String version = "0.0.1";
 
 String version = "0.0.1";
-String webID = "ESP8266"; //this should be some no to identify device type
+String webID = "ESP8266";             //this should be some no to identify device type
 const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
 #ifdef ISACCESS
@@ -105,7 +105,7 @@ String device_ssid = "xSmart-" + String(ESP_getChipId());
 
 int PINS_STATUS[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW}; //default status of all pins
 
-int delay_connect_wifi = 0;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
+int delay_connect_wifi = 0;                                //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
 const int max_delay_connect_wifi = delay_connect_wifi * 3; //this is the max time we try to connect.
 
 int ping_packet_count = 0; //ping packet is also variable only after 10 times do we second another package
@@ -498,7 +498,7 @@ void sendCardDataAddEmployee(String rfid)
   delay(10);
   ping_packet_count++;
 }
-void sendCardDataAddEmployeeFailed(message)
+void sendCardDataAddEmployeeFailed(String message)
 {
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
@@ -538,7 +538,9 @@ void checkCardEmployee(String uid)
     webSocketClient.sendData(json);
     delay(10);
     ping_packet_count++;
-  }else{
+  }
+  else
+  {
     Serial.println("not match found");
   }
 }
@@ -810,6 +812,7 @@ void setup()
 #ifdef ISACCESS
   SPI.begin();        // Init SPI bus
   mfrc522.PCD_Init(); // Init MFRC522
+  mfrc522.PCD_SetAntennaGain(mfrc522.RxGain_max);
   access.initConfig();
 #endif
   pinMode(LEDPIN, OUTPUT);
@@ -859,7 +862,19 @@ void loop()
         // Show some details of the PICC (that is: the tag/card)
         Serial.print(F("adding new  Card UID:"));
         String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
-        sendCardDataAddEmployee(rfid);
+        String emp_id = access.checkUID(rfid);
+        if (emp_id.length() > 0)
+        {
+          sendCardDataAddEmployeeFailed("card already assigned to employee");
+          Serial.println("card already assigned to employeee");
+          Serial.print(emp_id);
+        }
+        else
+        {
+          sendCardDataAddEmployee(rfid);
+        }
+
+        access_mode = ACCESS_MODE_READ;
       }
     }
     if (access_mode_timeout < access_mode_timeout_max)
@@ -873,6 +888,10 @@ void loop()
       access_mode = ACCESS_MODE_READ;
     }
   }
+  else
+  {
+    Serial.print("invalid access code status");
+  }
 
 #endif
 
@@ -883,17 +902,22 @@ void loop()
     {
       digitalWrite(LEDPIN, LOW);
 
-      if(canWorkWithoutWifi){
+      if (canWorkWithoutWifi)
+      {
         if (delay_socket < max_delay_connect_wifi)
         {
           delay_socket++;
           delay(1);
           return;
-        }else{
+        }
+        else
+        {
           Serial.println("wifi disconnected, connecting again.");
           connectWifi();
         }
-      }else{
+      }
+      else
+      {
         Serial.println("wifi disconnected, connecting again.");
 
         if (delay_connect_wifi < max_delay_connect_wifi)
@@ -905,14 +929,6 @@ void loop()
         delay(delay_connect_wifi);
         connectWifi();
       }
-<<<<<<< HEAD
-=======
-      Serial.print("some issue with wifi trying again in ");
-      Serial.println(delay_connect_wifi);
-      delay(delay_connect_wifi);
-      delay_connect_wifi = 5000; //only for the first time its zero. this way wifi connects fast first time on boot.
-      connectWifi();
->>>>>>> 46415518c00145fbd31cd981ba6fdbbd51ef1ec7
     }
     else
     {

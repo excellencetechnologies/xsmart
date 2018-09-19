@@ -13,9 +13,9 @@ router.post('/addDevice', [middleware.validateToken, middleware.checkForUniqueCh
         let newDevice = new Device({ chip_id: result.chip_id, user_id: req.id, meta: body.meta });
         newDevice.save((err, device) => {
             if (err) {
-                res.status(500).json({ error: 1, message: "mongodb internel problem while adding the new device" });
+                res.status(500).json({ message: "mongodb internel problem while adding the new device" });
             } else {
-                res.status(200).json({ status: 1, message: "successfully inserted device", device: device });
+                res.status(200).json(device);
             }
         });
     }
@@ -25,9 +25,9 @@ router.put("/updateDevice", [middleware.validateToken, middleware.checkChipId], 
     let body = req.body;
     Device.findByIdAndUpdate(req.documentID, { $set: { user_id: req.owner_id, meta: body.meta } }, { new: true }, (err, obj) => {
         if (err) {
-            res.status(500).json({ error: 1, message: "mongodb internel problem while updating the device" });
+            res.status(500).json({ message: "mongodb internel problem while updating the device" });
         } else {
-            res.status(200).json({ status: 1, message: "updated successfully", data: obj });
+            res.status(200).json(obj);
         }
     });
 });
@@ -39,9 +39,9 @@ router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
             res.status(500).json({ error: 1, message: "mongodb internel problem while deleting the device" });
         } else {
             if (obj != null) {
-                res.status(200).json({ message: "successfully deleted", data: obj });
+                res.status(200).json(obj);
             } else {
-                res.status(400).json({ error: 1, message: "you can not delete the device because the chip id and user id doest not matched" });
+                res.status(400).json({ message: "you can not delete the device because the chip id and user id doest not matched" });
             }
         }
     })
@@ -50,9 +50,9 @@ router.delete("/deleteDevice", middleware.validateToken, (req, res) => {
 router.get("/listDevice",middleware.validateToken, (req, res) => {
     Device.find({ user_id: req.id}, (err, obj) => {
         if (err) {
-            res.status(500).json({ error: 1, message: "mongodb internel problem while retrieving the device" });
+            res.status(500).json({ message: "mongodb internel problem while retrieving the device" });
         } else {
-            res.status(200).json({ status: 1, devices:obj});
+            res.status(200).json(obj);
         }
     })
 })
