@@ -1,18 +1,76 @@
-.Switches {
+.menu{
+    font-family: 'Titillium Web', sans-serif;
+    transform: scale(1.0);
+    padding: 10px;
+    font-size: 1.4em;
+}
+.grid-item-header{
+    border-bottom: thin solid #a2a4ab78;
+    font-size:20px;
+}
+.yellow{
+    color:#ffc900;
+}
+.wifi{
+    transform: scale(0.6);
+    color: gray;
+}
+.device-ID{
+    font-weight: 800;
+    font-size:16px; 
+}
+.device_device_id{
+   font-weight: 100;
+    font-size: 16px;
+}
+.card_content{
+    padding: 10px 0px 0px 0px;
+}
+.content{
+    padding-left: 14px;
+}
+.rightborder {
+    border-right: 2px solid #387ef5;
+    color: #387ef5;
+    transform: scale(1.0);
+    font-size: 20px;
+    padding: 18px 0px 13px 2px;
+}
+
+.qr-scanner{
+    color: #387ef5;
+    transform: scale(1.0);
+    padding: 18px 0px 13px 19px;
+    font-size: 18px;
+    
+}
+.icons {
+    border: 2px solid #387ef5;
+    margin-bottom: 13px;
+    border-radius: 5px;
+}
+.blue{
+    color:#11c1f3; 
+}
+.lightSwitches{
+    padding:0px 10px 10px 0px;
+    border-bottom:thin solid #a2a4ab78;
+    font-size: 18px;
+    color:gray;
+}
+.scan{
+    padding: 25px;
+    font-size: 16px;
+}
+.networkList{
+    border:thin solid #a2a4ab78;
+}
+.network{
+    border-bottom:thin solid #a2a4ab78;
+}
+.devicess>h3{
+    font-weight: 800; 
+}
+.devicess{
     margin: 0 auto;
-}
-.title {
-    text-align: center;
-}
-.icon {
-    float: left;
-}
-.grid {
-    border: 1px solid #a2a4ab;
-}
-.grid-item {
-    border-bottom: 1px solid #a2a4ab;
-}
-.grid-item:hover {
-    color: yellow;
 }

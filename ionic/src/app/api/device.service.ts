@@ -1,8 +1,7 @@
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Platform, Img } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
-
 import { Device, Switch } from "./api"
 import { stat } from 'fs';
 
@@ -14,11 +13,12 @@ export class DeviceService {
         private nativeStorage: NativeStorage,
         private platform: Platform,
         private uniqueDeviceID: UniqueDeviceID) {
-
     }
     //random id to identify the current app
     async getAppID() {
-        if (this.platform.is("mobile")) {
+        console.log("devicesID");
+        
+        if (this.platform.is("cordova")) {
             return await this.uniqueDeviceID.get()
         } else {
             return await Promise.resolve("!23");;
@@ -26,7 +26,7 @@ export class DeviceService {
     }
     async getDevices(): Promise<Device[]> {
         if (this.platform.is("mobile"))
-            return await this.nativeStorage.getItem('devices') as Device[]
+            return await this.nativeStorage.getItem('devices') as Device[];
         else {
             if (localStorage.getItem('devices')) {
                 return JSON.parse(localStorage.getItem('devices')) as Device[];
@@ -34,7 +34,9 @@ export class DeviceService {
                 return [];
             }
         }
+
     }
+
     async checkDeviceExists(chipid: String) {
         let devices = await this.getDevices();
         let device: Device = devices.find((device: Device) => {
@@ -46,20 +48,21 @@ export class DeviceService {
         return device;
     }
     async setDevices(devices: Device[]) {
-        if (this.platform.is("mobile"))
+        if (this.platform.is("mobile")) {
+            console.log('devices', devices)
             await this.nativeStorage.setItem('devices', devices);
-        else {
+        } else {
             localStorage.setItem('devices', JSON.stringify(devices));
-
         }
     }
-    async updateDevicePin(pin: number, status: number, chip: string) {
+    async updateDevicePin(pin: number, status: number, chip: string, name: string) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
             if (device.chip === chip) {
                 device.switches = device.switches.map((s: Switch) => {
                     if (s.pin === pin) {
-                        s.status = status;
+                        s.status = status,
+                        s.name = name;
                     }
                     return s;
                 })
@@ -93,9 +96,11 @@ export class DeviceService {
                 data.pins.forEach((pin: Switch) => {
                     let swtich: Switch = {
                         "status": pin.status,
-                        "pin": pin.pin
+                        "pin": pin.pin,
+                        "name": pin.name
                     }
                     device.switches.push(swtich);
+
                 })
 
             }
@@ -111,6 +116,8 @@ export class DeviceService {
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
         }
+       
+        
     }
     async deleteDevice(deleteDevice: Device) {
         let devices = await this.getDevices();

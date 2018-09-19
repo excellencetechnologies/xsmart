@@ -105,7 +105,7 @@ String device_ssid = "xSmart-" + String(ESP_getChipId());
 
 int PINS_STATUS[] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW}; //default status of all pins
 
-int delay_connect_wifi = 5000;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
+int delay_connect_wifi = 0;                             //this is delay after wifi connection, this is a variable because if wifi doesn't connect we try connection again after delay++ so its dynamic
 const int max_delay_connect_wifi = delay_connect_wifi * 3; //this is the max time we try to connect.
 
 int ping_packet_count = 0; //ping packet is also variable only after 10 times do we second another package
@@ -905,6 +905,14 @@ void loop()
         delay(delay_connect_wifi);
         connectWifi();
       }
+<<<<<<< HEAD
+=======
+      Serial.print("some issue with wifi trying again in ");
+      Serial.println(delay_connect_wifi);
+      delay(delay_connect_wifi);
+      delay_connect_wifi = 5000; //only for the first time its zero. this way wifi connects fast first time on boot.
+      connectWifi();
+>>>>>>> 46415518c00145fbd31cd981ba6fdbbd51ef1ec7
     }
     else
     {

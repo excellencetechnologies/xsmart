@@ -1,7 +1,9 @@
-<ion-header>
+<ion-header translucent>
   <ion-toolbar>
-    <ion-title title>Login</ion-title>
-    <ion-spinner slot="end" *ngIf="loading" name="bubbles"></ion-spinner>
+    <ion-title text-center>
+      Login
+      <ion-spinner slot="end" *ngIf="loading" name="bubbles"></ion-spinner>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,9 +12,10 @@
     <form *ngIf="loginForm" class="form-horizontal" [formGroup]="loginForm">
       <ion-row>
         <ion-col>
-          <ion-list>
+          <ion-list class="login-Form">
             <ion-item>
-              <ion-input type="email" placeholder="Email" formControlName="email" name="email" required></ion-input>
+              <ion-label floating>Email</ion-label>
+              <ion-input type="email" formControlName="email" name="email" required></ion-input>
             </ion-item>
             <div *ngIf="loginForm.controls['email'].errors && !loginForm.controls['email'].pristine" class="alert alert-danger">
               <div *ngIf="loginForm.controls['email'].errors.required">
@@ -20,7 +23,8 @@
               </div>
             </div>
             <ion-item>
-              <ion-input type="password" placeholder="Password" formControlName="password" name="password" required></ion-input>
+              <ion-label floating>Password</ion-label>
+              <ion-input type="password" formControlName="password" name="password" required></ion-input>
             </ion-item>
             <div *ngIf="loginForm.controls['password'].errors && !loginForm.controls['password'].pristine" class="alert alert-danger">
               <div *ngIf="loginForm.controls['password'].errors.required">
@@ -30,19 +34,19 @@
           </ion-list>
         </ion-col>
       </ion-row>
-      <ion-row>
-        <div class="error">
-          <p *ngIf="errorMessage">{{error}}</p>
-        </div>
-        <ion-col class="signup-col">
-          <ion-button block expand="full" (click)="onSubmit(loginForm)" [disabled]="!loginForm.valid || loading">Login</ion-button>
-        </ion-col>
-      </ion-row>
+      <div class="error">
+        <p *ngIf="errorMessage">{{errorMessage}}</p>
+      </div>
+      <ion-col class="signup-col">
+        <ion-button expand="block" (click)="onSubmit(loginForm)" [disabled]="!loginForm.valid || loading" color="light">Log in</ion-button>
+      </ion-col>
     </form>
-    <div class="alreadyaccount">
-      <p>if you don't. have an account
-        <a routerLink="/register">Register</a> here.
-      </p>
-    </div>
+    <ion-row class="alreadyaccount" center>
+      <ion-col center width-50 class="register">
+        <ion-label text-center class="text-decorater">
+          <a routerLink="/register">Or create an account</a>
+        </ion-label>
+      </ion-col>
+    </ion-row>
   </div>
 </ion-content>
