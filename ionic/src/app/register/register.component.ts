@@ -28,7 +28,8 @@ export class RegisterComponent implements OnInit {
   async onSubmit(formData) {
     this.loading = true;
     try {
-      this.user = await this.apiServices.postRegister(formData.value);
+      const data = await this.apiServices.postRegister(formData.value);
+      this.user=data['data']
       this.loading = false;
       this.router.navigate(["/login"]);
       this.userRegisterForm.reset();

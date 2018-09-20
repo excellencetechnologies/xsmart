@@ -20,8 +20,9 @@ import { SlidesComponent } from './slides/slides.component';
 import { AuthGuard } from './auth.guard';
 import { ProfileComponent } from './profile/profile.component';
 import { File } from '@ionic-native/file/ngx';
-import { FileTransfer, FileTransferObject} from '@ionic-native/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
+import { HttpModule } from '@angular/http';
 
 @NgModule({
   declarations: [
@@ -34,8 +35,8 @@ import { Camera } from '@ionic-native/camera/ngx';
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,
+    HttpModule,
     FormsModule,
-
     ReactiveFormsModule,
     IonicModule.forRoot(),
     AppRoutingModule],

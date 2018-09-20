@@ -14,8 +14,7 @@
       No Devices Found!
     </div>
     <ion-button (click)="scanDevice()" mode="ios" class="scanDevices" expand="block" color="primary">
-      <span class="scan">{{loading ? '' : 'Scan For devices'}}
-        <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+      <span class="scan">Scan For devices
       </span>
     </ion-button>
   </div>
@@ -24,7 +23,6 @@
       <ion-card *ngFor="let device of devices; trackBy: trackByDevice">
         <ion-list class="grid-item-header">
           <ion-item class="grid-item-header" [ngClass]="{'yellow' : device.online}">
-            <!-- <ion-icon slot="start" name="swap"></ion-icon> -->
             <ion-icon slot="start" *ngIf="device && device.type !='access'" name="swap"></ion-icon>
             <ion-icon slot="start" *ngIf="device && device.type == 'access'" name="infinite"></ion-icon>
             <ion-label (click)="askDeviceName(device);">{{device.name}}</ion-label>
@@ -44,9 +42,7 @@
 
               </p>
               <p *ngIf="device.switches.length > 0">
-                <b>
-                  <span size="4" class="device-ID"> Switches</span>
-                </b> :4
+                <span>Switch {{device.switches.length}}</span>
               </p>
             </div>
           </ion-item>
@@ -91,7 +87,7 @@
             Set special mode
           </ion-item>
           <ion-item class="grid-item-header">
-             <ion-icon sloat="start" mode="ios"  name="cloud-download"></ion-icon>   
+            <ion-icon sloat="start" mode="ios" name="cloud-download"></ion-icon>
             Download Data
           </ion-item>
         </ion-list>

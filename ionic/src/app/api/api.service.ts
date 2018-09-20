@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { Ping, Wifi } from "./api"
 import { environment } from "../../environments/environment";
+import { RequestOptions, Http, Headers } from "@angular/http";
 export interface Message {
   author: string,
   message: string
@@ -19,13 +20,13 @@ export class ApiService {
   };
   // ************************************************************************************************
   base_url: string = environment['base_url'];
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private httpOld: Http) { }
 
   async checkPing() {
     // return await this.http.get<Ping>(this.base_url).toPromise();
     try {
       const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
@@ -36,7 +37,7 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
     try {
       const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/scanWifi`).toPromise();
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
@@ -47,7 +48,7 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
     try {
       const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setWifiPassword/${ssid}/${password}`).toPromise();
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
@@ -58,23 +59,22 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
       const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/setDeviceNickName/${name}/${chip}`).toPromise();
-      console.log(data);
-
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
     }
   }
 
-  async postlogin(data) {
-    const apidata = { "email": data.email, "password": data.password };
+  async postlogin(user) {
+
+    const apidata = { "email": user.email, "password": user.password };
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/login`, apidata).toPromise();
       localStorage.setItem("token", data['token']);
       localStorage.setItem("username", data["data"].name);
       localStorage.setItem("userId", data["data"]._id);
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
@@ -84,7 +84,7 @@ export class ApiService {
     const apidata = { "name": data.name, "email": data.email, "password": data.password };
     try {
       const data = await this.http.post(`${environment["apiBase"]}user/register`, apidata).toPromise();
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
@@ -100,7 +100,7 @@ export class ApiService {
           headers: header
         }
       ).toPromise();
-      return data['data'];
+      return data;
     }
     catch (error) {
       throw (error);
@@ -114,6 +114,21 @@ export class ApiService {
           headers: header
         }
       ).toPromise();
+      return data;
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  async deleteDevices(body) {
+    let header = new Headers();
+    header.append('token', localStorage.getItem("token"));
+    try {
+      console.log(body);
+      const data = await this.httpOld.delete(`${environment["apiBase"]}device/deleteDevice`, new RequestOptions({
+        headers: header,
+        body: body,
+      })).toPromise();
       return data;
     }
     catch (error) {

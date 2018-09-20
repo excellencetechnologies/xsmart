@@ -38,39 +38,15 @@ export class LoginComponent implements OnInit {
   async onSubmit(formData) {
     this.loading = true;
     try {
-      this.user = await this.apiServices.postlogin(formData.value);
+      const data = await this.apiServices.postlogin(formData.value);
+      this.user = data['data']
       this.loading = false;
       this._event.setLoginEvent(this.user.name)
       this.loginForm.reset();
-      await this.addDevice();
       this.router.navigate(["/existing-devices"]);
     } catch (err) {
       this.loading = false;
       this.errorMessage = err['error'].message;
     }
   }
-
-  async addDevice() {
-    try {
-      let body = {};
-      body['chip_id'] = "123456"
-      body['meta'] = {
-        "name": "Access Control",
-        "device_id": "1234",
-        "chip": "devicePing",
-        "ttl": "0",
-        "switches": [],
-        "type": "access"
-      }
-      body['deviceId'] = await this.nativeStorage.getItem('id')
-      body['userId'] = localStorage.getItem("userId")
-      console.log("body")
-      await this.apiServices.addDevices(body);
-      return;
-    }
-
-    catch (err) {
-    }
-  }
-
 }

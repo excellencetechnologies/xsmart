@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Platform } from '@ionic/angular';
+import { allDevices } from "../components/model/user";
 
 @Component({
   selector: 'app-existing-devices',
@@ -13,7 +14,7 @@ import { Platform } from '@ionic/angular';
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-
+  alldevices;
   devices: Device[] = [];
   loading: boolean;
   errorMessage: string;
@@ -33,8 +34,7 @@ export class ExistingDevicesComponent implements OnInit {
   async getDevice() {
     this.loading = true;
     try {
-      const allDevices = await this.apiServices.listDevices();
-      this.devices = allDevices['devices'];
+      this.alldevices = await this.apiServices.listDevices();
       this.loading = false;
     } catch (err) {
       this.loading = false;
@@ -43,7 +43,7 @@ export class ExistingDevicesComponent implements OnInit {
   }
   importDevices() {
     const enableDevices = [];
-    this.devices.forEach(device => {
+    this.alldevices.forEach(device => {
       if (device['status'] && device['meta']) {
         enableDevices.push(device['meta']);
       }
@@ -56,6 +56,17 @@ export class ExistingDevicesComponent implements OnInit {
   }
   onSelect(devices): void {
     devices.status = !devices.status;
+  }
+  async deleteDevices(user_id,chip_id) {
+    this.loading = true;
+    try {
+      this.alldevices = await this.apiServices.deleteDevices({ chip_id: chip_id, user_id: user_id });
+      this.getDevice()
+      this.loading = false;
+    } catch (err) {
+      this.loading = false;
+      this.errorMessage = err.message;
+    }
   }
 }
 

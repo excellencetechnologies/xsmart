@@ -25,8 +25,7 @@ export class HomePage implements OnInit {
   isScanningDevice: boolean = false;
   mode: String = "device";
   isSocketConnected: boolean = false;
-  loading:boolean=false;
-  loader:boolean;
+  loader: boolean;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -83,9 +82,9 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
-        }else if(res.type === "device_bulk_io_notify"){
-          res.pins.forEach( async (p) => {
-            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip,res.name);
+        } else if (res.type === "device_bulk_io_notify") {
+          res.pins.forEach(async (p) => {
+            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip, res.name);
           })
           //this is not working. the ui doesn't update all the pin status
           this.devices = await this.deviceService.getDevices();
@@ -165,7 +164,6 @@ export class HomePage implements OnInit {
     this.checkExistingDevice();
   }
   scanDevice() {
-    this.loading=true;
     this.mode = "scan";
     this.isScanningDevice = true;
     this.wifinetworks = [];
@@ -183,17 +181,16 @@ export class HomePage implements OnInit {
       clearInterval(wifiCheckInterval);
     wifiCheckInterval = setInterval(async () => {
       try {
-        this.devicePing = await this.api.checkPing();
+        const data = await this.api.checkPing();
+        this.devicePing = data['data']
         if (this.devicePing.name.length > 0) {
           this.devicePing.isNew = false;
         } else {
           this.devicePing.isNew = true;
         }
-        console.log(this.devicePing);
         this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
         this.mode = "discovery";
-        this.loading = false;
       } catch (e) {
         console.log(e)
         this.isScanningDevice = true;
@@ -211,24 +208,29 @@ export class HomePage implements OnInit {
   async setDeviceName(name: String, chip: string) {
     try {
       await this.api.setDeviceNickName(name, chip);
-      let newdevice: Device = {
-        name: name,
-        device_id: this.devicePing.webid,
-        chip: this.devicePing.chip,
-        ttl: 0,
-        online: false,
-        switches: [],
-        type: ''
+      let newDevice = {
+        chip_id: this.devicePing.chip,
+        user_id: localStorage.getItem("userId"),
+        meta: {
+          name: name,
+          device_id: this.devicePing.webid,
+          chip: this.devicePing.chip,
+          ttl: 0,
+          online: false,
+          switches: [],
+          type: ''
+        }
       };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        this.deviceService.addDevice(newdevice);
+        await this.api.addDevices(newDevice);
+        this.deviceService.addDevice(newDevice['meta']);
       } else {
-        this.deviceService.updateDevice(newdevice);
+        this.deviceService.updateDevice(newDevice['meta']);
         const deviceData = await this.deviceService.getDevices();
         deviceData.forEach((value, key) => {
           if (value.chip === this.devicePing.chip) {
             deviceData.splice(key, 1)
-            deviceData.push(newdevice);
+            deviceData.push(newDevice['meta']);
           }
         })
         this.deviceService.setDevices(deviceData)
@@ -245,13 +247,14 @@ export class HomePage implements OnInit {
 
 
   async scanWifi() {
-    this.loader=true;
+    this.loader = true;
     try {
-      this.wifinetworks = await this.api.getScanWifi();
-      this.loader=false
+      const data = await this.api.getScanWifi();
+      this.wifinetworks = data['data'];
+      this.loader = false
       console.log(this.wifinetworks);
     } catch (e) {
-      this.loader=false;
+      this.loader = false;
       console.log(e)
       this.isScanningDevice = true;
 
@@ -259,7 +262,7 @@ export class HomePage implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      console.log("pinging device" , device.chip);
+      console.log("pinging device", device.chip);
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
@@ -304,7 +307,7 @@ export class HomePage implements OnInit {
             }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
-            this.checkExistingDevice(); 
+            this.checkExistingDevice();
           }
         }
       ]
@@ -368,7 +371,7 @@ export class HomePage implements OnInit {
    * new test code by manish for access card
    */
 
-  async addEmployee(device :Device){
+  async addEmployee(device: Device) {
 
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',
@@ -390,7 +393,7 @@ export class HomePage implements OnInit {
               type: "device_set_add_employee",
               chip: device.chip,
               app_id: await this.deviceService.getAppID(),
-              emp_id : data.emp_id
+              emp_id: data.emp_id
             })
           }
         }
@@ -399,6 +402,6 @@ export class HomePage implements OnInit {
 
     await alert.present();
 
-    
-   }
+
+  }
 }
