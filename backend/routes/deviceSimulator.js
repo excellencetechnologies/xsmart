@@ -54,7 +54,7 @@ router.get('/wifisave', (req, res) => {
 });
 
 router.get('/setnickname', async (req, res) => {
-    let result = await getDevice.getDevicePing(req.query.name, req.params.chip);
+    let result = await getDevice.getDevicePing(req.query.name, req.query.chip);
     if (result == null) {
         res.status(400).json("not found")
     } else {
