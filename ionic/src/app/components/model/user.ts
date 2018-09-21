@@ -7,7 +7,7 @@ export interface User {
     email: string;
     token: string;
 }
-export interface importDevices {
+export interface importDevice{
     chip_id: string;
     createdAt: string;
     meta: Device;

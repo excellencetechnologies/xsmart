@@ -11,13 +11,13 @@
   </div>
   <ion-list *ngIf="devices && devices.length">
 
-    <ion-card *ngFor="let devices of devices" [class.selected]="devices === selectedDevices">
+    <ion-card *ngFor="let devices of devices: trackBy: trackByimportDevice">
       <ion-list class="border">
         <ion-item class="border">
           <ion-icon slot="start" *ngIf="devices && devices.type !='access'" name="swap" color="primary"></ion-icon>
           <ion-icon slot="start" *ngIf="devices && devices.type =='access'" color="primary" name="infinite"></ion-icon>
           <ion-label color="primary" *ngIf="devices['meta']">{{devices.meta.name}}</ion-label>
-          <ion-checkbox slot="end" [ngModel]="devices.status" color="primary" (ionChange)="onSelect(devices)"></ion-checkbox>
+          <ion-checkbox slot="end" [ngModel]="devices.status" color="primary" (ionChange)="devices.status = !devices.status"></ion-checkbox>
         </ion-item>
       </ion-list>
 

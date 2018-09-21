@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Platform } from '@ionic/angular';
-import { importDevices } from "../components/model/user";
+import { importDevice } from "../components/model/user";
 
 @Component({
   selector: 'app-existing-devices',
@@ -14,7 +14,7 @@ import { importDevices } from "../components/model/user";
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-  devices: importDevices[];
+  devices: importDevice[];
   device: Device[] = [];
   loading: boolean;
   errorMessage: string;
@@ -54,10 +54,7 @@ export class ExistingDevicesComponent implements OnInit {
     else {
       localStorage.setItem("devices", JSON.stringify(enableDevices));
     }
-  }
-  onSelect(devices): void {
-    devices.status = !devices.status;
-  }
+  } 
   async deleteDevices(user_id, chip_id, device: Device) {
     this.loading = true;
     try {
