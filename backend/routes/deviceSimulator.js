@@ -37,10 +37,20 @@ router.get('/', (req, res) => {
 });
 
 router.get('/wifi', (req, res) => {
+    if(req.query.noPing){
+        return;
+    }
+    if(req.query.empty){
+        res.status(200).json({});
+        return;
+    }
     res.status(200).json({ data: data.Wifi });
 });
 
 router.get('/wifisave', (req, res) => {
+    if(req.query.noPing){
+        return;
+    }
     data.Wifi.forEach((wifi) => {
         if (wifi.SSID == req.query.ssid) {
             if (req.query.password == '123456789') {
@@ -54,6 +64,9 @@ router.get('/wifisave', (req, res) => {
 });
 
 router.get('/setnickname', async (req, res) => {
+    if(req.query.noPing){
+        return;
+    }
     let result = await getDevice.getDevicePing(req.query.name, req.query.chip);
     if (result == null) {
         res.status(400).json("not found")
