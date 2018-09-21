@@ -25,7 +25,7 @@ export class ApiService {
   async checkPing() {
     // return await this.http.get<Ping>(this.base_url).toPromise();
     try {
-      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing`).toPromise();
+      const data = await this.http.get(`${environment["apiBase"]}deviceSimulator/checkPing?access="access"`).toPromise();
       return data;
     }
     catch (error) {
@@ -93,8 +93,6 @@ export class ApiService {
   async addDevices(body) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      console.log(body);
-
       const data = await this.http.post(`${environment["apiBase"]}device/addDevice`, body,
         {
           headers: header
@@ -124,7 +122,6 @@ export class ApiService {
     let header = new Headers();
     header.append('token', localStorage.getItem("token"));
     try {
-      console.log(body);
       const data = await this.httpOld.delete(`${environment["apiBase"]}device/deleteDevice`, new RequestOptions({
         headers: header,
         body: body,

@@ -172,7 +172,7 @@ export class HomePage implements OnInit {
       chip: "",
       webid: "",
       isNew: false,
-      type: ""
+      type: "access"
     }
     this.keepCheckingWifiConnected();
   }
