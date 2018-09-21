@@ -28,14 +28,13 @@ export class RegisterComponent implements OnInit {
   async onSubmit(formData) {
     this.loading = true;
     try {
-      const data = await this.apiServices.postRegister(formData.value);
-      this.user=data['data']
+      this.user = await this.apiServices.postRegister(formData.value);
       this.loading = false;
       this.router.navigate(["/login"]);
       this.userRegisterForm.reset();
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err['error'].message;
+      this.errorMessage = err['error']
     }
   }
 }

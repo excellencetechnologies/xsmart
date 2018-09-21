@@ -8,11 +8,9 @@ export interface User {
     token: string;
 }
 export interface allDevices {
-    chip_id: string,
-    createdAt: string,
-    meta: Device,
-    updatedAt: string,
-    user_id: string,
-    __v: number,
-    _id: string,
+    chip_id: string;
+    createdAt: string;
+    meta: Device;
+    updatedAt: string;
+    user_id: string;
 }

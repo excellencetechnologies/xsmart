@@ -15,7 +15,7 @@ export class DeviceService {
         private uniqueDeviceID: UniqueDeviceID) {
     }
     //random id to identify the current app
-    async getAppID() {    
+    async getAppID() {
         if (this.platform.is("cordova")) {
             return await this.uniqueDeviceID.get()
         } else {
@@ -60,7 +60,7 @@ export class DeviceService {
                 device.switches = device.switches.map((s: Switch) => {
                     if (s.pin === pin) {
                         s.status = status,
-                        s.name = name;
+                            s.name = name;
                     }
                     return s;
                 })
@@ -114,8 +114,8 @@ export class DeviceService {
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
         }
-       
-        
+
+
     }
     async deleteDevice(deleteDevice: Device) {
         let devices = await this.getDevices();

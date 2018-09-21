@@ -10,12 +10,12 @@
     No Devices Found!
   </div>
   <ion-list *ngIf="alldevices && alldevices.length">
- 
+
     <ion-card *ngFor="let devices of alldevices" [class.selected]="devices === selectedDevices">
       <ion-list class="border">
         <ion-item class="border">
           <ion-icon slot="start" *ngIf="devices && devices.type !='access'" name="swap" color="primary"></ion-icon>
-          <ion-icon slot="start" *ngIf="devices && devices.type =='access'" color="primary"  name="infinite"></ion-icon>
+          <ion-icon slot="start" *ngIf="devices && devices.type =='access'" color="primary" name="infinite"></ion-icon>
           <ion-label color="primary" *ngIf="devices['meta']">{{devices.meta.name}}</ion-label>
           <ion-checkbox slot="end" [ngModel]="devices.status" color="primary" (ionChange)="onSelect(devices)"></ion-checkbox>
         </ion-item>
@@ -25,13 +25,10 @@
         <ion-item>
           <div class="content">
             <p size="12">
-              <b>
-                <span size="4">Device ID:</span>
-              </b>
-              <span *ngIf="devices['meta']">{{devices.chip_id}}</span>
+              <span *ngIf="devices['meta']"> device-Id:{{devices.chip_id}}</span>
             </p>
             <div *ngIf="devices['meta']">
-            <p *ngIf="devices.meta.switches.length > 0">
+              <p *ngIf="devices.meta.switches.length > 0">
                 <span> {{devices.meta.switches.length}}</span>
               </p>
             </div>

@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string;
   loading: boolean;
-  user: User;
+  user: User
   constructor(
     public apiServices: ApiService,
     private router: Router,
@@ -38,15 +38,14 @@ export class LoginComponent implements OnInit {
   async onSubmit(formData) {
     this.loading = true;
     try {
-      const data = await this.apiServices.postlogin(formData.value);
-      this.user = data['data']
+      this.user = await this.apiServices.postlogin(formData.value)
       this.loading = false;
       this._event.setLoginEvent(this.user.name)
       this.loginForm.reset();
       this.router.navigate(["/existing-devices"]);
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err['error'].message;
+      this.errorMessage = err['error'];
     }
   }
 }

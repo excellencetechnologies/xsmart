@@ -26,6 +26,7 @@ export class HomePage implements OnInit {
   mode: String = "device";
   isSocketConnected: boolean = false;
   loader: boolean;
+  errorMessage:string
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -172,7 +173,7 @@ export class HomePage implements OnInit {
       chip: "",
       webid: "",
       isNew: false,
-      type: "access"
+      type: ""
     }
     this.keepCheckingWifiConnected();
   }
@@ -240,7 +241,7 @@ export class HomePage implements OnInit {
       this.xSmartConnect = true;
       this.scanWifi();
     } catch (e) {
-      console.log(e);
+      this.errorMessage = e["error"];
       this.notifyService.alertUser("failed to set device name");
     }
   }
@@ -249,13 +250,13 @@ export class HomePage implements OnInit {
   async scanWifi() {
     this.loader = true;
     try {
-      const data = await this.api.getScanWifi();
-      this.wifinetworks = data['data'];
+     this. wifinetworks = await this.api.getScanWifi(); 
       this.loader = false
       console.log(this.wifinetworks);
     } catch (e) {
       this.loader = false;
       console.log(e)
+      this.errorMessage=e['error']
       this.isScanningDevice = true;
 
     }
@@ -303,6 +304,7 @@ export class HomePage implements OnInit {
             try {
               await this.api.setWifiPassword(wifi.SSID, data.password);
             } catch (e) {
+              this.errorMessage=e['error']
               console.log(e);
             }
             this.keepCheckingDeviceOnline();
@@ -353,6 +355,7 @@ export class HomePage implements OnInit {
               })
               this.deviceService.setDevices(allDevices);
             } catch (e) {
+              this.errorMessage=e['error']
               console.log(e);
             }
             this.keepCheckingDeviceOnline();

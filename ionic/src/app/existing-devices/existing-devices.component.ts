@@ -14,7 +14,7 @@ import { allDevices } from "../components/model/user";
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-  alldevices;
+  alldevices: allDevices[];
   device: Device[] = [];
   loading: boolean;
   errorMessage: string;
@@ -25,7 +25,7 @@ export class ExistingDevicesComponent implements OnInit {
     private router: Router,
     private nativeStorage: NativeStorage,
     private platform: Platform,
-    private deviceService:DeviceService
+    private deviceService: DeviceService
   ) { }
 
   ngOnInit() {
@@ -39,7 +39,7 @@ export class ExistingDevicesComponent implements OnInit {
       this.loading = false;
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err.message;
+      this.errorMessage = err['error'];
     }
   }
   importDevices() {
@@ -58,15 +58,15 @@ export class ExistingDevicesComponent implements OnInit {
   onSelect(devices): void {
     devices.status = !devices.status;
   }
-  async deleteDevices(user_id,chip_id,device:Device) {
+  async deleteDevices(user_id, chip_id, device: Device) {
     this.loading = true;
     try {
-      this.alldevices = await this.apiServices.deleteDevices({ chip_id: chip_id, user_id: user_id });
+      await this.apiServices.deleteDevices({ chip_id: chip_id, user_id: user_id });
       this.getDevice()
       this.loading = false;
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err.message;
+      this.errorMessage = err["error"];
     }
   }
 
