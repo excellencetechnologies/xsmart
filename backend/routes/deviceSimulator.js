@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var data = require("../device_data/data");
 var getDevice = require("../getDeviceData/data");
-router.get('/checkPing', (req, res) => {
+router.get('/', (req, res) => {
     let ping = {};
 
     if(req.query.noPing){
@@ -36,29 +36,29 @@ router.get('/checkPing', (req, res) => {
     res.status(200).json({ status: 1, message: "OK", data: ping });
 });
 
-router.get('/scanWifi', (req, res) => {
+router.get('/wifi', (req, res) => {
     res.status(200).json({ data: data.Wifi });
 });
 
-router.get('/setWifiPassword/:ssid/:password', (req, res) => {
+router.get('/wifisave', (req, res) => {
     data.Wifi.forEach((wifi) => {
-        if (wifi.SSID == req.params.SSID) {
-            if (req.params.password == '123456789') {
-                res.status(200).json({ status: 1, message: "password set ,you can access device", device: wifi });
+        if (wifi.SSID == req.query.ssid) {
+            if (req.query.password == '123456789') {
+                res.status(200).json(wifi);
             } else {
-                res.status(400).json({ error: 1, message: "check your wifi password. correct password is 123456789" });
+                res.status(400).json( "check your wifi password. correct password is 123456789" );
             }
         }
     });
 
 });
 
-router.get('/setDeviceNickName/:name/:chip', async (req, res) => {
-    let result = await getDevice.getDevicePing(req.params.name, req.params.chip);
+router.get('/setnickname', async (req, res) => {
+    let result = await getDevice.getDevicePing(req.query.name, req.params.chip);
     if (result == null) {
-        res.status(400).json({ error: 1, message: "not found" })
+        res.status(400).json("not found")
     } else {
-        res.status(200).json({ status: 1, data: result });
+        res.status(200).json(result );
     }
 });
 
