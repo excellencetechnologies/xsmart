@@ -6,12 +6,12 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
-  <div *ngIf="!(alldevices && alldevices.length)">
+  <div *ngIf="!(devices && devices.length)">
     No Devices Found!
   </div>
-  <ion-list *ngIf="alldevices && alldevices.length">
+  <ion-list *ngIf="devices && devices.length">
 
-    <ion-card *ngFor="let devices of alldevices" [class.selected]="devices === selectedDevices">
+    <ion-card *ngFor="let devices of devices" [class.selected]="devices === selectedDevices">
       <ion-list class="border">
         <ion-item class="border">
           <ion-icon slot="start" *ngIf="devices && devices.type !='access'" name="swap" color="primary"></ion-icon>

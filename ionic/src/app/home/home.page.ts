@@ -288,8 +288,6 @@ export class HomePage implements OnInit {
           type: 'text',
         }
       ],
-
-
       buttons: [
         {
           text: 'Cancel',

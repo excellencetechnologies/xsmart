@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Platform } from '@ionic/angular';
-import { allDevices } from "../components/model/user";
+import { importDevices } from "../components/model/user";
 
 @Component({
   selector: 'app-existing-devices',
@@ -14,7 +14,7 @@ import { allDevices } from "../components/model/user";
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-  alldevices: allDevices[];
+  devices: importDevices[];
   device: Device[] = [];
   loading: boolean;
   errorMessage: string;
@@ -35,7 +35,7 @@ export class ExistingDevicesComponent implements OnInit {
   async getDevice() {
     this.loading = true;
     try {
-      this.alldevices = await this.apiServices.listDevices();
+      this.devices = await this.apiServices.listDevices();
       this.loading = false;
     } catch (err) {
       this.loading = false;
@@ -44,7 +44,7 @@ export class ExistingDevicesComponent implements OnInit {
   }
   importDevices() {
     const enableDevices = [];
-    this.alldevices.forEach(device => {
+    this.devices.forEach(device => {
       if (device['status'] && device['meta']) {
         enableDevices.push(device['meta']);
       }
