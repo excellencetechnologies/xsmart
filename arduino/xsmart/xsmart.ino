@@ -485,6 +485,23 @@ void sendDisableAccess()
   delay(10);
   ping_packet_count++;
 }
+void sendEnableAccess()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_enable_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void sendDeleteAccess()
 {
   ping_packet_count = 0;
@@ -563,7 +580,7 @@ void checkCardEmployee(String uid)
   String emp_id = access.checkUID(uid);
   if (emp_id.length() > 0)
   {
-    boolean is_disabled = access.isDisabled(emp_id);
+    bool is_disabled = access.isDisabled(emp_id);
     Serial.print("emp id");
     Serial.println(emp_id);
     Serial.println("emplyee disabled");
@@ -1071,6 +1088,12 @@ void loop()
             emp_id = root.get<String>("emp_id");
             access.disableUID(emp_id);
             sendDisableAccess();
+          }
+          else if (type == "device_set_enable_employee")
+          {
+            emp_id = root.get<String>("emp_id");
+            access.enableUID(emp_id);
+            sendEnableAccess();
           }
 #endif
           data = "";

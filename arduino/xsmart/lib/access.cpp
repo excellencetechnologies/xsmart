@@ -129,14 +129,14 @@ void XAccess::deleteUID(String emp_id){
     root.printTo(file);
     saveConfigFile(file.c_str());
 }
-boolean XAccess::isDisabled(String emp_id){
+bool XAccess::isDisabled(String emp_id){
     String file = loadConfigFile();
     StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
     if(!root["disabled"]){
         return false;
     } else {
-        boolean found = false;
+        bool found = false;
         JsonArray &disabled = root["disabled"].as<JsonArray>();
         for (int i = 0; i < disabled.size(); i++){
             if(disabled[i].as<String>() == emp_id){
@@ -155,6 +155,31 @@ void XAccess::disableUID(String emp_id){
         JsonArray& disabled = root.createNestedArray("disabled");
         disabled.add(emp_id);
     } else {
+        int index = -1;
+        JsonArray &disabled = root["disabled"].as<JsonArray>();
+        for (int i = 0; i < disabled.size(); i++){
+            if(disabled[i].as<String>() == emp_id){
+                index = i;
+                break;
+            }
+        }
+        if(index > 0){
+            disabled.remove(index);
+        }
+    }
+    root.printTo(Serial);
+    file = "";
+    root.printTo(file);
+    saveConfigFile(file.c_str());
+}
+void XAccess::enableUID(String emp_id){
+    String file = loadConfigFile();
+    StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+    JsonObject &root = jsonBuffer.parseObject(file);
+    int index = 0;
+    if(!root["disabled"]){
+        
+    } else {
         JsonArray &disabled = root["disabled"].as<JsonArray>();
         disabled.add(emp_id);
     }
@@ -162,6 +187,7 @@ void XAccess::disableUID(String emp_id){
     file = "";
     root.printTo(file);
     saveConfigFile(file.c_str());
+
 }
 
 void XAccess::P(String msg)

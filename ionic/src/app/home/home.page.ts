@@ -126,8 +126,16 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
-        } else if(res.type === "device_set_disable_employee_notify"){
+        } else if (res.type === "device_set_disable_employee_notify") {
           this.notifyService.alertUser("employee disable");
+        } else if (res.type === "device_set_enable_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_enable_employee_notify") {
+          this.notifyService.alertUser("employee enabled");
         }
       });
     }
@@ -477,6 +485,37 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.sendMessageToSocket({
               type: "device_set_disable_employee",
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+  async enableEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_enable_employee",
               chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,

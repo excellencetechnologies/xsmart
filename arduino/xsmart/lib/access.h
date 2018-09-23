@@ -15,7 +15,8 @@ class XAccess
     void addUID(String, String);
     void deleteUID(String);
     void disableUID(String);
-    boolean isDisabled(String);
+    bool isDisabled(String);
+    void enableUID(String);
     
   private:
     char * configfile;
