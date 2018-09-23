@@ -98,14 +98,20 @@ export class HomePage implements OnInit {
           //this is not working. the ui doesn't update all the pin status
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
-        }else if(res.type === "device_set_add_employee_reply"){
+        } else if (res.type === "device_set_add_employee_reply") {
           if (res.found) {
             this.notifyService.alertUser("operation sent to device");
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
-        }else if(res.type === "device_set_add_employee_notify"){
-          this.notifyService.alertUser("device waiting to add employee. touch card.");
+        } else if (res.type === "device_set_add_employee_notify") {
+          if (res.stage === "employee_add_failed") {
+            this.notifyService.alertUser("employee add failed on device. reason: " + res.message);
+          } else if (res.stage === "employee_add_success") {
+            this.notifyService.alertUser("device added card successful with card id ." + res.rfid + " and employee id " + res.emp_id);
+          } else {
+            this.notifyService.alertUser("device waiting to add employee. touch card.");
+          }
         }
       });
     }
@@ -401,6 +407,39 @@ export class HomePage implements OnInit {
 
     await alert.present();
 
+
+  }
+  async deleteEmployee(device: Device){
+
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_delete_employee",
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
 
   }
 }

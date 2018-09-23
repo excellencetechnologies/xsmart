@@ -13,6 +13,7 @@ class XAccess
     void initConfig(void);
     String checkUID(String);
     void addUID(String, String);
+    void deleteUID(String);
     
   private:
     char * configfile;

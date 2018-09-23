@@ -468,6 +468,22 @@ void sendNamePack(String name)
   ping_packet_count++;
 }
 #ifdef ISACCESS
+void sendDeleteAccess(){
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_delete_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void sendAccessMode()
 {
   ping_packet_count = 0;
@@ -875,9 +891,8 @@ void loop()
         String emp_id = access.checkUID(rfid);
         if (emp_id.length() > 0)
         {
-          sendCardDataAddEmployeeFailed("card already assigned to employee");
-          Serial.println("card already assigned to employeee");
-          Serial.print(emp_id);
+          sendCardDataAddEmployeeFailed("card already assigned to employee"  + emp_id);
+          Serial.println("card already assigned to employeee: " + emp_id);
           access_mode = ACCESS_MODE_READ;
         }
         else
@@ -1022,6 +1037,10 @@ void loop()
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
             emp_id = root.get<String>("emp_id");
             sendAccessMode();
+          }else if(type == "device_set_delete_employee"){
+              emp_id = root.get<String>("emp_id");
+              access.deleteUID(emp_id);
+              sendDeleteAccess();
           }
           data = "";
         }

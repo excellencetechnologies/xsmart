@@ -99,8 +99,17 @@ handleProtocol = async (obj, ws, w) => {
         "device_pin_oper",
         "device_bulk_pin_oper",
         "device_set_name",
-        "device_set_add_employee"
+        "device_set_add_employee",
+        "device_set_delete_employee"
     ];
+    if(obj.type === "device_set_delete_employee"){
+        if(obj.stage === "success"){
+            Card.deleteOne({
+                chip: obj["chip"],
+                emp_id: obj['emp_id']
+            })
+        }
+    }
     if (methods.includes(obj.type)) {
         if (obj.stage === "init") {
             //this variable found is just so that code is more readable.

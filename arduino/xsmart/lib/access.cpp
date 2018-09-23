@@ -111,6 +111,16 @@ void XAccess::addUID(String uid, String emp_id)
     root.printTo(file);
     saveConfigFile(file.c_str());
 }
+void XAccess::deleteUID(String emp_id){
+    String file = loadConfigFile();
+    StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+    JsonObject &root = jsonBuffer.parseObject(file);
+    root.remove(emp_id);
+    root.printTo(Serial);
+    file = "";
+    root.printTo(file);
+    saveConfigFile(file.c_str());
+}
 
 void XAccess::P(String msg)
 {
