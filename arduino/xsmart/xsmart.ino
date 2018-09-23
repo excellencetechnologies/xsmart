@@ -24,6 +24,7 @@
 #include <ArduinoJson.h>
 #include <xconfig.h>
 #include <ota.h>
+#include <time.h>
 
 XConfig xconfig = XConfig("/config.json");
 OTA update = OTA();
@@ -423,6 +424,7 @@ void connectWifi()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     delay_connect_wifi = 5000;
+    configTime(0, 0, "pool.ntp.org", "time.nist.gov");
   }
   delay(delay_connect_wifi);
 }
@@ -467,7 +469,44 @@ void sendNamePack(String name)
   delay(10);
   ping_packet_count++;
 }
+void sendDeviceTime(char *time){
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_name";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["version"] = version;
+  root["chip"] = device_ssid;
+  root["data"] = time;
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 #ifdef ISACCESS
+void sendAccessData(JsonObject &accessData)
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_list_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+  String data = "";
+  accessData.printTo(data);
+  root["data"] = data;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void sendDisableAccess()
 {
   ping_packet_count = 0;
@@ -607,6 +646,7 @@ void checkCardEmployee(String uid)
   }
 }
 #endif
+#ifdef ISSWITCH
 void sendPinNamePack()
 {
   ping_packet_count = 0;
@@ -682,6 +722,7 @@ void sendIOPack(int pin, int status)
   delay(10);
   ping_packet_count++;
 }
+#endif
 void pingPacket()
 {
   if (ping_packet_count == 0)
@@ -873,6 +914,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(10);
+
 #ifdef ISACCESS
   SPI.begin();        // Init SPI bus
   mfrc522.PCD_Init(); // Init MFRC522
@@ -899,7 +941,6 @@ void setup()
 void loop()
 {
   detectInterruptChange();
-
 #ifdef ISACCESS
   // Look for new cards
   if (access_mode == ACCESS_MODE_READ)
@@ -964,6 +1005,7 @@ void loop()
     String data;
     if (WiFi.status() != WL_CONNECTED)
     {
+
       digitalWrite(LEDPIN, LOW);
 
       if (canWorkWithoutWifi)
@@ -996,6 +1038,7 @@ void loop()
     }
     else
     {
+
       digitalWrite(LEDPIN, HIGH);
       if (client.connected())
       {
@@ -1022,6 +1065,22 @@ void loop()
           root.printTo(Serial);
           String type = root["type"];
 
+          if (type == "device_set_name")
+          {
+            xconfig.setNickName(root.get<String>("name"));
+            sendNamePack(root.get<String>("name"));
+          }
+          else if (type == "device_set_time")
+          {
+          }
+          else if (type == "device_get_time")
+          {
+            time_t now = time(nullptr);
+            Serial.println(ctime(&now));
+            sendDeviceTime(ctime(&now));
+          }
+
+#ifdef ISSWITCH
           if (type == "device_pin_oper")
           {
             if (root["status"] == "HIGH")
@@ -1041,11 +1100,7 @@ void loop()
               sendIOPack(pin, 0);
             }
           }
-          else if (type == "device_set_name")
-          {
-            xconfig.setNickName(root.get<String>("name"));
-            sendNamePack(root.get<String>("name"));
-          }
+
           else if (type == "device_bulk_pin_oper")
           {
             JsonArray &pins = root["switches"].as<JsonArray>();
@@ -1070,6 +1125,7 @@ void loop()
           {
             ok_ping_not_recieved_count = 0;
           }
+#endif
 #ifdef ISACCESS
           if (type == "device_set_add_employee")
           {
@@ -1094,6 +1150,11 @@ void loop()
             emp_id = root.get<String>("emp_id");
             access.enableUID(emp_id);
             sendEnableAccess();
+          }
+          else if (type == "device_set_list_employee")
+          {
+            JsonObject &root = access.listData();
+            sendAccessData(root);
           }
 #endif
           data = "";

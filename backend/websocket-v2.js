@@ -103,7 +103,9 @@ handleProtocol = async (obj, ws, w) => {
         "device_set_delete_employee",
         "device_set_disable_employee",
         "device_set_enable_employee",
-        "device_set_list_employee"
+        "device_set_list_employee",
+        "device_set_time",
+        "device_get_time"
     ];
     if(obj.type === "device_set_delete_employee"){
         if(obj.stage === "success"){
