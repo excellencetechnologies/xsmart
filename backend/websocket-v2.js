@@ -94,7 +94,7 @@ sendNotifyToApp = (obj, ws, w) => {
 // the name of protocol is drunkDeviceSync or highDSync
 
 // who's going to test this............
-handleProtocol = (obj, ws, w) => {
+handleProtocol = async (obj, ws, w) => {
     let methods = [
         "device_pin_oper",
         "device_bulk_pin_oper",
