@@ -81,14 +81,14 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
-        }else if(res.type === "device_bulk_io_notify"){
+        }else if(res.type === "device_bulk_pin_oper_notify"){
           res.pins.forEach( async (p) => {
             await this.deviceService.updateDevicePin(p.pin, p.status, res.chip,res.name);
           })
           //this is not working. the ui doesn't update all the pin status
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
-        } else if (res.type === "device_io_notify") {
+        } else if (res.type === "device_pin_oper_notify") {
           await this.deviceService.updateDevicePin(res.pin, res.status, res.chip, res.name);
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
@@ -111,9 +111,10 @@ export class HomePage implements OnInit {
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
-      status: 0,
+      status: "LOW",
       name: s.name,
-      app_id: await this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID(),
+      stage : "init"
     })
   }
   async switchOn(s: Switch, d: Device) {
@@ -121,9 +122,10 @@ export class HomePage implements OnInit {
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
-      status: 1,
+      status: "HIGH",
       name: s.name,
-      app_id: await this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID(),
+      stage : "init"
     })
   }
   async setSwitchNamee(s: Switch, d: Device) {
@@ -132,7 +134,8 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       name: s.name,
-      app_id: await this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID(),
+      stage : "init"
     })
   }
 
@@ -256,7 +259,8 @@ export class HomePage implements OnInit {
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
-        app_id: await this.deviceService.getAppID()
+        app_id: await this.deviceService.getAppID(),
+        stage : "init"
       });
     });
   }
@@ -382,7 +386,8 @@ export class HomePage implements OnInit {
               type: "device_set_add_employee",
               chip: device.chip,
               app_id: await this.deviceService.getAppID(),
-              emp_id : data.emp_id
+              emp_id : data.emp_id,
+              stage : "init"
             })
           }
         }

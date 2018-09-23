@@ -83,7 +83,7 @@ const int PIN_SIZE = 7;
 const byte interruptPin = 19;
 #endif
 
-int current_wifi_status = WIFI_CONNECT_MODE;
+int current_wifi_status = WIFI_AP_MODE;
 int previous_wifi_status = current_wifi_status; //this used to detect change
 
 char path[] = "/";
@@ -257,6 +257,10 @@ void startWifiAP()
 
       String ssid = server.arg("ssid");
       String password = server.arg("password");
+      if (ssid.length == 0)
+        return server.send(500, "text/plain", "ssid empty");
+      if (password.length == 0)
+        return server.send(500, "text/plain", "password empty");
       Serial.println("wifi save called");
 
       char ssid_array[ssid.length() + 1];
@@ -450,7 +454,8 @@ void sendNamePack(String name)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_name_success";
+  root["type"] = "device_set_name";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["version"] = version;
   root["chip"] = device_ssid;
@@ -468,7 +473,8 @@ void sendAccessMode()
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_add_employee_success";
+  root["type"] = "device_set_add_employee";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
 
@@ -485,7 +491,8 @@ void sendCardDataAddEmployee(String rfid)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_add_card";
+  root["type"] = "device_set_add_employee";
+  root["stage"] = "error";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
   root["data"] = rfid;
@@ -578,7 +585,8 @@ void sendBulkIOPack()
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_bulk_io_reply";
+  root["type"] = "device_bulk_pin_oper";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
 
@@ -605,7 +613,8 @@ void sendIOPack(int pin, int status)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_io_reply";
+  root["type"] = "device_pin_oper";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["version"] = version;
   root["chip"] = device_ssid;
@@ -958,28 +967,31 @@ void loop()
           root.printTo(Serial);
           String type = root["type"];
 
-          if (type == "HIGH")
+          if (type == "device_pin_oper")
           {
-            int pin = root["pin"];
-            Serial.println("setting hight");
-            pinWrite(pin, HIGH);
-            delay(10);
-            sendIOPack(pin, 1);
+            if (root["status"] == "HIGH")
+            {
+              int pin = root["pin"];
+              Serial.println("setting hight");
+              pinWrite(pin, HIGH);
+              delay(10);
+              sendIOPack(pin, 1);
+            }
+            else if (root["status"] == "LOW")
+            {
+              int pin = root["pin"];
+              Serial.println("setting low");
+              pinWrite(pin, LOW);
+              delay(10);
+              sendIOPack(pin, 0);
+            }
           }
-          else if (type == "LOW")
-          {
-            int pin = root["pin"];
-            Serial.println("setting low");
-            pinWrite(pin, LOW);
-            delay(10);
-            sendIOPack(pin, 0);
-          }
-          else if (type == "DEVICE_NAME")
+          else if (type == "device_set_name")
           {
             xconfig.setNickName(root.get<String>("name"));
             sendNamePack(root.get<String>("name"));
           }
-          else if (type == "IO")
+          else if (type == "device_bulk_pin_oper")
           {
             JsonArray &pins = root["switches"].as<JsonArray>();
             for (int i = 0; i < pins.size(); i++)
@@ -1003,7 +1015,7 @@ void loop()
           {
             ok_ping_not_recieved_count = 0;
           }
-          else if (type == "ADD_EMPLOYEE")
+          else if (type == "device_set_add_employee")
           {
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
             emp_id = root.get<String>("emp_id");
