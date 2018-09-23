@@ -165,6 +165,20 @@ export class HomePage implements OnInit {
           }
         } else if (res.type === "device_get_time_notify") {
           console.log(res.data);
+          let deviceTime = new Date(res.data).getTime();
+          let currentTime = new Date().getTime();
+          let diff = currentTime - deviceTime;
+          if(Math.abs(diff) > 24){
+            console.log("some time wrong");
+          }else{
+            this.sendMessageToSocket({
+              type: "device_set_time",
+              chip: res.chip,
+              app_id: await this.deviceService.getAppID(),
+              stage: "init",
+              diff: (diff/1000)
+            });
+          }
           this.notifyService.alertUser("device time recieved");
         }
       });

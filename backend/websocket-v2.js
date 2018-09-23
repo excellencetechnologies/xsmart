@@ -176,7 +176,8 @@ ws.on('connection', function (w) {
                     pins: obj['PINS'],
                     chip: obj['chip'],
                     time: time,
-                    type: obj["type"] ? obj["type"] : "switch"
+                    type: obj["type"] ? obj["type"] : "switch",
+                    deviceTime: obj["deviceTime"]
                 };
                 w.chip = chip;
                 w.send(JSON.stringify({
@@ -196,7 +197,8 @@ ws.on('connection', function (w) {
                                     status: devices[chip].status,
                                     chip: devices[chip].chip,
                                     time: devices[chip].time,
-                                    found: true
+                                    found: true,
+                                    deviceTime: devices[chip].deviceTime
                                 }));
                             }
                         });

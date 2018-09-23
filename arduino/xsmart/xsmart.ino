@@ -424,7 +424,7 @@ void connectWifi()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     delay_connect_wifi = 5000;
-    configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+    configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
   }
   delay(delay_connect_wifi);
 }
@@ -469,11 +469,12 @@ void sendNamePack(String name)
   delay(10);
   ping_packet_count++;
 }
-void sendDeviceTime(char *time){
+void sendDeviceTime(char *time, String type)
+{
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_name";
+  root["type"] = type;
   root["stage"] = "success";
   root["WEBID"] = webID;
   root["version"] = version;
@@ -734,6 +735,8 @@ void pingPacket()
     root["WEBID"] = webID;
     root["version"] = version;
     root["chip"] = device_ssid;
+    time_t now = time(nullptr);
+    root["deviceTime"] = ctime(&now);
 #ifdef ISACCESS
     root["device_type"] = "access";
 #endif
@@ -1072,12 +1075,18 @@ void loop()
           }
           else if (type == "device_set_time")
           {
+            int diff = root.get<int>("diff");
+            xconfig.setDeviceTimezone(diff);
+            configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
+            time_t now = time(nullptr);
+            Serial.println(ctime(&now));
+            sendDeviceTime(ctime(&now), "device_set_time");
           }
           else if (type == "device_get_time")
           {
             time_t now = time(nullptr);
             Serial.println(ctime(&now));
-            sendDeviceTime(ctime(&now));
+            sendDeviceTime(ctime(&now), "device_get_time");
           }
 
 #ifdef ISSWITCH
