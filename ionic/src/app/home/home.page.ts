@@ -81,13 +81,6 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
-        }else if(res.type === "device_bulk_pin_oper_notify"){
-          res.pins.forEach( async (p) => {
-            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip,res.name);
-          })
-          //this is not working. the ui doesn't update all the pin status
-          this.devices = await this.deviceService.getDevices();
-          this.notifyService.alertUser("device performed the action!");
         } else if (res.type === "device_pin_oper_notify") {
           await this.deviceService.updateDevicePin(res.pin, res.status, res.chip, res.name);
           this.devices = await this.deviceService.getDevices();
@@ -98,9 +91,13 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
-        }
-        else if (res.type === "device_online_check_reply") {
-          this.notifyService.alertUser("name sent to device");
+        } else if (res.type === "device_bulk_pin_oper_notify") {
+          res.pins.forEach(async (p) => {
+            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip, res.name);
+          })
+          //this is not working. the ui doesn't update all the pin status
+          this.devices = await this.deviceService.getDevices();
+          this.notifyService.alertUser("device performed the action!");
         }
       });
     }
@@ -114,7 +111,7 @@ export class HomePage implements OnInit {
       status: "LOW",
       name: s.name,
       app_id: await this.deviceService.getAppID(),
-      stage : "init"
+      stage: "init"
     })
   }
   async switchOn(s: Switch, d: Device) {
@@ -125,7 +122,7 @@ export class HomePage implements OnInit {
       status: "HIGH",
       name: s.name,
       app_id: await this.deviceService.getAppID(),
-      stage : "init"
+      stage: "init"
     })
   }
   async setSwitchNamee(s: Switch, d: Device) {
@@ -135,7 +132,7 @@ export class HomePage implements OnInit {
       pin: s.pin,
       name: s.name,
       app_id: await this.deviceService.getAppID(),
-      stage : "init"
+      stage: "init"
     })
   }
 
@@ -255,12 +252,12 @@ export class HomePage implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      console.log("pinging device" , device.chip);
+      console.log("pinging device", device.chip);
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
         app_id: await this.deviceService.getAppID(),
-        stage : "init"
+        stage: "init"
       });
     });
   }
@@ -364,7 +361,7 @@ export class HomePage implements OnInit {
    * new test code by manish for access card
    */
 
-  async addEmployee(device :Device){
+  async addEmployee(device: Device) {
 
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',
@@ -384,10 +381,10 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.sendMessageToSocket({
               type: "device_set_add_employee",
-              chip: device.chip,
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
-              emp_id : data.emp_id,
-              stage : "init"
+              emp_id: data.emp_id,
+              stage: "init"
             })
           }
         }
@@ -396,6 +393,6 @@ export class HomePage implements OnInit {
 
     await alert.present();
 
-    
-   }
+
+  }
 }

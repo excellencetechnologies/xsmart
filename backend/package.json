@@ -1,7 +1,7 @@
 {
     "name": "xsmart",
     "scripts": {
-        "start": "node websocket.js",
+        "start": "node websocket-v2.js",
         "simulateSwitch1" : "node deviceSimulator 0",
         "simulateSwitch2" : "node deviceSimulator 1",
         "simulateSwitch3" : "node deviceSimulator 2",

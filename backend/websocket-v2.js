@@ -63,6 +63,8 @@ sendToApp = (found, w) => {
         chip: obj['chip']
     }));
 }
+
+
 sendNotifyToApp = (obj, ws, w) => {
     // this is when a device send back reply after a sucessfuly i/o operation
     let chip = obj['chip'];
@@ -77,6 +79,65 @@ sendNotifyToApp = (obj, ws, w) => {
             });
         });
 
+    }
+}
+
+
+
+//general operation will be liek this
+
+// 1. app sends operation to device with type = "xxxx" and stage = "init"
+// 2. server sends to device with the same type
+// 3. server sends back to app with respons if device was found or not with type = type + "_reply"
+// 4. device gets the type and replies back with type _ "success" or type "_error"
+// 5. server gives to to app with type type + "_notify"
+// the name of protocol is drunkDeviceSync or highDSync
+
+// who's going to test this............
+handleProtocol = (obj, ws, w) => {
+    let methods = [
+        "device_pin_oper",
+        "device_bulk_pin_oper",
+        "device_set_name",
+        "device_set_add_employee"
+    ];
+    if (methods.includes(obj.type)) {
+        if (obj.stage === "init") {
+            //this variable found is just so that code is more readable.
+            //no other use...... :thinkk....
+            let found = await sendToDevice(obj, ws, w);
+            sendToApp(found, w);
+        } else if (obj.stage === "success" || obj.stage === "error") {
+            sendNotifyToApp(obj, ws, w);
+        } else if (obj.stage === "employee_add_failed") {
+            sendNotifyToApp(obj, ws, w);
+        } else if (obj.stage = "employee_add_success") {
+            Card.findOneAndUpdate({
+                chip: chip,
+                emp_id: obj['emp_id'],
+            },
+                {
+                    chip: chip,
+                    emp_id: obj['emp_id'],
+                    rfid: obj['rfid']
+                },
+                { upsert: true, new: true },
+                () => {
+                    sendNotifyToApp(obj, ws, w);
+                }
+            )
+        }
+    } else {
+        if (obj.type === "device_card_read") {
+            //this is special method. outside regular protocal.
+            //in this device is sending push to socket.
+
+            // do something when card is read successfully like doing push notification or 
+            //sending data to webhook. will come in advance usage.
+
+        } else {
+            w.send("error...... wtfs.. yeah method nai hai :P :P :P");
+        }
     }
 }
 
@@ -104,7 +165,6 @@ ws.on('connection', function (w) {
                     type: obj["type"] ? obj["type"] : "switch"
                 };
                 w.chip = chip;
-
                 w.send(JSON.stringify({
                     type: "OK"
                 }));
@@ -175,106 +235,6 @@ ws.on('connection', function (w) {
             } else {
                 handleProtocol(obj, ws, w);
             }
-
-            //general operation will be liek this
-
-            // 1. app sends operation to device with type = "xxxx" and stage = "init"
-            // 2. server sends to device with the same type
-            // 3. server sends back to app with respons if device was found or not with type = type + "_reply"
-            // 4. device gets the type and replies back with type _ "success" or type "_error"
-            // 5. server gives to to app with type type + "_notify"
-            // the name of protocol is drunkDeviceSync or highDSync
-
-            // who's going to test this............
-            handleProtocol = (obj, ws, w) => {
-                let methods = [
-                    "device_pin_oper", 
-                    "device_bulk_pin_oper",
-                    "device_set_name",
-                    "device_set_add_employee"
-                ];
-                if (methods.includes(obj.type)) {
-                    if (obj.stage === "init") {
-                        //this variable found is just so that code is more readable.
-                        //no other use...... :thinkk....
-                        let found = await sendToDevice(obj, ws, w);
-                        sendToApp(found, w);
-                    } else if (obj.stage === "success"  || obj.stage === "error") {
-                        sendNotifyToApp(obj, ws, w);
-                    }
-                }else{
-                    w.send("error...... wtfs.. yeah method nai hai :P :P :P");
-                }
-            }
-            } else if (obj.type === "device_add_card") {
-
-                let chip = obj['chip'];
-                if (obj["data"] * 1 === -1) {
-                    w.send(JSON.stringify({
-                        type: "NORMAL_CARD_MODE"
-                    }));
-                    w.chip = chip;
-                    if (apps[chip]) {
-                        apps[chip].forEach((app) => {
-                            ws.clients.forEach((client) => {
-                                if (client.app_id && client.app_id == app) {
-                                    client.send(JSON.stringify({
-                                        type: "device_add_card_notify",
-                                        data: obj["data"],
-                                        message: obj["message"]
-                                    }));
-                                }
-                            });
-                        });
-
-                    }
-                } else {
-                    Card.findOneAndUpdate({
-                        chip: chip,
-                        emp_id: obj['emp_id'],
-                    },
-                        {
-                            chip: chip,
-                            emp_id: obj['emp_id'],
-                            meta: {
-                                size: obj['size'],
-                                data: obj['data']
-                            }
-                        },
-                        { upsert: true, new: true },
-                        () => {
-                            w.chip = chip;
-                            if (apps[chip]) {
-                                apps[chip].forEach((app) => {
-                                    ws.clients.forEach((client) => {
-                                        if (client.app_id && client.app_id == app) {
-                                            client.send(JSON.stringify({
-                                                type: "device_add_card_notify",
-                                                data: obj["data"],
-                                                size: obj["size"]
-                                            }));
-                                        }
-                                    });
-                                });
-
-                            }
-
-                            w.send(JSON.stringify({
-                                type: "NORMAL_CARD_MODE"
-                            }));
-                        }
-                    )
-                }
-
-
-            } else if (obj.type === "device_card_read") {
-                let chip = obj['chip'];
-                let app_id = obj['app_id'];
-                w.app_id = app_id;
-                // do something when card is read successfully
-            }
-
-
 
         } catch (e) {
             console.log(msg);

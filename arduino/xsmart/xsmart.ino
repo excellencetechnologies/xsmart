@@ -257,9 +257,9 @@ void startWifiAP()
 
       String ssid = server.arg("ssid");
       String password = server.arg("password");
-      if (ssid.length == 0)
+      if (ssid.length() == 0)
         return server.send(500, "text/plain", "ssid empty");
-      if (password.length == 0)
+      if (password.length() == 0)
         return server.send(500, "text/plain", "password empty");
       Serial.println("wifi save called");
 
@@ -492,10 +492,10 @@ void sendCardDataAddEmployee(String rfid)
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
   root["type"] = "device_set_add_employee";
-  root["stage"] = "error";
+  root["stage"] = "employee_add_success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
-  root["data"] = rfid;
+  root["rfid"] = rfid;
   root["emp_id"] = emp_id;
 
   String json = "";
@@ -510,7 +510,8 @@ void sendCardDataAddEmployeeFailed(String message)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_add_card";
+  root["type"] = "device_set_add_employee";
+  root["stage"] = "employee_add_failed";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
   root["data"] = "-1";
@@ -877,6 +878,7 @@ void loop()
           sendCardDataAddEmployeeFailed("card already assigned to employee");
           Serial.println("card already assigned to employeee");
           Serial.print(emp_id);
+          access_mode = ACCESS_MODE_READ;
         }
         else
         {
@@ -1020,10 +1022,6 @@ void loop()
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
             emp_id = root.get<String>("emp_id");
             sendAccessMode();
-          }
-          else if (type == "NORMAL_CARD_MODE")
-          {
-            access_mode = ACCESS_MODE_READ;
           }
           data = "";
         }
