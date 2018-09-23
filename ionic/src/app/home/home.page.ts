@@ -98,6 +98,14 @@ export class HomePage implements OnInit {
           //this is not working. the ui doesn't update all the pin status
           this.devices = await this.deviceService.getDevices();
           this.notifyService.alertUser("device performed the action!");
+        }else if(res.type === "device_set_add_employee_reply"){
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        }else if(res.type === "device_set_add_employee_notify"){
+          this.notifyService.alertUser("device waiting to add employee. touch card.");
         }
       });
     }

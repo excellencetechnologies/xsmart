@@ -113,11 +113,11 @@ handleProtocol = async (obj, ws, w) => {
             sendNotifyToApp(obj, ws, w);
         } else if (obj.stage = "employee_add_success") {
             Card.findOneAndUpdate({
-                chip: chip,
+                chip: obj["chip"],
                 emp_id: obj['emp_id'],
             },
                 {
-                    chip: chip,
+                    chip: obj["chip"],
                     emp_id: obj['emp_id'],
                     rfid: obj['rfid']
                 },

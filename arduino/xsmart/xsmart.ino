@@ -83,7 +83,7 @@ const int PIN_SIZE = 7;
 const byte interruptPin = 19;
 #endif
 
-int current_wifi_status = WIFI_AP_MODE;
+int current_wifi_status = WIFI_CONNECT_MODE;
 int previous_wifi_status = current_wifi_status; //this used to detect change
 
 char path[] = "/";

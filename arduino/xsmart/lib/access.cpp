@@ -104,7 +104,7 @@ void XAccess::addUID(String uid, String emp_id)
     StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
     
-    root.set("uid", emp_id);
+    root.set(uid, emp_id);
 
     root.printTo(Serial);
     file = "";
