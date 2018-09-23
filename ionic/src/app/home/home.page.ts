@@ -137,6 +137,16 @@ export class HomePage implements OnInit {
         } else if (res.type === "device_set_enable_employee_notify") {
           this.notifyService.alertUser("employee enabled");
         }
+        else if (res.type === "device_set_list_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_list_employee_notify") {
+          console.log(res.data);
+          this.notifyService.alertUser("employee list recieved");
+        }
       });
     }
   }
@@ -528,4 +538,15 @@ export class HomePage implements OnInit {
 
     await alert.present();
   }
+  async listEmployee(device: Device) {
+
+    this.sendMessageToSocket({
+      type: "device_set_list_employee",
+      chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
+    })
+
+  }
+
 }

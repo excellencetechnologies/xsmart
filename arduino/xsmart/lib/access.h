@@ -17,6 +17,7 @@ class XAccess
     void disableUID(String);
     bool isDisabled(String);
     void enableUID(String);
+    JsonObject& listData();
     
   private:
     char * configfile;
