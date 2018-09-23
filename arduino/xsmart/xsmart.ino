@@ -468,7 +468,25 @@ void sendNamePack(String name)
   ping_packet_count++;
 }
 #ifdef ISACCESS
-void sendDeleteAccess(){
+void sendDisableAccess()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_disable_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendDeleteAccess()
+{
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
@@ -545,8 +563,11 @@ void checkCardEmployee(String uid)
   String emp_id = access.checkUID(uid);
   if (emp_id.length() > 0)
   {
+    boolean is_disabled = access.isDisabled(emp_id);
     Serial.print("emp id");
     Serial.println(emp_id);
+    Serial.println("emplyee disabled");
+    Serial.print(is_disabled);
     ping_packet_count = 0;
     StaticJsonBuffer<200> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
@@ -891,7 +912,7 @@ void loop()
         String emp_id = access.checkUID(rfid);
         if (emp_id.length() > 0)
         {
-          sendCardDataAddEmployeeFailed("card already assigned to employee"  + emp_id);
+          sendCardDataAddEmployeeFailed("card already assigned to employee" + emp_id);
           Serial.println("card already assigned to employeee: " + emp_id);
           access_mode = ACCESS_MODE_READ;
         }
@@ -1032,16 +1053,26 @@ void loop()
           {
             ok_ping_not_recieved_count = 0;
           }
-          else if (type == "device_set_add_employee")
+#ifdef ISACCESS
+          if (type == "device_set_add_employee")
           {
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
             emp_id = root.get<String>("emp_id");
             sendAccessMode();
-          }else if(type == "device_set_delete_employee"){
-              emp_id = root.get<String>("emp_id");
-              access.deleteUID(emp_id);
-              sendDeleteAccess();
           }
+          else if (type == "device_set_delete_employee")
+          {
+            emp_id = root.get<String>("emp_id");
+            access.deleteUID(emp_id);
+            sendDeleteAccess();
+          }
+          else if (type == "device_set_disable_employee")
+          {
+            emp_id = root.get<String>("emp_id");
+            access.disableUID(emp_id);
+            sendDisableAccess();
+          }
+#endif
           data = "";
         }
         else

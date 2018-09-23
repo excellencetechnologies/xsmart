@@ -112,6 +112,22 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("device waiting to add employee. touch card.");
           }
+        } else if (res.type === "device_set_delete_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_delete_employee_notify") {
+          this.notifyService.alertUser("employee delete");
+        } else if (res.type === "device_set_disable_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if(res.type === "device_set_disable_employee_notify"){
+          this.notifyService.alertUser("employee disable");
         }
       });
     }
@@ -409,7 +425,7 @@ export class HomePage implements OnInit {
 
 
   }
-  async deleteEmployee(device: Device){
+  async deleteEmployee(device: Device) {
 
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',
@@ -441,5 +457,36 @@ export class HomePage implements OnInit {
 
     await alert.present();
 
+  }
+  async disableEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_disable_employee",
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 }

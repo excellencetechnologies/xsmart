@@ -100,7 +100,8 @@ handleProtocol = async (obj, ws, w) => {
         "device_bulk_pin_oper",
         "device_set_name",
         "device_set_add_employee",
-        "device_set_delete_employee"
+        "device_set_delete_employee",
+        "device_set_disable_employee"
     ];
     if(obj.type === "device_set_delete_employee"){
         if(obj.stage === "success"){
