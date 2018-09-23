@@ -56,7 +56,7 @@ sendToDevice = (obj, ws, w) => {
 }
 
 
-sendToApp = (found, w) => {
+sendToApp = (obj, found, w) => {
     w.send(JSON.stringify({
         type: obj.type + "_reply",
         found: found,
@@ -106,7 +106,7 @@ handleProtocol = async (obj, ws, w) => {
             //this variable found is just so that code is more readable.
             //no other use...... :thinkk....
             let found = await sendToDevice(obj, ws, w);
-            sendToApp(found, w);
+            sendToApp(obj, found, w);
         } else if (obj.stage === "success" || obj.stage === "error") {
             sendNotifyToApp(obj, ws, w);
         } else if (obj.stage === "employee_add_failed") {
