@@ -231,7 +231,8 @@ ws.on('connection', function (w) {
                             pins: devices[c].pins,
                             chip: devices[c].chip,
                             found: true,
-                            time: devices[c].time
+                            time: devices[c].time,
+                            deviceTime: devices[c].deviceTime
                         }));
                         found = true;
 

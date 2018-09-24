@@ -165,18 +165,23 @@ export class HomePage implements OnInit {
           }
         } else if (res.type === "device_get_time_notify") {
           console.log(res.data);
+          console.log(new Date(res.data));
+          console.log(new Date());
           let deviceTime = new Date(res.data).getTime();
           let currentTime = new Date().getTime();
           let diff = currentTime - deviceTime;
-          if(Math.abs(diff) > 24){
-            console.log("some time wrong");
+          console.log("difference in time " + (diff/(1000 * 60 * 60)))
+          if(Math.abs(diff) > 24 * 60 * 60 * 1000){
+            console.log("some thing wnent wrong. diff is very large " + diff);
+          }else if(Math.abs(diff) < .5 * 60 * 60 * 1000){
+            console.log("different in time less than 30min its fine")
           }else{
             this.sendMessageToSocket({
               type: "device_set_time",
               chip: res.chip,
               app_id: await this.deviceService.getAppID(),
               stage: "init",
-              diff: (diff/1000)
+              diff: Math.round(diff/1000)
             });
           }
           this.notifyService.alertUser("device time recieved");

@@ -736,7 +736,10 @@ void pingPacket()
     root["version"] = version;
     root["chip"] = device_ssid;
     time_t now = time(nullptr);
-    root["deviceTime"] = ctime(&now);
+    struct tm * p = localtime(&now);
+    char s[1000];
+    strftime(s, 1000, "%c", p);
+    root["deviceTime"] = s;
 #ifdef ISACCESS
     root["device_type"] = "access";
 #endif
@@ -1086,6 +1089,7 @@ void loop()
           {
             time_t now = time(nullptr);
             Serial.println(ctime(&now));
+            configTime(0, 0, "pool.ntp.org", "time.nist.gov");
             sendDeviceTime(ctime(&now), "device_get_time");
           }
 
