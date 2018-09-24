@@ -128,12 +128,4 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
-    // async presentToast() {
-    //     const toast = await this.toastCtrl.create({
-    //       message: 'Your settings have been saved.',
-    //       duration: 2000
-    //     });
-    //     toast.present();
-    //   }
-    
 }

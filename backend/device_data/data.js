@@ -84,13 +84,23 @@ module.exports = {
                 name: "bedroom2"
             }
         ]
+    },
+    {
+
+        name: 'access control',
+        device_id: 'access2',
+        chip: 'chip222',
+        WEBID: 'W102',
+        version: '1.0.2',
+        type: "access",
+        switches: []
     }
     ],
     Access: {
         name: 'access control',
-        device_id: 'access1',
-        chip: 'chip1',
-        WEBID: 'W101',
+        device_id: 'access2',
+        chip: 'chip222',
+        WEBID: 'W102',
         version: '1.0.2',
         type: "access",
         switches: []

@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
     if (result instanceof Error) {
         res.status(400).json(result.message);
     } else {
-        User.findOne({ email: result.email }, (err, obj) => {
+        User.findOne({ email: result.email }).lean().exec((err, obj) => {
             if (err) {
                 res.status(500).json("mongodb internel problem while login the user");
             } else {

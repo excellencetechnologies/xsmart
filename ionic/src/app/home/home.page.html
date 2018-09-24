@@ -36,7 +36,7 @@
             <div class="content">
               <p size="12">
                 <b>
-                  <span size="4" >Device ID:</span>
+                  <span size="4">Device ID:</span>
                 </b>
                 <span>{{device.device_id}}</span>
               </p>
@@ -61,15 +61,15 @@
           </ion-item>
         </ion-list>
         <ion-list class="grid-item-header" *ngIf="device && device.type =='access'">
-          <ion-item class="grid-item-header">
+          <ion-item class="grid-item-header" (click)=addEmployee(device)>
             <ion-icon slot="start" mode="ios" name="add"></ion-icon>
             Add Employee
           </ion-item>
-          <ion-item class="grid-item-header">
+          <ion-item class="grid-item-header"(clcik)=deleteEmployee(device)>
             <ion-icon slot="start" name="trash"></ion-icon>
             Remove Employee
           </ion-item>
-          <ion-item class="grid-item-header">
+          <ion-item class="grid-item-header"(click)="disableEmployee(device)">
             <ion-icon slot="start" name="eye-off"></ion-icon>
             Disable Employee
           </ion-item>
@@ -90,9 +90,9 @@
             Download Data
           </ion-item>
         </ion-list>
-        <ion-list >
+        <ion-list>
           <ion-grid no-padding>
-            <ion-row  color="primary">
+            <ion-row color="primary">
               <ion-col no-padding>
                 <ion-button expand="block" (click)="askWifiPassword(wifi)" color="primary" fill="outline">
                   <ion-icon mode="ios" name="wifi"></ion-icon> Wifi</ion-button>
@@ -102,7 +102,7 @@
                   <ion-icon color="primary" mode="md" name="trash"></ion-icon> Delete</ion-button>
               </ion-col>
               <ion-col no-padding>
-                <ion-button  expand="block" color="primary" fill="outline">
+                <ion-button expand="block" color="primary" fill="outline">
                   <ion-icon color="primary" name="qr-scanner"></ion-icon> Name</ion-button>
               </ion-col>
             </ion-row>

@@ -102,9 +102,100 @@ export class HomePage implements OnInit {
           } else {
             this.notifyService.alertUser("unable to reach device. device not online");
           }
+        } else if (res.type === "device_bulk_pin_oper_notify") {
+          res.pins.forEach(async (p) => {
+            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip, res.name);
+          })
+          //this is not working. the ui doesn't update all the pin status
+          this.devices = await this.deviceService.getDevices();
+          this.notifyService.alertUser("device performed the action!");
+        } else if (res.type === "device_set_add_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_add_employee_notify") {
+          if (res.stage === "employee_add_failed") {
+            this.notifyService.alertUser("employee add failed on device. reason: " + res.message);
+          } else if (res.stage === "employee_add_success") {
+            this.notifyService.alertUser("device added card successful with card id ." + res.rfid + " and employee id " + res.emp_id);
+          } else {
+            this.notifyService.alertUser("device waiting to add employee. touch card.");
+          }
+        } else if (res.type === "device_set_delete_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_delete_employee_notify") {
+          this.notifyService.alertUser("employee delete");
+        } else if (res.type === "device_set_disable_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_disable_employee_notify") {
+          this.notifyService.alertUser("employee disable");
+        } else if (res.type === "device_set_enable_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_enable_employee_notify") {
+          this.notifyService.alertUser("employee enabled");
         }
-        else if (res.type === "device_online_check_reply") {
-          this.notifyService.alertUser("name sent to device");
+        else if (res.type === "device_set_list_employee_reply") {
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_list_employee_notify") {
+          console.log(res.data);
+          //remove disabled from this
+          //data will be of format card : emp_id
+          this.notifyService.alertUser("employee list recieved");
+        } else if(res.type === "device_set_time_reply"){
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_set_time_notify") {
+          console.log(res.data);
+          this.notifyService.alertUser("device time recieved");
+        } else if(res.type === "device_get_time_reply"){
+          if (res.found) {
+            this.notifyService.alertUser("operation sent to device");
+          } else {
+            this.notifyService.alertUser("unable to reach device. device not online");
+          }
+        } else if (res.type === "device_get_time_notify") {
+          console.log(res.data);
+          console.log(new Date(res.data));
+          console.log(new Date());
+          let deviceTime = new Date(res.data).getTime();
+          let currentTime = new Date().getTime();
+          let diff = currentTime - deviceTime;
+          console.log("difference in time " + (diff/(1000 * 60 * 60)))
+          if(Math.abs(diff) > 24 * 60 * 60 * 1000){
+            console.log("some thing wnent wrong. diff is very large " + diff);
+          }else if(Math.abs(diff) < .5 * 60 * 60 * 1000){
+            console.log("different in time less than 30min its fine")
+          }else{
+            this.sendMessageToSocket({
+              type: "device_set_time",
+              chip: res.chip,
+              app_id: await this.deviceService.getAppID(),
+              stage: "init",
+              diff: Math.round(diff/1000)
+            });
+          }
+          this.notifyService.alertUser("device time recieved");
         }
       });
     }
@@ -115,9 +206,10 @@ export class HomePage implements OnInit {
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
-      status: 0,
+      status: "LOW",
       name: s.name,
-      app_id: await this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
     })
   }
   async switchOn(s: Switch, d: Device) {
@@ -125,9 +217,10 @@ export class HomePage implements OnInit {
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
-      status: 1,
+      status: "HIGH",
       name: s.name,
-      app_id: await this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
     })
   }
   async setSwitchNamee(s: Switch, d: Device) {
@@ -136,7 +229,8 @@ export class HomePage implements OnInit {
       chip: d.chip,
       pin: s.pin,
       name: s.name,
-      app_id: await this.deviceService.getAppID()
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
     })
   }
 
@@ -208,7 +302,6 @@ export class HomePage implements OnInit {
     this.devicePing.isNew = true;
   }
   async askDeviceName() {
-
   }
   async setDeviceName(name: String, chip: string) {
     try {
@@ -257,7 +350,8 @@ export class HomePage implements OnInit {
   async scanWifi() {
     this.loader = true;
     try {
-     this. wifinetworks = await this.api.getScanWifi(); 
+     const resData = await this.api.getScanWifi(); 
+     this. wifinetworks = resData['data']; 
       this.loader = false
       console.log(this.wifinetworks);
     } catch (e) {
@@ -275,7 +369,8 @@ export class HomePage implements OnInit {
       this.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
-        app_id: await this.deviceService.getAppID()
+        app_id: await this.deviceService.getAppID(),
+        stage: "init"
       });
     });
   }
@@ -399,7 +494,104 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.sendMessageToSocket({
               type: "device_set_add_employee",
-              chip: device.chip,
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
+
+  }
+  async deleteEmployee(device: Device) {
+
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_delete_employee",
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+
+  }
+  async disableEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_disable_employee",
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+  async enableEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.sendMessageToSocket({
+              type: "device_set_enable_employee",
+              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id
             })

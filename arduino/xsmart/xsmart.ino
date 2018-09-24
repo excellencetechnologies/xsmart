@@ -24,6 +24,7 @@
 #include <ArduinoJson.h>
 #include <xconfig.h>
 #include <ota.h>
+#include <time.h>
 
 XConfig xconfig = XConfig("/config.json");
 OTA update = OTA();
@@ -257,6 +258,10 @@ void startWifiAP()
 
       String ssid = server.arg("ssid");
       String password = server.arg("password");
+      if (ssid.length() == 0)
+        return server.send(500, "text/plain", "ssid empty");
+      if (password.length() == 0)
+        return server.send(500, "text/plain", "password empty");
       Serial.println("wifi save called");
 
       char ssid_array[ssid.length() + 1];
@@ -419,6 +424,7 @@ void connectWifi()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     delay_connect_wifi = 5000;
+    configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
   }
   delay(delay_connect_wifi);
 }
@@ -450,7 +456,8 @@ void sendNamePack(String name)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_name_success";
+  root["type"] = "device_set_name";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["version"] = version;
   root["chip"] = device_ssid;
@@ -462,13 +469,103 @@ void sendNamePack(String name)
   delay(10);
   ping_packet_count++;
 }
+void sendDeviceTime(char *time, String type)
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = type;
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["version"] = version;
+  root["chip"] = device_ssid;
+  root["data"] = time;
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 #ifdef ISACCESS
+void sendAccessData(JsonObject &accessData)
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_list_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+  String data = "";
+  accessData.printTo(data);
+  root["data"] = data;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendDisableAccess()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_disable_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendEnableAccess()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_enable_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
+void sendDeleteAccess()
+{
+  ping_packet_count = 0;
+  StaticJsonBuffer<200> jsonBuffer;
+  JsonObject &root = jsonBuffer.createObject();
+  root["type"] = "device_set_delete_employee";
+  root["stage"] = "success";
+  root["WEBID"] = webID;
+  root["chip"] = device_ssid;
+
+  String json = "";
+  root.printTo(json);
+  Serial.println(json);
+  webSocketClient.sendData(json);
+  delay(10);
+  ping_packet_count++;
+}
 void sendAccessMode()
 {
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_add_employee_success";
+  root["type"] = "device_set_add_employee";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
 
@@ -485,10 +582,11 @@ void sendCardDataAddEmployee(String rfid)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_add_card";
+  root["type"] = "device_set_add_employee";
+  root["stage"] = "employee_add_success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
-  root["data"] = rfid;
+  root["rfid"] = rfid;
   root["emp_id"] = emp_id;
 
   String json = "";
@@ -503,7 +601,8 @@ void sendCardDataAddEmployeeFailed(String message)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_add_card";
+  root["type"] = "device_set_add_employee";
+  root["stage"] = "employee_add_failed";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
   root["data"] = "-1";
@@ -521,8 +620,11 @@ void checkCardEmployee(String uid)
   String emp_id = access.checkUID(uid);
   if (emp_id.length() > 0)
   {
+    bool is_disabled = access.isDisabled(emp_id);
     Serial.print("emp id");
     Serial.println(emp_id);
+    Serial.println("emplyee disabled");
+    Serial.print(is_disabled);
     ping_packet_count = 0;
     StaticJsonBuffer<200> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
@@ -545,6 +647,7 @@ void checkCardEmployee(String uid)
   }
 }
 #endif
+#ifdef ISSWITCH
 void sendPinNamePack()
 {
   ping_packet_count = 0;
@@ -578,7 +681,8 @@ void sendBulkIOPack()
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_bulk_io_reply";
+  root["type"] = "device_bulk_pin_oper";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
 
@@ -605,7 +709,8 @@ void sendIOPack(int pin, int status)
   ping_packet_count = 0;
   StaticJsonBuffer<200> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_io_reply";
+  root["type"] = "device_pin_oper";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["version"] = version;
   root["chip"] = device_ssid;
@@ -618,6 +723,7 @@ void sendIOPack(int pin, int status)
   delay(10);
   ping_packet_count++;
 }
+#endif
 void pingPacket()
 {
   if (ping_packet_count == 0)
@@ -629,6 +735,11 @@ void pingPacket()
     root["WEBID"] = webID;
     root["version"] = version;
     root["chip"] = device_ssid;
+    time_t now = time(nullptr);
+    struct tm * p = localtime(&now);
+    char s[1000];
+    strftime(s, 1000, "%c", p);
+    root["deviceTime"] = s;
 #ifdef ISACCESS
     root["device_type"] = "access";
 #endif
@@ -809,6 +920,7 @@ void setup()
 {
   Serial.begin(115200);
   delay(10);
+
 #ifdef ISACCESS
   SPI.begin();        // Init SPI bus
   mfrc522.PCD_Init(); // Init MFRC522
@@ -835,7 +947,6 @@ void setup()
 void loop()
 {
   detectInterruptChange();
-
 #ifdef ISACCESS
   // Look for new cards
   if (access_mode == ACCESS_MODE_READ)
@@ -865,9 +976,9 @@ void loop()
         String emp_id = access.checkUID(rfid);
         if (emp_id.length() > 0)
         {
-          sendCardDataAddEmployeeFailed("card already assigned to employee");
-          Serial.println("card already assigned to employeee");
-          Serial.print(emp_id);
+          sendCardDataAddEmployeeFailed("card already assigned to employee" + emp_id);
+          Serial.println("card already assigned to employeee: " + emp_id);
+          access_mode = ACCESS_MODE_READ;
         }
         else
         {
@@ -900,6 +1011,7 @@ void loop()
     String data;
     if (WiFi.status() != WL_CONNECTED)
     {
+
       digitalWrite(LEDPIN, LOW);
 
       if (canWorkWithoutWifi)
@@ -932,6 +1044,7 @@ void loop()
     }
     else
     {
+
       digitalWrite(LEDPIN, HIGH);
       if (client.connected())
       {
@@ -958,28 +1071,50 @@ void loop()
           root.printTo(Serial);
           String type = root["type"];
 
-          if (type == "HIGH")
-          {
-            int pin = root["pin"];
-            Serial.println("setting hight");
-            pinWrite(pin, HIGH);
-            delay(10);
-            sendIOPack(pin, 1);
-          }
-          else if (type == "LOW")
-          {
-            int pin = root["pin"];
-            Serial.println("setting low");
-            pinWrite(pin, LOW);
-            delay(10);
-            sendIOPack(pin, 0);
-          }
-          else if (type == "DEVICE_NAME")
+          if (type == "device_set_name")
           {
             xconfig.setNickName(root.get<String>("name"));
             sendNamePack(root.get<String>("name"));
           }
-          else if (type == "IO")
+          else if (type == "device_set_time")
+          {
+            int diff = root.get<int>("diff");
+            xconfig.setDeviceTimezone(diff);
+            configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
+            time_t now = time(nullptr);
+            Serial.println(ctime(&now));
+            sendDeviceTime(ctime(&now), "device_set_time");
+          }
+          else if (type == "device_get_time")
+          {
+            time_t now = time(nullptr);
+            Serial.println(ctime(&now));
+            configTime(0, 0, "pool.ntp.org", "time.nist.gov");
+            sendDeviceTime(ctime(&now), "device_get_time");
+          }
+
+#ifdef ISSWITCH
+          if (type == "device_pin_oper")
+          {
+            if (root["status"] == "HIGH")
+            {
+              int pin = root["pin"];
+              Serial.println("setting hight");
+              pinWrite(pin, HIGH);
+              delay(10);
+              sendIOPack(pin, 1);
+            }
+            else if (root["status"] == "LOW")
+            {
+              int pin = root["pin"];
+              Serial.println("setting low");
+              pinWrite(pin, LOW);
+              delay(10);
+              sendIOPack(pin, 0);
+            }
+          }
+
+          else if (type == "device_bulk_pin_oper")
           {
             JsonArray &pins = root["switches"].as<JsonArray>();
             for (int i = 0; i < pins.size(); i++)
@@ -1003,16 +1138,38 @@ void loop()
           {
             ok_ping_not_recieved_count = 0;
           }
-          else if (type == "ADD_EMPLOYEE")
+#endif
+#ifdef ISACCESS
+          if (type == "device_set_add_employee")
           {
             access_mode = ACCESS_MODE_ADD_EMPLOYEE;
             emp_id = root.get<String>("emp_id");
             sendAccessMode();
           }
-          else if (type == "NORMAL_CARD_MODE")
+          else if (type == "device_set_delete_employee")
           {
-            access_mode = ACCESS_MODE_READ;
+            emp_id = root.get<String>("emp_id");
+            access.deleteUID(emp_id);
+            sendDeleteAccess();
           }
+          else if (type == "device_set_disable_employee")
+          {
+            emp_id = root.get<String>("emp_id");
+            access.disableUID(emp_id);
+            sendDisableAccess();
+          }
+          else if (type == "device_set_enable_employee")
+          {
+            emp_id = root.get<String>("emp_id");
+            access.enableUID(emp_id);
+            sendEnableAccess();
+          }
+          else if (type == "device_set_list_employee")
+          {
+            JsonObject &root = access.listData();
+            sendAccessData(root);
+          }
+#endif
           data = "";
         }
         else

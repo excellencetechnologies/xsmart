@@ -24,6 +24,8 @@ class XConfig
     void deletePinConfig(void);
     String getPinName(int);
     void setPinName(int, String);
+    void setDeviceTimezone(int);
+    int getDeviceTimezone();
 
   // library-accessible "private" interface
   private:

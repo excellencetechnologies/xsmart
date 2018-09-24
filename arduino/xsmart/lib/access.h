@@ -13,6 +13,11 @@ class XAccess
     void initConfig(void);
     String checkUID(String);
     void addUID(String, String);
+    void deleteUID(String);
+    void disableUID(String);
+    bool isDisabled(String);
+    void enableUID(String);
+    JsonObject& listData();
     
   private:
     char * configfile;

@@ -23,7 +23,7 @@ XConfig::XConfig(char *filename)
 
 void XConfig::initConfig(void)
 {
-  #ifdef ESP32
+#ifdef ESP32
   if (!SPIFFS.begin(true))
   {
     P("SPIFFS Mount Failed");
@@ -32,8 +32,8 @@ void XConfig::initConfig(void)
   {
     P("xconfig init");
   }
-  #endif
-  #ifdef ESP8266
+#endif
+#ifdef ESP8266
   if (!SPIFFS.begin())
   {
     P("SPIFFS Mount Failed");
@@ -42,7 +42,7 @@ void XConfig::initConfig(void)
   {
     P("xconfig init");
   }
-  #endif
+#endif
 }
 void XConfig::testConfig(void)
 {
@@ -56,7 +56,7 @@ String XConfig::loadConfigFile(void)
 {
   P("load config file");
   P(configfile);
-  File file = SPIFFS.open(configfile,FILE_READ);
+  File file = SPIFFS.open(configfile, FILE_READ);
   if (!file)
   {
     P("- failed to open file for reading");
@@ -172,6 +172,39 @@ void XConfig::addWifiSSID(String ssid, String password)
   saveConfigFile(file.c_str());
 }
 
+void XConfig::setDeviceTimezone(int tz)
+{
+  P("setDeviceTimezone");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+
+  root["tz"] = tz;
+
+  root.printTo(Serial);
+  file = "";
+  root.printTo(file);
+  saveConfigFile(file.c_str());
+}
+int XConfig::getDeviceTimezone()
+{
+  P("getDeviceTimezone");
+  String file = loadConfigFile();
+  P(file);
+  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+  JsonObject &root = jsonBuffer.parseObject(file);
+  int tz = root.get<int>("tz");
+  if (tz)
+  {
+    return tz;
+  }
+  else
+  {
+    return 0;
+  }
+}
+
 void XConfig::setNickName(String deviceName)
 {
   P("setNickName");
@@ -195,9 +228,12 @@ String XConfig::getNickName()
   StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   String nick = root.get<String>("nickname");
-  if(nick){
-    return nick; 
-  }else{
+  if (nick)
+  {
+    return nick;
+  }
+  else
+  {
     return "";
   }
 }
@@ -219,7 +255,8 @@ JsonArray &XConfig::getPinConfig()
     return jsonBuffer.createArray();
   }
 }
-void XConfig::deletePinConfig(){
+void XConfig::deletePinConfig()
+{
   P("deletePinConfig");
   String file = loadConfigFile();
   P(file);
