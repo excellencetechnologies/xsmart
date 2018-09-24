@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { Platform, MenuController } from '@ionic/angular';
+import { Platform, MenuController, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ApiService } from "../api/api.service";
@@ -39,7 +39,9 @@ export class HomePage implements OnInit {
     public alertController: AlertController,
     private deviceService: DeviceService,
     private menuController: MenuController,
-    private notifyService: NotifyService) { }
+    private notifyService: NotifyService,
+    private toastCtrl: ToastController
+    ) { }
 
   ngOnInit() {
     this.platform.ready().then(() => {
@@ -195,6 +197,8 @@ export class HomePage implements OnInit {
       } catch (e) {
         console.log(e)
         this.isScanningDevice = true;
+        this.errorMessage = e["error"];
+        this.notifyService.alertUser("Device not found");
         // this.xSmartConnect = false;
       }
     }, 1000);
@@ -225,6 +229,7 @@ export class HomePage implements OnInit {
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
         await this.api.addDevices(newDevice);
         this.deviceService.addDevice(newDevice['meta']);
+        this.notifyService.alertUser("Device added Successfully");
       } else {
         this.deviceService.updateDevice(newDevice['meta']);
         const deviceData = await this.deviceService.getDevices();
@@ -235,6 +240,7 @@ export class HomePage implements OnInit {
           }
         })
         this.deviceService.setDevices(deviceData)
+        this.notifyService.alertUser("Device Update Successfully");
       }
       this.checkExistingDevice();
       this.mode = "scan";
@@ -242,7 +248,8 @@ export class HomePage implements OnInit {
       this.scanWifi();
     } catch (e) {
       this.errorMessage = e["error"];
-      this.notifyService.alertUser("failed to set device name");
+      this.notifyService.alertUser("Please Provide valid unique chip ID");
+ 
     }
   }
 
@@ -257,6 +264,7 @@ export class HomePage implements OnInit {
       this.loader = false;
       console.log(e)
       this.errorMessage=e['error']
+      this.notifyService.alertUser("Can not get Wifi");
       this.isScanningDevice = true;
 
     }
@@ -296,13 +304,11 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            console.log('Confirm Ok')
-            console.log(data.password);
-            console.log(wifi.SSID);
             try {
               await this.api.setWifiPassword(wifi.SSID, data.password);
             } catch (e) {
               this.errorMessage=e['error']
+              this.notifyService.alertUser("Please provide valid password");
               console.log(e);
             }
             this.keepCheckingDeviceOnline();
@@ -354,6 +360,7 @@ export class HomePage implements OnInit {
               this.deviceService.setDevices(allDevices);
             } catch (e) {
               this.errorMessage=e['error']
+              this.notifyService.alertUser("Switch name is not set");
               console.log(e);
             }
             this.keepCheckingDeviceOnline();
@@ -400,9 +407,6 @@ export class HomePage implements OnInit {
         }
       ]
     });
-
     await alert.present();
-
-
   }
 }

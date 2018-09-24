@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Setting
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <ion-list>
+    <ion-item class="grid-item-header">
+      <ion-label>HR System</ion-label>
+      <ion-toggle [(ngModel)]="pepperoni"></ion-toggle>
+    </ion-item>
+    <ion-item class="grid-item-header" padding-bottom>
+      Access Key
+    </ion-item>
+  </ion-list>
+  <ion-button class="button-radius" expand="block" color="tertiary">Connect</ion-button>
+</ion-content>

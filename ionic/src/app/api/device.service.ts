@@ -1,6 +1,6 @@
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
-import { Platform, Img } from '@ionic/angular';
+import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { Device, Switch } from "./api"
 import { stat } from 'fs';
@@ -12,7 +12,8 @@ export class DeviceService {
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
-        private uniqueDeviceID: UniqueDeviceID) {
+        private uniqueDeviceID: UniqueDeviceID,
+        private toastCtrl: ToastController) {
     }
     //random id to identify the current app
     async getAppID() {
@@ -127,4 +128,12 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
+    // async presentToast() {
+    //     const toast = await this.toastCtrl.create({
+    //       message: 'Your settings have been saved.',
+    //       duration: 2000
+    //     });
+    //     toast.present();
+    //   }
+    
 }

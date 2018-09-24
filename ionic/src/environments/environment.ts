@@ -4,7 +4,7 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 export const environment = {
   production: false,
-  apiBase: "http://5.9.144.226:9030/deviceSimulator/",
+  deviceUrl: "http://5.9.144.226:9030/deviceSimulator/",
   base_url: "http://5.9.144.226:9030/"
   // base_url: "http://192.168.4.1/"
 };

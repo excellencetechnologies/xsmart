@@ -11,7 +11,7 @@
   </div>
   <ion-list *ngIf="devices && devices.length">
 
-    <ion-card *ngFor="let devices of devices: trackBy: trackByimportDevice">
+    <ion-card *ngFor="let devices of devices; trackBy: trackByimportDevice">
       <ion-list class="border">
         <ion-item class="border">
           <ion-icon slot="start" *ngIf="devices && devices.type !='access'" name="swap" color="primary"></ion-icon>
@@ -25,7 +25,7 @@
         <ion-item>
           <div class="content">
             <p size="12">
-              <span *ngIf="devices['meta']"> device-Id:{{devices.chip_id}}</span>
+              <span *ngIf="devices['meta']"> device_id : {{devices.chip_id}}</span>
             </p>
             <div *ngIf="devices['meta']">
               <p *ngIf="devices.meta.switches.length > 0">

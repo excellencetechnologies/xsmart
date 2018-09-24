@@ -80,6 +80,10 @@ export class AppComponent implements OnDestroy {
     this.router.navigate(["/profile"])
     this.menuControler.toggle()
   }
+  setting() {
+    this.router.navigate(["/setting"])
+    this.menuControler.toggle()
+  }
   ngOnDestroy() {
     this.loginSubscription.unsubscribe()
   }

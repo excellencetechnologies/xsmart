@@ -87,7 +87,6 @@ module.exports = {
     }
     ],
     Access: {
-
         name: 'access control',
         device_id: 'access1',
         chip: 'chip1',

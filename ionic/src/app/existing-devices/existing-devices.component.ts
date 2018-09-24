@@ -7,6 +7,7 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Platform } from '@ionic/angular';
 import { importDevice } from "../components/model/user";
+import { NotifyService } from '../api/notify.service';
 
 @Component({
   selector: 'app-existing-devices',
@@ -25,7 +26,8 @@ export class ExistingDevicesComponent implements OnInit {
     private router: Router,
     private nativeStorage: NativeStorage,
     private platform: Platform,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
+    private notifyService: NotifyService
   ) { }
 
   ngOnInit() {
@@ -39,6 +41,7 @@ export class ExistingDevicesComponent implements OnInit {
       this.loading = false;
     } catch (err) {
       this.loading = false;
+      this.notifyService.alertUser(this.errorMessage);
       this.errorMessage = err['error'];
     }
   }
@@ -60,10 +63,12 @@ export class ExistingDevicesComponent implements OnInit {
     try {
       await this.apiServices.deleteDevices({ chip_id: chip_id, user_id: user_id });
       this.getDevice()
+      this.notifyService.alertUser("Successfully deleted ");
       this.loading = false;
     } catch (err) {
       this.loading = false;
       this.errorMessage = err["error"];
+      this.notifyService.alertUser("device not Delete ");
     }
   }
 

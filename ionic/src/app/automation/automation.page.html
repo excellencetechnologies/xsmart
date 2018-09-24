@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-icon slot="start" menuToggle (click)="menu()" color="secondry" mode="md" class="menu" name="menu"> </ion-icon>
+    <ion-title>
+      Automation
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <div text-center>
+    <h3>Rooms</h3>
+  </div>
+  <div padding>
+    <p> Group switches together to make a room.</p>
+    <p> Perform bulk operations on rooms</p>
+  </div>
+  <ion-card no-padding>
+    <ion-card-content no-padding>
+      <ion-list class="grid-item-header" no-padding>
+        <ion-item class="grid-item-header">
+          <ion-icon sloat="start" name="apps"></ion-icon>
+          <ion-label>BedRoom</ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>
+            BedRoom Fan
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>
+            BedRoom TubeLight
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>
+            BedRoom LED
+          </ion-label>
+        </ion-item>
+      </ion-list>
+      <ion-list>
+        <ion-grid no-padding>
+          <ion-row class="buttonGroup" color="primary">
+            <ion-col no-padding>
+              <ion-button class="button-radius" expand="block" color="primary" fill="outline"> On</ion-button>
+            </ion-col>
+            <ion-col no-padding>
+              <ion-button class="button-radius" expand="block" color="primary" fill="outline"> Off</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-button class="button-radius" expand="block" color="danger" fill="outline"> Add Room</ion-button>
+</ion-content>

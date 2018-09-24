@@ -36,10 +36,9 @@
             <div class="content">
               <p size="12">
                 <b>
-                  <span size="4" class="device-ID">Device ID:</span>
+                  <span size="4" >Device ID:</span>
                 </b>
-                <span class="device_device_id">{{device.device_id}}</span>
-
+                <span>{{device.device_id}}</span>
               </p>
               <p *ngIf="device.switches.length > 0">
                 <span>Switch {{device.switches.length}}</span>
@@ -91,19 +90,19 @@
             Download Data
           </ion-item>
         </ion-list>
-        <ion-list class="group">
+        <ion-list >
           <ion-grid no-padding>
-            <ion-row class="buttonGroup" color="primary">
+            <ion-row  color="primary">
               <ion-col no-padding>
-                <ion-button class="button-radius" expand="block" (click)="askWifiPassword(wifi)" color="primary" fill="outline">
+                <ion-button expand="block" (click)="askWifiPassword(wifi)" color="primary" fill="outline">
                   <ion-icon mode="ios" name="wifi"></ion-icon> Wifi</ion-button>
               </ion-col>
               <ion-col no-padding>
-                <ion-button class="button-radius" expand="full" (click)="deleteDevice(device)" color="primary" fill="outline">
-                  <ion-icon mode="md" name="trash"></ion-icon> Delete</ion-button>
+                <ion-button expand="block" (click)="deleteDevice(device)" color="primary" fill="outline">
+                  <ion-icon color="primary" mode="md" name="trash"></ion-icon> Delete</ion-button>
               </ion-col>
               <ion-col no-padding>
-                <ion-button class="button-radius" expand="block" color="primary" fill="outline">
+                <ion-button  expand="block" color="primary" fill="outline">
                   <ion-icon color="primary" name="qr-scanner"></ion-icon> Name</ion-button>
               </ion-col>
             </ion-row>

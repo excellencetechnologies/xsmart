@@ -8,10 +8,10 @@ import { DeviceService } from '../api/device.service';
 import {  Device } from "../api/api"
 @Component({
   selector: 'app-about',
-  templateUrl: 'about.page.html',
-  styleUrls: ['about.page.scss']
+  templateUrl: 'switch.page.html',
+  styleUrls: ['switch.page.scss']
 })
-export class AboutPage {
+export class switchPage {
   loading: boolean;
   device: Device[] = [];
   errorMessage: string;
