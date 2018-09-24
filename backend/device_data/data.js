@@ -89,7 +89,7 @@ module.exports = {
 
         name: 'access control',
         device_id: 'access2',
-        chip: 'chip2',
+        chip: 'chip222',
         WEBID: 'W102',
         version: '1.0.2',
         type: "access",
@@ -100,7 +100,7 @@ module.exports = {
 
         name: 'access control',
         device_id: 'access2',
-        chip: 'chip2',
+        chip: 'chip222',
         WEBID: 'W102',
         version: '1.0.2',
         type: "access",
