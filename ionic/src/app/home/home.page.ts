@@ -476,7 +476,8 @@ export class HomePage implements OnInit {
               type: "device_set_enable_employee",
               chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
-              emp_id: data.emp_id
+              emp_id: data.emp_id,
+              stage: "init"
             })
           }
         }

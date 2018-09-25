@@ -21,3 +21,10 @@ export interface addDevice{
     updatedAt: string;
     user_id: string;
 }
+export interface deleteDevice{
+    chip_id: string;
+    createdAt: string;
+    meta: Device;
+    updatedAt: string;
+    user_id: string;
+}
