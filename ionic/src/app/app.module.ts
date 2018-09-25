@@ -29,6 +29,7 @@ import { SetWifiPasswordComponent } from './set-wifi-password/set-wifi-password.
 import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
+import { AddDevicesComponent } from './add-devices/add-devices.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { SettingComponent } from './setting/setting.component';
     SetWifiPasswordComponent,
     AddEmployeeComponent,
     ViewEmployeeComponent,
-    SettingComponent],
+    SettingComponent,
+    AddDevicesComponent],
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,

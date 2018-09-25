@@ -8,7 +8,7 @@
   <ion-content padding>
       <div>
           <div padding-left>
-            <h3>Wifi Password</h3>
+            <h3>Device Name</h3>
           </div>
           <form class="form-horizontal">
             <ion-row>
@@ -19,16 +19,11 @@
                   <ion-item>
                     <ion-input type="text" name="empId" required></ion-input>
                   </ion-item>
-                  <!-- <div *ngIf="passwordForm.controls['password'].errors && !passwordForm.controls['password'].pristine" class="alert alert-danger">
-                    <div *ngIf="passwordForm.controls['password'].errors.required">
-                      password is required.
-                    </div>
-                  </div> -->
                 </ion-list>
               </ion-col>
             </ion-row>
             <ion-col class="signup-col">
-              <ion-button expand="block"  color="primary"> Next
+              <ion-button expand="block" color="tirtary" fill="outline"> Next
                 <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
               </ion-button>
             </ion-col>

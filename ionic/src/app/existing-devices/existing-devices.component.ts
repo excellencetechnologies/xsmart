@@ -57,6 +57,7 @@ export class ExistingDevicesComponent implements OnInit {
     else {
       localStorage.setItem("devices", JSON.stringify(enableDevices));
     }
+    this.router.navigate(["/tabs"]);
   } 
   async deleteDevices(user_id, chip_id, device: Device) {
     this.loading = true;

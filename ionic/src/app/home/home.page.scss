@@ -12,13 +12,47 @@
 .yellow {
     color: #ffc900;
 }
-.wifi{ 
+
+.wifi {
     transform: scale(0.6);
     color: gray;
 }
+
 .blue {
     color: #11c1f3;
 }
-.group{
+
+.group {
     padding-bottom: 10px;
+}
+
+.button-radius {
+    --padding-bottom: 1.5em;
+    --padding-top: 1.5em;
+    text-transform: capitalize;
+    padding-left: 10px;
+    padding-right:10px;
+}
+
+.border{
+    border: thin solid blue;
+    border-radius:2px; 
+}
+.border ion-col:not(:last-child) {
+   border-right: thin solid blue
+}
+.item-padding{
+    padding:6px;
+    color:#666;
+}
+.content{
+    --padding-top:4px;
+    color:black;
+}
+.devicename{
+    border-bottom: thin solid #EEE;
+    font-size: 19px;
+}
+.device>h3{
+    padding-left:10px;
 }

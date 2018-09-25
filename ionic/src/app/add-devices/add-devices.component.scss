@@ -1,0 +1,29 @@
+.network {
+    margin-top: 30px;
+}
+
+.networklist {
+    border: thin solid #EEE;
+    margin: unset;
+}
+
+.wifiNetwork {
+    float: right;
+    color:gray;
+}
+
+.button-radius {
+    --padding-bottom: 1.5em;
+    --padding-top: 1.5em;
+    text-transform: capitalize;
+    font-size: 17px;
+}
+.newDevice{
+    font-size:15px;
+}
+.content{
+    --padding-top:4px;
+}
+.listPassword{
+    padding:5px;
+}
