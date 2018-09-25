@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { Ping, Wifi } from "./api"
 import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
-import { User, importDevice,addDevice,deleteDevice } from "../components/model/user"
+import { User, importDevice,newDevice,deleteDevice } from "../components/model/user"
 export interface Message {
   author: string,
   message: string
@@ -88,10 +88,10 @@ export class ApiService {
       throw (error);
     }
   }
-  async addDevices(body:addDevice) {
+  async addDevices(body) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      return await this.http.post<addDevice[]>(`${environment["base_url"]}device/addDevice`, body,
+      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`, body,
         {
           headers: header
         }
