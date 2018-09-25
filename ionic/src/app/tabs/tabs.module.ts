@@ -8,10 +8,6 @@ import { TabsPage } from './tabs.page';
 import { AutomationPageModule } from '../automation/automation.module';
 import { switchPageModule } from '../switch/switch.module';
 import { HomePageModule } from '../home/home.module';
-// import { ScanDeviceComponent } from '../scan-device/scan-device.component';
-// import { PairDeviceComponent } from '../pair-device/pair-device.component';
-// import { AddEmployeeComponent } from '../add-employee/add-employee.component';
-
 
 @NgModule({
   imports: [
@@ -22,10 +18,6 @@ import { HomePageModule } from '../home/home.module';
     HomePageModule,
     switchPageModule,
     AutomationPageModule,
-    // ScanDeviceComponent,
-    // PairDeviceComponent,
-    // AddEmployeeComponent 
-   
   ],
   declarations: [TabsPage]
 })

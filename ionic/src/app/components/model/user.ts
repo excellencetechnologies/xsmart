@@ -14,13 +14,12 @@ export interface importDevice{
     updatedAt: string;
     user_id: string;
 }
-export interface addDevice{
+export interface newDevice{
     chip_id: string;
-    createdAt: string;
-    meta: Device;
-    updatedAt: string;
     user_id: string;
+    meta: Device; 
 }
+
 export interface deleteDevice{
     chip_id: string;
     createdAt: string;

@@ -285,11 +285,17 @@ export class DeviceService {
     }
 
     async updateDeviceStatus(data) {
-        if (data.found) {
-            await this.updateDevice(data);
-        } else {
-            await this.updateDeviceNotFound(data);
+        try {
+            if (data.found) {
+                await this.updateDevice(data);
+            } else {
+                await this.updateDeviceNotFound(data);
+            }
+            this.getDevices();
         }
-        this.getDevices();
+        catch (e) {
+            this.notifyService.alertUser("device not found");
+        }
     }
+
 }

@@ -88,10 +88,10 @@ export class ApiService {
       throw (error);
     }
   }
-  async addDevices(body) {
+  async addDevices(addDevice:newDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`, body,
+      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`,addDevice,
         {
           headers: header
         }

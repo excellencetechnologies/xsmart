@@ -6,6 +6,8 @@ import { MenuController, AlertController, Platform } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
 import { ApiService } from '../api/api.service';
 import { HttpClient } from '@angular/common/http';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { newDevice } from '../components/model/user';
 let wifiCheckInterval = null;
 @Component({
   selector: 'app-add-devices',
@@ -13,13 +15,15 @@ let wifiCheckInterval = null;
   styleUrls: ['./add-devices.component.scss']
 })
 export class AddDevicesComponent implements OnInit {
+  setNameForm: FormGroup;
   wifinetworks: Wifi[] = [];
   devices: Device[] = [];
   devicePing: Ping;
   isScanningDevice: boolean = false;
   mode: String = "device";
   canSetDevice: Boolean;
-  errorMessage: string
+  errorMessage: string;
+  loader: boolean;
   constructor(
     private router: Router,
     private notifyService: NotifyService,
@@ -31,6 +35,13 @@ export class AddDevicesComponent implements OnInit {
 
   ngOnInit() {
     this.scanDevice();
+  }
+  createLoginForm() {
+    this.setNameForm = new FormGroup({
+      name: new FormControl("", [
+        Validators.required,
+      ]),
+    });
   }
   scanDevice() {
     this.mode = "scan";
@@ -69,10 +80,10 @@ export class AddDevicesComponent implements OnInit {
       }
     }, 5000);
   }
-  async setDeviceName(name: String, chip: string) {
+  async setDeviceName(name: String, chip: string,formData) {
     try {
       await this.api.setDeviceNickName(name, chip);
-      let newDevice = {
+      let newDevice:newDevice = {
         chip_id: this.devicePing.chip,
         user_id: localStorage.getItem("userId"),
         meta: {
@@ -114,14 +125,14 @@ export class AddDevicesComponent implements OnInit {
   }
 
   async scanWifi() {
-    // this.loader = true;
+    this.loader = true;
     try {
       const resData = await this.api.getScanWifi();
       this.wifinetworks = resData['data'];
-      // this.loader = false
+      this.loader = false
       console.log(this.wifinetworks);
     } catch (e) {
-      // this.loader = false;
+      this.loader = false;
       console.log(e)
       this.errorMessage = e['error']
       this.notifyService.alertUser("Can not get Wifi");
@@ -130,13 +141,14 @@ export class AddDevicesComponent implements OnInit {
     }
   }
 
-  triggerSetDevice() {
+  SetName() {
     this.canSetDevice = true;
+    this.createLoginForm()
   }
 
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
-      // this.pingDevices();
+      this.pingDevices();
       console.log(this.deviceService.isSocketConnected);
       this.keepCheckingDeviceOnline();
     }, this.deviceService.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
@@ -174,5 +186,20 @@ export class AddDevicesComponent implements OnInit {
     });
 
     await alert.present();
+  }
+  async pingDevices() {
+    this.devices.forEach(async (device) => {
+      console.log("pinging device", device.chip);
+      this.deviceService.sendMessageToSocket({
+        type: "device_online_check",
+        chip: device.chip,
+        app_id: await this.deviceService.getAppID(),
+        stage: "init"
+      });
+    });
+  }
+  async freshDevice() {
+    this.devicePing.name = "";
+    this.devicePing.isNew = true;
   }
 }

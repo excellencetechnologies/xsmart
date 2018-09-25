@@ -1,13 +1,13 @@
 <ion-header>
-    <ion-toolbar mode="ios">
-      <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-      </ion-buttons>
-      <ion-title>
-       Add Devices
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Add Devices
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content padding class="content">
   <div no-padding>
     <div padding-left>
@@ -25,19 +25,26 @@
           <span class="item-padding">{{devicePing.webid}}</span>
         </p>
       </div>
-      <ion-button class="button-radius" (click)="triggerSetDevice()" expand="block" color="primary">Set Device Name</ion-button>
+      <ion-button class="button-radius" (click)="SetName()" expand="block" color="primary">Set Device Name</ion-button>
     </div>
-    <div *ngIf="canSetDevice">
-      <ion-item>
-        <ion-input [(ngModel)]="devicePing.name" required type="text" placeholder="Device Name.."></ion-input>
-        <ion-button (click)="setDeviceName(devicePing.name,devicePing.chip)" color="primary">Set Name</ion-button>
-      </ion-item>
-    </div>
+    <form [formGroup]="setNameForm">
+      <div *ngIf="canSetDevice">
+        <ion-item>
+          <ion-input [(ngModel)]="devicePing.name" formControlName="name" type="text" placeholder="Device Name.."></ion-input>
+          <ion-button (click)="setDeviceName(devicePing.name,devicePing.chip,setNameForm)" color="primary">Set Name</ion-button>
+        </ion-item>
+        <div *ngIf="setNameForm.controls['name'].errors && !setNameForm.controls['name'].pristine">
+            <div *ngIf="setNameForm.controls['name'].errors.required">
+              Name is required.
+            </div>
+          </div>
+      </div>
+    </form>
   </div>
   <ion-button class="network button-radius" (click)="scanWifi()" color="primary" expand="block" fill="outline">Getting Wifi Networks</ion-button>
   <div>
     <ion-list class="networklist" *ngFor="let wifi of wifinetworks">
-      <ion-item class="listPassword"(click)="askWifiPassword(wifi)">
+      <ion-item class="listPassword" (click)="askWifiPassword(wifi)">
         <ion-item no-padding>
           <ion-icon slot="start" mode="ios" name="wifi"></ion-icon>
           {{wifi.SSID}}
