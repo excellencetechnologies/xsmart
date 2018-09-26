@@ -13,10 +13,7 @@ import { timer } from 'rxjs';
 export class PairDeviceComponent implements OnInit {
 
   constructor(
-    private router: Router,
-    private notifyService: NotifyService,
-    private http: HttpClient,
-    private api: ApiService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -26,6 +23,7 @@ export class PairDeviceComponent implements OnInit {
   }
   addDevice() {
     this.router.navigate(["/add-devices"]);
+
   }
 
 }
