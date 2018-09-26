@@ -11,7 +11,6 @@ export interface importDevice {
     chip_id: string;
     user_id: string;
     meta:Device;
-    // updatedAt: string;
 }
 
 export interface deleteDevice {
