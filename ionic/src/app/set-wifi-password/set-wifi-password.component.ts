@@ -17,7 +17,7 @@ export class SetWifiPasswordComponent implements OnInit {
   errorMessage:string;
   loader:boolean;
   isScanningDevice: boolean = false;
-  wifi:any;
+  ssid:any;
   constructor( 
     private router: Router,
     private api:ApiService,
@@ -31,7 +31,7 @@ export class SetWifiPasswordComponent implements OnInit {
    this.getSsid();
   }
   getSsid(){
-   this.wifi= this.navParams.get('ssid')
+   this.ssid= this.navParams.get('ssid')
   }
   createLoginForm() {
     this.passwordForm = new FormGroup({
@@ -45,7 +45,7 @@ export class SetWifiPasswordComponent implements OnInit {
     try {
       this.loading = false;
       this.passwordForm.reset();
-      await this.api.setWifiPassword(this.wifi.ssid,formData.password);
+      await this.api.setWifiPassword(this.ssid.wifi,formData.password);
       await this.modalController.dismiss();
       this.router.navigate(["/tabs"]);
     } catch (err) {
