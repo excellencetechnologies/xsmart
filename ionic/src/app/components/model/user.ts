@@ -10,7 +10,7 @@ export interface User {
 export interface newDevice {
     chip_id: string;
     user_id: string;
-    meta:Device;
+    meta: Device;
 }
 
 export interface deleteDevice {

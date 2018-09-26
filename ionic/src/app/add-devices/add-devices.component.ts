@@ -82,10 +82,10 @@ export class AddDevicesComponent implements OnInit {
       }
     }, 5000);
   }
-  async setDeviceName(name: String, chip: string,formData) {
+  async setDeviceName(name: String, chip: string, formData) {
     try {
       await this.api.setDeviceNickName(name, chip);
-      let newDevice:newDevice = {
+      let newDevice: newDevice = {
         chip_id: this.devicePing.chip,
         user_id: localStorage.getItem("userId"),
         meta: {
@@ -162,7 +162,6 @@ export class AddDevicesComponent implements OnInit {
       componentProps: { ssid: data }
     });
     return await modal.present();
-
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {

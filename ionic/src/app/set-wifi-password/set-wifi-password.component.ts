@@ -53,4 +53,6 @@ export class SetWifiPasswordComponent implements OnInit {
       this.errorMessage = err['error'];
     }
   }
+
+
 }

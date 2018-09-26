@@ -62,7 +62,7 @@ export class ExistingDevicesComponent implements OnInit {
   async deleteDevices(user_id, chip_id, device: Device) {
     this.loading = true;
     try {
-      await this.apiServices.deleteDevices({ chip_id: chip_id, user_id: user_id });
+      await this.apiServices.deleteDevices({ user_id:user_id,chip_id:chip_id});
       this.getDevice()
       this.notifyService.alertUser("Successfully deleted ");
       this.loading = false;
