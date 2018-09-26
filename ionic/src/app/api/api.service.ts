@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { Ping, Wifi } from "./api"
 import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
-import { User, importDevice,deleteDevice } from "../components/model/user"
+import { User, newDevice,deleteDevice } from "../components/model/user"
 export interface Message {
   author: string,
   message: string
@@ -88,10 +88,10 @@ export class ApiService {
       throw (error);
     }
   }
-  async addDevices(addDevice:importDevice) {
+  async addDevices(addDevice:newDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      return await this.http.post<importDevice[]>(`${environment["base_url"]}device/addDevice`,addDevice,
+      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`,addDevice,
         {
           headers: header
         }
@@ -102,10 +102,10 @@ export class ApiService {
       throw (error);
     }
   }
-  async listDevices(importDevice?:importDevice) {
+  async listDevices(importDevice?:newDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      return await this.http.get<importDevice[]>(`${environment["base_url"]}device/listDevice`,
+      return await this.http.get<newDevice[]>(`${environment["base_url"]}device/listDevice`,
         {
           headers: header
         }

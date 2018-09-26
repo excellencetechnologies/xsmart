@@ -104,6 +104,10 @@ export class HomePage implements OnInit {
   scanDevice() {
     this.router.navigate(["/scan-device"]);
   }
+
+  async askDeviceName() {
+  }
+ 
   async scanWifi() {
     this.loader = true;
     try {
@@ -283,7 +287,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_disable_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"

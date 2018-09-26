@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Platform } from '@ionic/angular';
-import { importDevice } from "../components/model/user";
+import { newDevice } from "../components/model/user";
 import { NotifyService } from '../api/notify.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { NotifyService } from '../api/notify.service';
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-  devices: importDevice[];
+  devices: newDevice[];
   device: Device[] = [];
   loading: boolean;
   errorMessage: string;
@@ -62,7 +62,7 @@ export class ExistingDevicesComponent implements OnInit {
   async deleteDevices(user_id, chip_id, device: Device) {
     this.loading = true;
     try {
-      await this.apiServices.deleteDevices({ chip_id: chip_id, user_id: user_id });
+      await this.apiServices.deleteDevices({ user_id:user_id,chip_id:chip_id});
       this.getDevice()
       this.notifyService.alertUser("Successfully deleted ");
       this.loading = false;
