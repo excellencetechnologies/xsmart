@@ -7,20 +7,14 @@ export interface User {
     email: string;
     token: string;
 }
-export interface importDevice{
-    chip_id: string;
-    createdAt: string;
-    meta: Device;
-    updatedAt: string;
-    user_id: string;
-}
-export interface newDevice{
+export interface importDevice {
     chip_id: string;
     user_id: string;
-    meta: Device; 
+    meta:Device;
+    // updatedAt: string;
 }
 
-export interface deleteDevice{
+export interface deleteDevice {
     chip_id: string;
     user_id: string;
 }
