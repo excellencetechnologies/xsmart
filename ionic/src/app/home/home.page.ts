@@ -257,10 +257,6 @@ export class HomePage implements OnInit {
     this.router.navigate(["/scan-device"]);
   }
 
-  async freshDevice() {
-    this.devicePing.name = "";
-    this.devicePing.isNew = true;
-  }
   async askDeviceName() {
   }
  
@@ -377,7 +373,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_add_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -411,7 +407,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_delete_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -443,7 +439,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_disable_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"

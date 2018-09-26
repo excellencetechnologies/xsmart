@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Router } from '@angular/router';
 import { NotifyService } from '../api/notify.service';
-import { MenuController, AlertController, Platform } from '@ionic/angular';
+import { MenuController, AlertController, Platform, ModalController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
 import { ApiService } from '../api/api.service';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { newDevice } from '../components/model/user';
+import { SetWifiPasswordComponent } from '../set-wifi-password/set-wifi-password.component';
 let wifiCheckInterval = null;
 @Component({
   selector: 'app-add-devices',
@@ -30,7 +31,8 @@ export class AddDevicesComponent implements OnInit {
     private http: HttpClient,
     private api: ApiService,
     private deviceService: DeviceService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public modalController: ModalController
   ) { }
 
   ngOnInit() {
@@ -80,10 +82,10 @@ export class AddDevicesComponent implements OnInit {
       }
     }, 5000);
   }
-  async setDeviceName(name: String, chip: string,formData) {
+  async setDeviceName(name: String, chip: string, formData) {
     try {
       await this.api.setDeviceNickName(name, chip);
-      let newDevice:newDevice = {
+      let newDevice: newDevice = {
         chip_id: this.devicePing.chip,
         user_id: localStorage.getItem("userId"),
         meta: {
@@ -154,38 +156,12 @@ export class AddDevicesComponent implements OnInit {
     }, this.deviceService.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
-    const alert = await this.alertController.create({
-      header: 'Enter Wifi Password',
-      inputs: [
-        {
-          name: 'password',
-          type: 'text',
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary'
-        }, {
-          text: 'Ok',
-          handler: async (data) => {
-            try {
-              await this.api.setWifiPassword(wifi.SSID, data.password);
-            } catch (e) {
-              this.errorMessage = e['error']
-              this.notifyService.alertUser("Please provide valid password");
-              console.log(e);
-            }
-            this.keepCheckingDeviceOnline();
-            this.mode = "device";
-            this.router.navigate(["/tabs"]);
-          }
-        }
-      ]
+    const data = { wifi: wifi.SSID };
+    const modal = await this.modalController.create({
+      component: SetWifiPasswordComponent,
+      componentProps: { ssid: data }
     });
-
-    await alert.present();
+    return await modal.present();
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {

@@ -102,7 +102,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async listDevices(importDevice:importDevice) {
+  async listDevices(importDevice?:importDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
       return await this.http.get<importDevice[]>(`${environment["base_url"]}device/listDevice`,
