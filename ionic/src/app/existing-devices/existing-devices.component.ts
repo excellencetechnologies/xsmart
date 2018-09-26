@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Platform } from '@ionic/angular';
-import { importDevice } from "../components/model/user";
+import { newDevice } from "../components/model/user";
 import { NotifyService } from '../api/notify.service';
 
 @Component({
@@ -15,7 +15,7 @@ import { NotifyService } from '../api/notify.service';
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-  devices: importDevice[];
+  devices: newDevice[];
   device: Device[] = [];
   loading: boolean;
   errorMessage: string;

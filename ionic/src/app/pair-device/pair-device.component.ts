@@ -4,7 +4,7 @@ import { Ping, Wifi, Device, Switch } from "../api/api"
 import { NotifyService } from '../api/notify.service';
 import { HttpClient } from '@angular/common/http'
 import { ApiService } from '../api/api.service';
-
+import { timer } from 'rxjs';
 @Component({
   selector: 'app-pair-device',
   templateUrl: './pair-device.component.html',
@@ -20,9 +20,9 @@ export class PairDeviceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    setTimeout(() => {
+    timer(1000).subscribe(() => {
       this.addDevice();
-    }, 1000)
+  });
   }
   addDevice() {
     this.router.navigate(["/add-devices"]);
