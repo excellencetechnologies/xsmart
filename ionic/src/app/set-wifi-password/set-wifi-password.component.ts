@@ -41,7 +41,7 @@ export class SetWifiPasswordComponent implements OnInit {
     });
   }
   async onSubmit(formData) {
-    this.loading = true;
+     this.loading = true;
     try {
       this.loading = false;
       this.passwordForm.reset();
@@ -53,6 +53,4 @@ export class SetWifiPasswordComponent implements OnInit {
       this.errorMessage = err['error'];
     }
   }
-
-
 }

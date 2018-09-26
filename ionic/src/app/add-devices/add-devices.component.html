@@ -34,10 +34,10 @@
           <ion-button (click)="setDeviceName(devicePing.name,devicePing.chip,setNameForm)" color="primary">Set Name</ion-button>
         </ion-item>
         <div *ngIf="setNameForm.controls['name'].errors && !setNameForm.controls['name'].pristine">
-            <div *ngIf="setNameForm.controls['name'].errors.required">
-              Name is required.
-            </div>
+          <div *ngIf="setNameForm.controls['name'].errors.required">
+            Name is required.
           </div>
+        </div>
       </div>
     </form>
   </div>
@@ -51,10 +51,11 @@
         </ion-item>
         <ion-label slot="end" color="stable">
           <div no-padding class="wifiNetwork">
-            {{wifi.RSSI}} -- {{wifi.ENC}}
-          </div>
+            {{wifi.RSSI >= -50 ? 'Strong' : (wifi.RSSI >= -60 && wifi.RSSI
+            < -50) ? 'Good' : (wifi.RSSI>= -70 && wifi.RSSI
+              < -60) ? 'Fair' : 'Weak'}} </div>
         </ion-label>
       </ion-item>
     </ion-list>
-  </div>
+    </div>
 </ion-content>
