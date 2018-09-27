@@ -7,7 +7,8 @@ import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+// import { RouterModule, }   from '@angular/router';
 let socket = null;
 
 let wifiCheckInterval = null;
@@ -50,6 +51,14 @@ export class HomePage implements OnInit {
       this.message = "platform ready";
       this.checkExistingDevice();
     });
+    this.router.events
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          console.log('NavigationEnd:', event);
+          this.checkExistingDevice();
+
+        }
+      });
   }
   async switchOff(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -87,7 +96,6 @@ export class HomePage implements OnInit {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
       console.log(this.devices);
-
       this.keepCheckingDeviceOnline();
     }
   }
@@ -107,7 +115,7 @@ export class HomePage implements OnInit {
 
   async askDeviceName() {
   }
- 
+
   async scanWifi() {
     this.loader = true;
     try {

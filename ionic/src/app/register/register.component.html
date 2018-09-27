@@ -35,7 +35,7 @@
         <p *ngIf="errorMessage">{{errorMessage}}</p>
       </div>
       <ion-col class="center" class="registerr">
-        <ion-button expand="block" color="light" (click)="onSubmit(userRegisterForm)" [disabled]="!userRegisterForm.valid || loading">{{loading ? '' : 'Register'}}
+        <ion-button expand="block" color="light" (click)="onSubmit(userRegisterForm)">{{loading ? '' : 'Register'}}
           <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
         </ion-button>
       </ion-col>

@@ -114,6 +114,7 @@ export class AddDevicesComponent implements OnInit {
         })
         this.deviceService.setDevices(deviceData)
         this.notifyService.alertUser("Device Update Successfully");
+        this.keepCheckingDeviceOnline();
       }
       this.canSetDevice = false;
       this.router.navigate(["/add-devices"]);
@@ -126,7 +127,6 @@ export class AddDevicesComponent implements OnInit {
 
     }
   }
-
   async scanWifi() {
     this.loader = true;
     try {

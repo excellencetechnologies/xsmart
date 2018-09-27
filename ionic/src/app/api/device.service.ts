@@ -297,5 +297,4 @@ export class DeviceService {
             this.notifyService.alertUser("device not found");
         }
     }
-
 }

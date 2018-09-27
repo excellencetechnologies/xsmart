@@ -25,7 +25,8 @@
         <ion-item>
           <div class="content">
             <p size="12">
-              <span *ngIf="devices['meta']"> device_id : {{devices.chip_id}}</span>
+              <span *ngIf="devices['meta']">
+                <b>Device Id </b> : {{devices.chip_id}}</span>
             </p>
             <div *ngIf="devices['meta']">
               <p *ngIf="devices.meta.switches.length > 0">
