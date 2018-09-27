@@ -16,7 +16,8 @@ router.get('/', (req, res) => {
             webid: data.Access.WEBID,
             chip: data.Access.chip,
             name: data.Access.name,
-            type: data.Access.type
+            type: data.Access.type,
+            pins: data.Access.switches
         };
     } else {
         let index = Math.floor((Math.random() * 3));
@@ -24,7 +25,8 @@ router.get('/', (req, res) => {
             webid: data.Device[index].WEBID,
             chip: data.Device[index].chip,
             name: data.Device[index].name,
-            type: data.Device[index].type
+            type: data.Device[index].type,
+            pins: data.Access.switches
         };
     }
     if (ping.name == null) {
