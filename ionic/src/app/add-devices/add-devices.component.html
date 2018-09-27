@@ -45,11 +45,9 @@
   <div>
     <ion-list class="networklist" *ngFor="let wifi of wifinetworks">
       <ion-item class="listPassword" (click)="askWifiPassword(wifi)">
-        <ion-item no-padding>
-          <ion-icon slot="start" mode="ios" name="wifi"></ion-icon>
-          {{wifi.SSID}}
-        </ion-item>
-        <ion-label slot="end" color="stable">
+        <ion-icon slot="start"  mode="ios" name="wifi"></ion-icon>
+        <ion-label class="wifiSSid"> {{wifi.SSID}}</ion-label>
+        <ion-label sl ot="end" color="stable">
           <div no-padding class="wifiNetwork">
             {{wifi.RSSI >= -50 ? 'Strong' : (wifi.RSSI >= -60 && wifi.RSSI
             < -50) ? 'Good' : (wifi.RSSI>= -70 && wifi.RSSI

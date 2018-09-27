@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { newDevice } from '../components/model/user';
 import { SetWifiPasswordComponent } from '../set-wifi-password/set-wifi-password.component';
+
 let wifiCheckInterval = null;
 @Component({
   selector: 'app-add-devices',
@@ -130,9 +131,16 @@ export class AddDevicesComponent implements OnInit {
     this.loader = true;
     try {
       const resData = await this.api.getScanWifi();
-      this.wifinetworks = resData['data'];
+      this.wifinetworks = resData['data'].sort(function (RSSI1,RSSI2) {
+        if (RSSI1['RSSI'] > RSSI2['RSSI']) {
+          return -1;
+        } else if (RSSI1['RSSI'] < RSSI2['RSSI']) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
       this.loader = false
-      console.log(this.wifinetworks);
     } catch (e) {
       this.loader = false;
       console.log(e)

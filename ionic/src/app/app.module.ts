@@ -30,6 +30,7 @@ import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
+import { AddDevicePipe } from './add-device.pipe';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { AddDevicesComponent } from './add-devices/add-devices.component';
     AddEmployeeComponent,
     ViewEmployeeComponent,
     SettingComponent,
-    AddDevicesComponent],
+    AddDevicesComponent,
+    AddDevicePipe],
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,
