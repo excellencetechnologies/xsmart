@@ -12,7 +12,6 @@ export interface newDevice {
     user_id: string;
     meta: Device;
 }
-
 export interface deleteDevice {
     chip_id: string;
     user_id: string;

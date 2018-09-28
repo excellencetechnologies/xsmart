@@ -5,7 +5,8 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { HttpClient } from '@angular/common/http';
 import { AlertController, MenuController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
-import {  Device } from "../api/api"
+import { Device } from "../api/api"
+import { Ping, Wifi, Switch } from "../api/api"
 @Component({
   selector: 'app-about',
   templateUrl: 'switch.page.html',
@@ -20,14 +21,14 @@ export class switchPage {
   }
   constructor(
     public apiServices: ApiService,
-     private router: Router,
-     private nativeStorage: NativeStorage,
-     private http: HttpClient,
-     private api: ApiService,
-     public alertController: AlertController,
-     private deviceService: DeviceService,
-     private menuController:MenuController
-    ) { }
+    private router: Router,
+    private nativeStorage: NativeStorage,
+    private http: HttpClient,
+    private api: ApiService,
+    public alertController: AlertController,
+    private deviceService: DeviceService,
+    private menuController: MenuController
+  ) { }
   async getDevice() {
     this.loading = true;
     try {
@@ -38,8 +39,30 @@ export class switchPage {
       this.errorMessage = err.message;
     }
   }
+  async switchOff(s: Switch, d: Device) {
+    this.deviceService.sendMessageToSocket({
+      type: "device_pin_oper",
+      chip: d.chip,
+      pin: s.pin,
+      status: "LOW",
+      name: s.name,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
+    })
+  }
+  async switchOn(s: Switch, d: Device) {
+    this.deviceService.sendMessageToSocket({
+      type: "device_pin_oper",
+      chip: d.chip,
+      pin: s.pin,
+      status: "HIGH",
+      name: s.name,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
+    })
+  }
   menu() {
     this.menuController.toggle()
-  }  
+  }
 
 }

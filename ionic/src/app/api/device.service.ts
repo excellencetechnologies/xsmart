@@ -2,21 +2,28 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
 import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
-import { Device, Switch } from "./api"
+// import { Device, Switch ,ping} from "./api"
+import { Ping, Wifi, Device, Switch } from "../api/api"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
+import { ApiService } from './api.service';
+let wifiCheckInterval = null;
 let socket = null;
 @Injectable({
     providedIn: 'root',
 })
 export class DeviceService {
+    devicePing: Ping;
+    isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
+    mode: String = "device";
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
         private uniqueDeviceID: UniqueDeviceID,
         private toastCtrl: ToastController,
         private notifyService: NotifyService,
+        private api: ApiService
     ) {
     }
     //random id to identify the current app
@@ -52,7 +59,6 @@ export class DeviceService {
     }
     async setDevices(devices: Device[]) {
         if (this.platform.is("mobile")) {
-            console.log('devices', devices)
             await this.nativeStorage.setItem('devices', devices);
         } else {
             localStorage.setItem('devices', JSON.stringify(devices));
@@ -135,7 +141,6 @@ export class DeviceService {
     sendMessageToSocket(msg) {
 
         if (this.isSocketConnected) {
-            console.log("socket msg send to", msg);
             socket.send(JSON.stringify(msg));
 
         } else {
@@ -144,22 +149,16 @@ export class DeviceService {
             socket = new WebSocket('ws://5.9.144.226:9030');
             // Connection opened
             socket.addEventListener('open', (event) => {
-                console.log("socket connected");
                 this.isSocketConnected = true;
                 socket.send(JSON.stringify(msg));
             });
-
             socket.addEventListener('close', () => {
-                console.log("socket closed");
                 this.isSocketConnected = false;
             });
-
             // Listen for messages
             socket.addEventListener('message', async (event) => {
 
                 let res = JSON.parse(event.data);
-                console.log('Message from server ');
-                console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                 } else if (res.type === "device_pin_oper_reply") {
@@ -238,9 +237,6 @@ export class DeviceService {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
                 } else if (res.type === "device_set_list_employee_notify") {
-                    console.log(res.data);
-                    //remove disabled from this
-                    //data will be of format card : emp_id
                     this.notifyService.alertUser("employee list recieved");
                 } else if (res.type === "device_set_time_reply") {
                     if (res.found) {
@@ -249,7 +245,6 @@ export class DeviceService {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
                 } else if (res.type === "device_set_time_notify") {
-                    console.log(res.data);
                     this.notifyService.alertUser("device time recieved");
                 } else if (res.type === "device_get_time_reply") {
                     if (res.found) {
@@ -257,18 +252,20 @@ export class DeviceService {
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
-                } else if (res.type === "device_get_time_notify") {
-                    console.log(res.data);
-                    console.log(new Date(res.data));
-                    console.log(new Date());
+                } else if (res.type == "device_set_name") {
+                    if (res.found) {
+                        this.notifyService.alertUser("device name recived")
+                    }
+                    else {
+                        this.notifyService.alertUser("unable to reach device name");
+                    }
+                }
+                else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
                     let currentTime = new Date().getTime();
                     let diff = currentTime - deviceTime;
-                    console.log("difference in time " + (diff / (1000 * 60 * 60)))
                     if (Math.abs(diff) > 24 * 60 * 60 * 1000) {
-                        console.log("some thing wnent wrong. diff is very large " + diff);
                     } else if (Math.abs(diff) < .5 * 60 * 60 * 1000) {
-                        console.log("different in time less than 30min its fine")
                     } else {
                         this.sendMessageToSocket({
                             type: "device_set_time",
@@ -278,7 +275,7 @@ export class DeviceService {
                             diff: Math.round(diff / 1000)
                         });
                     }
-                    this.notifyService.alertUser("device time recieved");
+                    this.notifyService.alertUser("device time recived");
                 }
             });
         }

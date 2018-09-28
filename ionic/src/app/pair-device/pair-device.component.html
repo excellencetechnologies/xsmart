@@ -1,13 +1,13 @@
 <ion-header>
-    <ion-toolbar mode="ios">
-      <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-      </ion-buttons>
-      <ion-title>
-        Pair Devices
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Pair Devices
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content padding>
   <div padding-left>
     <h3>Connect To Device</h3>
@@ -23,5 +23,8 @@
       <b>123456789</b>
     </p>
   </div>
-  <ion-button class="button-radius" expand="block"  color="primary" fill="outline">Wating..</ion-button>
+  <div class="error">
+    <p *ngIf="errorMessage">Make sure device is close to your mobile and you are connect to the wifi network</p>
+  </div>
+  <ion-button class="button-radius" expand="block" color="primary" fill="outline">Wating..</ion-button>
 </ion-content>

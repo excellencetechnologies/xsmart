@@ -46,7 +46,7 @@ import { AddDevicesComponent } from './add-devices/add-devices.component';
     ViewEmployeeComponent,
     SettingComponent,
     AddDevicesComponent,
-   ],
+  ],
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,
@@ -65,6 +65,7 @@ import { AddDevicesComponent } from './add-devices/add-devices.component';
     FileTransfer,
     Camera,
     FileTransferObject,
+    //
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

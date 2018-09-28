@@ -54,9 +54,7 @@ export class HomePage implements OnInit {
     this.router.events
       .subscribe((event) => {
         if (event instanceof NavigationEnd) {
-          console.log('NavigationEnd:', event);
           this.checkExistingDevice();
-
         }
       });
   }
@@ -84,7 +82,7 @@ export class HomePage implements OnInit {
   }
   async setSwitchNamee(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
-      type: "set_switch_name",
+      type: "device_set_name",
       chip: d.chip,
       pin: s.pin,
       name: s.name,
@@ -95,7 +93,6 @@ export class HomePage implements OnInit {
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
-      console.log(this.devices);
       this.keepCheckingDeviceOnline();
     }
   }
@@ -122,10 +119,8 @@ export class HomePage implements OnInit {
       const resData = await this.api.getScanWifi();
       this.wifinetworks = resData['data'];
       this.loader = false
-      console.log(this.wifinetworks);
     } catch (e) {
       this.loader = false;
-      console.log(e)
       this.errorMessage = e['error']
       this.notifyService.alertUser("Can not get Wifi");
       this.isScanningDevice = true;
@@ -134,7 +129,6 @@ export class HomePage implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      console.log("pinging device", device.chip);
       this.deviceService.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
@@ -147,7 +141,6 @@ export class HomePage implements OnInit {
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
-      console.log(this.isSocketConnected);
       this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
@@ -190,7 +183,6 @@ export class HomePage implements OnInit {
               this.deviceService.setDevices(allDevices);
             } catch (e) {
               this.errorMessage = e['error']
-              this.notifyService.alertUser("Switch name is not set");
               console.log(e);
             }
             this.keepCheckingDeviceOnline();
@@ -336,5 +328,8 @@ export class HomePage implements OnInit {
       ]
     });
     await alert.present();
+  }
+  wifi1() {
+    this.router.navigate(["/scan-device"]);
   }
 }
