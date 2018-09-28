@@ -54,7 +54,6 @@ export class HomePage implements OnInit {
     this.router.events
       .subscribe((event) => {
         if (event instanceof NavigationEnd) {
-          console.log('NavigationEnd:', event);
           this.checkExistingDevice();
         }
       });
@@ -142,7 +141,6 @@ export class HomePage implements OnInit {
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
-      //  console.log(this.isSocketConnected);
       this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }

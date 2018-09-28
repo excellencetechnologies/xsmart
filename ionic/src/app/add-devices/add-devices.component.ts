@@ -53,7 +53,7 @@ export class AddDevicesComponent implements OnInit {
       ])
     });
   }
-  async setDeviceName(name: String, chip: string, type: string, formData) {
+  async setDeviceName(name: String, chip: string, type: string) {
     try {
       await this.api.setDeviceNickName(name, chip);
       let newDevice: newDevice = {

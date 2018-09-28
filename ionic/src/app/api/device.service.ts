@@ -275,7 +275,7 @@ export class DeviceService {
                             diff: Math.round(diff / 1000)
                         });
                     }
-                    this.notifyService.alertUser("device time recieved");
+                    this.notifyService.alertUser("device time recived");
                 }
             });
         }
