@@ -37,16 +37,16 @@ export class AddDevicesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getPindDevice()
-    this.createLoginForm()
+    this.getPingDevice()
+    this.createsetNameForm()
     this.scanWifi()
   }
-  getPindDevice() {
+  getPingDevice() {
     const devicePingData = this.navParm.get('pingDevice')
     this.devicePing = devicePingData['pingDevice']
   }
 
-  createLoginForm() {
+  createsetNameForm() {
     this.setNameForm = new FormGroup({
       name: new FormControl("", [
         Validators.required
