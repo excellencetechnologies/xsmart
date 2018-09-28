@@ -5,25 +5,74 @@ import { NotifyService } from '../api/notify.service';
 import { HttpClient } from '@angular/common/http'
 import { ApiService } from '../api/api.service';
 import { timer } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+import { AddDevicesComponent } from '../add-devices/add-devices.component';
+let wifiCheckInterval = null;
 @Component({
   selector: 'app-pair-device',
   templateUrl: './pair-device.component.html',
   styleUrls: ['./pair-device.component.scss']
 })
 export class PairDeviceComponent implements OnInit {
-
+  wifinetworks: Wifi[] = [];
+  devices: Device[] = [];
+  devicePing: Ping;
+  isScanningDevice: boolean = false;
+  mode: String = "device";
   constructor(
-    private router: Router
+    private router: Router,
+    private api: ApiService,
+    public modalController: ModalController,
+    private notifyService: NotifyService,
   ) { }
 
   ngOnInit() {
-    timer(1000).subscribe(() => {
-      this.addDevice();
-  });
+    this.scanDevice();
   }
   addDevice() {
     this.router.navigate(["/add-devices"]);
-
   }
+  keepCheckingWifiConnected() {
+    if (wifiCheckInterval)
+      clearInterval(wifiCheckInterval);
+    wifiCheckInterval = setInterval(async () => {
+      try {
+        const data = await this.api.checkPing();
+        this.devicePing = data['data']
+        if (this.devicePing.name.length > 0) {
+          this.devicePing.isNew = false;
+        } else {
+          this.devicePing.isNew = true;
+        }
+        this.isScanningDevice = false;
+        clearInterval(wifiCheckInterval);
+        this.mode = "discovery";
+        const data2 = { pingDevice: this.devicePing };
+        console.log(data2);
 
+        const modal = await this.modalController.create({
+          component: AddDevicesComponent,
+          componentProps: { pingDevice: data2 }
+        });
+        return await modal.present();
+      } catch (e) {
+        console.log(e)
+        this.isScanningDevice = true;
+        this.notifyService.alertUser("Make sure device is close to your mobile and you are connect to the wifi network.");
+      }
+    }, 5000);
+  }
+  scanDevice() {
+    this.mode = "scan";
+    this.isScanningDevice = true;
+    this.wifinetworks = [];
+    this.devicePing = {
+      name: "",
+      chip: "",
+      webid: "",
+      isNew: false,
+      type: ""
+    }
+    this.keepCheckingWifiConnected();
+  }
 }

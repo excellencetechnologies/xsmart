@@ -70,6 +70,7 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+    console.log(s.status)
   }
   async switchOn(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -81,10 +82,12 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+    console.log(s.status)
+    
   }
   async setSwitchNamee(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
-      type: "set_switch_name",
+      type: "device_set_name",
       chip: d.chip,
       pin: s.pin,
       name: s.name,
@@ -134,7 +137,7 @@ export class HomePage implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      console.log("pinging device", device.chip);
+      // console.log("pinging device", device.chip);
       this.deviceService.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
@@ -147,7 +150,7 @@ export class HomePage implements OnInit {
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
-      console.log(this.isSocketConnected);
+      //  console.log(this.isSocketConnected);
       this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
@@ -190,7 +193,6 @@ export class HomePage implements OnInit {
               this.deviceService.setDevices(allDevices);
             } catch (e) {
               this.errorMessage = e['error']
-              this.notifyService.alertUser("Switch name is not set");
               console.log(e);
             }
             this.keepCheckingDeviceOnline();
@@ -336,5 +338,8 @@ export class HomePage implements OnInit {
       ]
     });
     await alert.present();
+  }
+  wifi1(){
+    this.router.navigate(["/scan-device"]);
   }
 }

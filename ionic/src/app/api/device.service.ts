@@ -2,21 +2,28 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
 import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
-import { Device, Switch } from "./api"
+// import { Device, Switch ,ping} from "./api"
+import { Ping, Wifi, Device, Switch } from "../api/api"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
+import { ApiService } from './api.service';
+let wifiCheckInterval = null;
 let socket = null;
 @Injectable({
     providedIn: 'root',
 })
 export class DeviceService {
+    devicePing: Ping;
+    isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
+    mode: String = "device";
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
         private uniqueDeviceID: UniqueDeviceID,
         private toastCtrl: ToastController,
         private notifyService: NotifyService,
+        private api: ApiService
     ) {
     }
     //random id to identify the current app
@@ -135,7 +142,7 @@ export class DeviceService {
     sendMessageToSocket(msg) {
 
         if (this.isSocketConnected) {
-            console.log("socket msg send to", msg);
+            // console.log("socket msg send to", msg);
             socket.send(JSON.stringify(msg));
 
         } else {
@@ -158,8 +165,8 @@ export class DeviceService {
             socket.addEventListener('message', async (event) => {
 
                 let res = JSON.parse(event.data);
-                console.log('Message from server ');
-                console.log(res);
+                // console.log('Message from server ');
+                // console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                 } else if (res.type === "device_pin_oper_reply") {
@@ -257,7 +264,16 @@ export class DeviceService {
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
-                } else if (res.type === "device_get_time_notify") {
+                } else if (res.type == "device_set_name") {
+                    console.log(res.data)
+                    if (res.found) {
+                        this.notifyService.alertUser("device name recived")
+                    }
+                    else {
+                        this.notifyService.alertUser("unable to reach device name");
+                    }
+                }
+                else if (res.type === "device_get_time_notify") {
                     console.log(res.data);
                     console.log(new Date(res.data));
                     console.log(new Date());
@@ -296,5 +312,27 @@ export class DeviceService {
         catch (e) {
             this.notifyService.alertUser("device not found");
         }
+    }
+    keepCheckingWifiConnected() {
+        if (wifiCheckInterval)
+            clearInterval(wifiCheckInterval);
+        wifiCheckInterval = setInterval(async () => {
+            try {
+                const data = await this.api.checkPing();
+                this.devicePing = data['data']
+                if (this.devicePing.name.length > 0) {
+                    this.devicePing.isNew = false;
+                } else {
+                    this.devicePing.isNew = true;
+                }
+                this.isScanningDevice = false;
+                clearInterval(wifiCheckInterval);
+                this.mode = "discovery";
+            } catch (e) {
+                console.log(e)
+                this.isScanningDevice = true;
+                this.notifyService.alertUser("Device not found");
+            }
+        }, 5000);
     }
 }

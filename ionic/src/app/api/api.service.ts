@@ -26,7 +26,7 @@ export class ApiService {
   async checkPing() {
     // return await this.http.get<Ping>(this.base_url).toPromise();
     try {
-      return await this.http.get<Ping>(`${environment["deviceUrl"]}?access=1`).toPromise();
+      return await this.http.get<Ping>(`${environment["deviceUrl"]}`).toPromise();
 
     }
     catch (error) {

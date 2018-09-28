@@ -13,6 +13,11 @@
     color: #ffc900;
 }
 
+.exclm {
+    font-family: 'Titillium Web', sans-serif;
+    color: gray;
+}
+
 .wifi {
     transform: scale(0.6);
     color: gray;
@@ -31,28 +36,44 @@
     --padding-top: 1.5em;
     text-transform: capitalize;
     padding-left: 10px;
-    padding-right:10px;
+    padding-right: 10px;
+    --border-radius: 5px;
 }
 
-.border{
+.yourDevice {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.border {
     border: thin solid blue;
-    border-radius:2px; 
+    border-radius: 2px;
 }
+
 .border ion-col:not(:last-child) {
-   border-right: thin solid blue
+    border-right: thin solid blue
 }
-.item-padding{
-    padding:6px;
-    color:#666;
+
+.item-padding {
+    padding: 6px;
+    color: #666;
 }
-.content{
-    --padding-top:4px;
-    color:black;
+
+.content {
+    --padding-top: 4px;
+    color: black;
 }
-.devicename{
+
+.devicename {
     border-bottom: thin solid #EEE;
     font-size: 19px;
 }
-.device>h3{
-    padding-left:10px;
+
+.device>h3 {
+    padding-left: 10px;
+}
+
+.iconlevel {
+    margin-bottom: 9.2px;
+    margin-left: 5px;
 }

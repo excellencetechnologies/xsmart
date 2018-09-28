@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { Router } from '@angular/router';
 import { NotifyService } from '../api/notify.service';
-import { MenuController, AlertController, Platform, ModalController } from '@ionic/angular';
+import { MenuController, AlertController, Platform, ModalController, NavParams } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
 import { ApiService } from '../api/api.service';
 import { HttpClient } from '@angular/common/http';
@@ -33,57 +33,63 @@ export class AddDevicesComponent implements OnInit {
     private api: ApiService,
     private deviceService: DeviceService,
     public alertController: AlertController,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private navParm: NavParams
   ) { }
 
   ngOnInit() {
-    this.scanDevice();
+    this.getdataPairDevice()
   }
+  getdataPairDevice() {
+    const devicePingData = this.navParm.get('pingDevice')
+    this.devicePing = devicePingData['pingDevice']
+  }
+
   createLoginForm() {
     this.setNameForm = new FormGroup({
       name: new FormControl("", [
-        Validators.required,
-      ]),
+        Validators.required
+      ])
     });
   }
-  scanDevice() {
-    this.mode = "scan";
-    this.isScanningDevice = true;
-    this.wifinetworks = [];
-    this.devicePing = {
-      name: "",
-      chip: "",
-      webid: "",
-      isNew: false,
-      type: ""
-    }
-    this.keepCheckingWifiConnected();
-    this.router.navigate(["/add-devices"]);
-  }
-  keepCheckingWifiConnected() {
-    if (wifiCheckInterval)
-      clearInterval(wifiCheckInterval);
-    wifiCheckInterval = setInterval(async () => {
-      try {
-        const data = await this.api.checkPing();
-        this.devicePing = data['data']
-        if (this.devicePing.name.length > 0) {
-          this.devicePing.isNew = false;
-        } else {
-          this.devicePing.isNew = true;
-        }
-        this.isScanningDevice = false;
-        clearInterval(wifiCheckInterval);
-        this.mode = "discovery";
-      } catch (e) {
-        console.log(e)
-        this.isScanningDevice = true;
-        this.errorMessage = e["error"];
-        this.notifyService.alertUser("Device not found");
-      }
-    }, 5000);
-  }
-  async setDeviceName(name: String, chip: string, formData) {
+  // scanDevice() {
+  //   this.mode = "scan";
+  //   this.isScanningDevice = true;
+  //   this.wifinetworks = [];
+  //   this.devicePing = {
+  //     name: "",
+  //     chip: "",
+  //     webid: "",
+  //     isNew: false,
+  //     type: ""
+  //   }
+  //   this.keepCheckingWifiConnected();
+  //   this.router.navigate(["/add-devices"]);
+  // }
+  // keepCheckingWifiConnected() {
+  //   if (wifiCheckInterval)
+  //     clearInterval(wifiCheckInterval);
+  //   wifiCheckInterval = setInterval(async () => {
+  //     try {
+  //       const data = await this.api.checkPing();
+  //       this.devicePing = data['data']
+  //       if (this.devicePing.name.length > 0) {
+  //         this.devicePing.isNew = false;
+  //       } else {
+  //         this.devicePing.isNew = true;
+  //       }
+  //       this.isScanningDevice = false;
+  //       clearInterval(wifiCheckInterval);
+  //       this.mode = "discovery";
+  //     } catch (e) {
+  //       console.log(e)
+  //       this.isScanningDevice = true;
+  //       this.errorMessage = e["error"];
+  //       this.notifyService.alertUser("Device not found");
+  //     }
+  //   }, 5000);
+  // }
+  async setDeviceName(name: String, chip: string, type: string, formData) {
     try {
       await this.api.setDeviceNickName(name, chip);
       let newDevice: newDevice = {
@@ -96,7 +102,7 @@ export class AddDevicesComponent implements OnInit {
           ttl: 0,
           online: false,
           switches: [],
-          type: ''
+          type: this.devicePing.type
         }
       };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
@@ -131,7 +137,7 @@ export class AddDevicesComponent implements OnInit {
     this.loader = true;
     try {
       const resData = await this.api.getScanWifi();
-      this.wifinetworks = resData['data'].sort(function (RSSI1,RSSI2) {
+      this.wifinetworks = resData['data'].sort(function (RSSI1, RSSI2) {
         if (RSSI1['RSSI'] > RSSI2['RSSI']) {
           return -1;
         } else if (RSSI1['RSSI'] < RSSI2['RSSI']) {
