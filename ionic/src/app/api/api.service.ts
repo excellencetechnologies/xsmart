@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { Ping, Wifi } from "./api"
 import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
-import { User, newDevice,deleteDevice } from "../components/model/user"
+import { User, newDevice, deleteDevice } from "../components/model/user"
 export interface Message {
   author: string,
   message: string
@@ -65,7 +65,7 @@ export class ApiService {
     }
   }
 
-  async postlogin(user:User) {
+  async postlogin(user: User) {
     const apidata = { "email": user.email, "password": user.password };
     try {
       const data = await this.http.post<User>(`${environment["base_url"]}user/login`, apidata).toPromise();
@@ -78,7 +78,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async postRegister(user:User) {
+  async postRegister(user: User) {
     const apidata = { "name": user.name, "email": user.email, "password": user.password };
     try {
       return await this.http.post<User>(`${environment["base_url"]}user/register`, apidata).toPromise();
@@ -88,10 +88,10 @@ export class ApiService {
       throw (error);
     }
   }
-  async addDevices(addDevice:newDevice) {
+  async addDevices(addDevice: newDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
-      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`,addDevice,
+      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`, addDevice,
         {
           headers: header
         }
@@ -102,7 +102,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async listDevices(importDevice?:newDevice) {
+  async listDevices(importDevice?: newDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
       return await this.http.get<newDevice[]>(`${environment["base_url"]}device/listDevice`,
@@ -115,7 +115,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async deleteDevices(deleteDevice:deleteDevice) {
+  async deleteDevices(deleteDevice: deleteDevice) {
     let header = new Headers();
     header.append('token', localStorage.getItem("token"));
     try {

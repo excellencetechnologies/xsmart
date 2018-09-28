@@ -23,7 +23,6 @@ export class AddDevicesComponent implements OnInit {
   devicePing: Ping;
   isScanningDevice: boolean = false;
   mode: String = "device";
-  canSetDevice: Boolean;
   errorMessage: string;
   loader: boolean;
   constructor(
@@ -38,9 +37,11 @@ export class AddDevicesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.getdataPairDevice()
+    this.getPindDevice()
+    this.createLoginForm()
+    this.scanWifi()
   }
-  getdataPairDevice() {
+  getPindDevice() {
     const devicePingData = this.navParm.get('pingDevice')
     this.devicePing = devicePingData['pingDevice']
   }
@@ -52,43 +53,6 @@ export class AddDevicesComponent implements OnInit {
       ])
     });
   }
-  // scanDevice() {
-  //   this.mode = "scan";
-  //   this.isScanningDevice = true;
-  //   this.wifinetworks = [];
-  //   this.devicePing = {
-  //     name: "",
-  //     chip: "",
-  //     webid: "",
-  //     isNew: false,
-  //     type: ""
-  //   }
-  //   this.keepCheckingWifiConnected();
-  //   this.router.navigate(["/add-devices"]);
-  // }
-  // keepCheckingWifiConnected() {
-  //   if (wifiCheckInterval)
-  //     clearInterval(wifiCheckInterval);
-  //   wifiCheckInterval = setInterval(async () => {
-  //     try {
-  //       const data = await this.api.checkPing();
-  //       this.devicePing = data['data']
-  //       if (this.devicePing.name.length > 0) {
-  //         this.devicePing.isNew = false;
-  //       } else {
-  //         this.devicePing.isNew = true;
-  //       }
-  //       this.isScanningDevice = false;
-  //       clearInterval(wifiCheckInterval);
-  //       this.mode = "discovery";
-  //     } catch (e) {
-  //       console.log(e)
-  //       this.isScanningDevice = true;
-  //       this.errorMessage = e["error"];
-  //       this.notifyService.alertUser("Device not found");
-  //     }
-  //   }, 5000);
-  // }
   async setDeviceName(name: String, chip: string, type: string, formData) {
     try {
       await this.api.setDeviceNickName(name, chip);
@@ -122,10 +86,8 @@ export class AddDevicesComponent implements OnInit {
         this.notifyService.alertUser("Device Update Successfully");
         this.keepCheckingDeviceOnline();
       }
-      this.canSetDevice = false;
       this.router.navigate(["/add-devices"]);
       this.mode = "scan";
-      // this.xSmartConnect = true;
       this.scanWifi();
     } catch (e) {
       this.errorMessage = e["error"];
@@ -149,23 +111,15 @@ export class AddDevicesComponent implements OnInit {
       this.loader = false
     } catch (e) {
       this.loader = false;
-      console.log(e)
       this.errorMessage = e['error']
       this.notifyService.alertUser("Can not get Wifi");
       this.isScanningDevice = true;
 
     }
   }
-
-  SetName() {
-    this.canSetDevice = true;
-    this.createLoginForm()
-  }
-
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
-      console.log(this.deviceService.isSocketConnected);
       this.keepCheckingDeviceOnline();
     }, this.deviceService.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
@@ -179,7 +133,6 @@ export class AddDevicesComponent implements OnInit {
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      console.log("pinging device", device.chip);
       this.deviceService.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,

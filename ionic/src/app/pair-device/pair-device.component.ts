@@ -19,6 +19,7 @@ export class PairDeviceComponent implements OnInit {
   devicePing: Ping;
   isScanningDevice: boolean = false;
   mode: String = "device";
+  errorMessage: string;
   constructor(
     private router: Router,
     private api: ApiService,
@@ -48,17 +49,14 @@ export class PairDeviceComponent implements OnInit {
         clearInterval(wifiCheckInterval);
         this.mode = "discovery";
         const data2 = { pingDevice: this.devicePing };
-        console.log(data2);
-
         const modal = await this.modalController.create({
           component: AddDevicesComponent,
           componentProps: { pingDevice: data2 }
         });
         return await modal.present();
       } catch (e) {
-        console.log(e)
         this.isScanningDevice = true;
-        this.notifyService.alertUser("Make sure device is close to your mobile and you are connect to the wifi network.");
+        this.errorMessage = e;
       }
     }, 5000);
   }
