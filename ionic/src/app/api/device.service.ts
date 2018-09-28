@@ -149,13 +149,10 @@ export class DeviceService {
             socket = new WebSocket('ws://5.9.144.226:9030');
             // Connection opened
             socket.addEventListener('open', (event) => {
-                console.log("socket connected");
                 this.isSocketConnected = true;
                 socket.send(JSON.stringify(msg));
             });
-
             socket.addEventListener('close', () => {
-                console.log("socket closed");
                 this.isSocketConnected = false;
             });
             // Listen for messages
@@ -296,26 +293,5 @@ export class DeviceService {
         catch (e) {
             this.notifyService.alertUser("device not found");
         }
-    }
-    keepCheckingWifiConnected() {
-        if (wifiCheckInterval)
-            clearInterval(wifiCheckInterval);
-        wifiCheckInterval = setInterval(async () => {
-            try {
-                const data = await this.api.checkPing();
-                this.devicePing = data['data']
-                if (this.devicePing.name.length > 0) {
-                    this.devicePing.isNew = false;
-                } else {
-                    this.devicePing.isNew = true;
-                }
-                this.isScanningDevice = false;
-                clearInterval(wifiCheckInterval);
-                this.mode = "discovery";
-            } catch (e) {
-                this.isScanningDevice = true;
-                this.notifyService.alertUser("Device not found");
-            }
-        }, 5000);
     }
 }

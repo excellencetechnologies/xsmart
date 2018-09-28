@@ -60,8 +60,6 @@ export class switchPage {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    console.log(s.status)
-
   }
   menu() {
     this.menuController.toggle()
