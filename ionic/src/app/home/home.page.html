@@ -27,7 +27,6 @@
             <ion-label (click)="askDeviceName(device);">{{device.name}}</ion-label>
             <ion-icon slot="end" *ngIf="device && device.type !='access' && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
             <span slot="end" class="exclm" *ngIf="device && device.type!=='access' && !device.online" mode="md">!</span>
-
             <span slot="end" *ngIf="device && device.type =='access' && device.online" mode="md">!</span>
           </ion-item>
         </ion-list>
@@ -50,7 +49,7 @@
         <ion-list class="grid-item-header" *ngIf="device && device.type !='access'">
           <ion-item class="grid-item-header" *ngFor="let switch of device.switches; trackBy: trackBySwitch">
             <ion-icon [ngClass]="{'blue' : switch.status}" slot="start" mode="ios" name="bulb"></ion-icon>
-            <span (click)="setSwitchName(switch, device)"[ngClass]="{'blue' : switch.status}">{{switch.name}}</span>
+            <span (click)="setSwitchName(switch, device)" [ngClass]="{'blue' : switch.status}">{{switch.name}}</span>
             <ion-buttons slot="start">
               <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
                 <ion-icon name="power" mod="md"></ion-icon>
@@ -95,7 +94,7 @@
           <ion-grid no-padding class="group">
             <ion-row color="primary" class="border">
               <ion-col no-padding>
-                <ion-button expand="block" (click)="wifi1()" class="warranty" (click)="askWifiPassword(wifi)" color="primary" fill="clear">
+                <ion-button expand="block" (click)="wifi1()" class="warranty" color="primary" fill="clear">
                   <ion-icon mode="ios" name="wifi"></ion-icon>
                   <ion-label class="iconlevel">Wifi</ion-label>
                 </ion-button>

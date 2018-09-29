@@ -8,9 +8,7 @@ import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
 import { Router, NavigationEnd } from '@angular/router';
-// import { RouterModule, }   from '@angular/router';
 let socket = null;
-
 let wifiCheckInterval = null;
 
 @Component({
@@ -21,10 +19,8 @@ let wifiCheckInterval = null;
 export class HomePage implements OnInit {
   message: String = "test";
   xSmartConnect: boolean = false;
-  wifinetworks: Wifi[] = [];
   devicePing: Ping;
   devices: Device[] = [];
-  isScanningDevice: boolean = false;
   mode: String = "device";
   isSocketConnected: boolean = false;
   loader: boolean;
@@ -68,6 +64,7 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+    s.status = 0
   }
   async switchOn(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -79,6 +76,7 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+    s.status = 1
   }
   async setSwitchNamee(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -108,24 +106,6 @@ export class HomePage implements OnInit {
   }
   scanDevice() {
     this.router.navigate(["/scan-device"]);
-  }
-
-  async askDeviceName() {
-  }
-
-  async scanWifi() {
-    this.loader = true;
-    try {
-      const resData = await this.api.getScanWifi();
-      this.wifinetworks = resData['data'];
-      this.loader = false
-    } catch (e) {
-      this.loader = false;
-      this.errorMessage = e['error']
-      this.notifyService.alertUser("Can not get Wifi");
-      this.isScanningDevice = true;
-
-    }
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
@@ -161,7 +141,6 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            console.log('Confirm Ok')
             try {
               s['name'] = data.name;
               d.switches.forEach(value => {

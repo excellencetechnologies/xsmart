@@ -30,7 +30,6 @@ import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -65,7 +64,6 @@ import { AddDevicesComponent } from './add-devices/add-devices.component';
     FileTransfer,
     Camera,
     FileTransferObject,
-    //
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],
   bootstrap: [AppComponent]

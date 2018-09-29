@@ -2,7 +2,6 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
 import { Injectable } from '@angular/core';
 import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
-// import { Device, Switch ,ping} from "./api"
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
@@ -23,7 +22,7 @@ export class DeviceService {
         private uniqueDeviceID: UniqueDeviceID,
         private toastCtrl: ToastController,
         private notifyService: NotifyService,
-        private api: ApiService
+        private api: ApiService,
     ) {
     }
     //random id to identify the current app
@@ -294,4 +293,6 @@ export class DeviceService {
             this.notifyService.alertUser("device not found");
         }
     }
+
 }
+
