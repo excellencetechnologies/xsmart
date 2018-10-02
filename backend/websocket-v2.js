@@ -42,6 +42,7 @@ let apps = {};
 
 
 checkLatestVersionOTA = (version, device) => {
+    device = device.toLowerCase();
     let cacheKey = device + "-" + version;
     if (cache.get(cacheKey)) {
         return cache.get(cacheKey);
