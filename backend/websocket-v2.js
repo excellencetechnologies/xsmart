@@ -221,13 +221,13 @@ ws.on('connection', function (w) {
                     pins: obj['PINS'],
                     chip: obj['chip'],
                     time: time,
-                    type: obj["type"] ? obj["type"] : "switch",
+                    device_type: obj["device_type"] ? obj["device_type"] : "switch",
                     deviceTime: obj["deviceTime"],
                 };
                 w.chip = chip;
                 w.send(JSON.stringify({
                     type: "OK",
-                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'] , obj["type"] ? obj["type"] : "switch")
+                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'] , obj["device_type"] ? obj["device_type"] : "switch")
                 }));
 
                 if (apps[chip]) {
@@ -246,7 +246,8 @@ ws.on('connection', function (w) {
                                     version: devices[chip].version,
                                     found: true,
                                     deviceTime: devices[chip].deviceTime,
-                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id , devices[chip].type)
+                                    device_type: devices[chip].device_type,
+                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id , devices[chip].device_type)
                                 }));
                             }
                         });
