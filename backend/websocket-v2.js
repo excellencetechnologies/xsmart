@@ -248,7 +248,8 @@ ws.on('connection', function (w) {
                                     time: devices[chip].time,
                                     version: devices[chip].version,
                                     found: true,
-                                    deviceTime: devices[chip].deviceTime
+                                    deviceTime: devices[chip].deviceTime,
+                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id)
                                 }));
                             }
                         });
@@ -283,7 +284,8 @@ ws.on('connection', function (w) {
                             chip: devices[c].chip,
                             found: true,
                             time: devices[c].time,
-                            deviceTime: devices[c].deviceTime
+                            deviceTime: devices[c].deviceTime,
+                            ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
                         }));
                         found = true;
 
