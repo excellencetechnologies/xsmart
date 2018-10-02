@@ -52,12 +52,13 @@ checkLatestVersionOTA = (version, device) => {
     glob("**/*.bin", function (er, files) {
         if (!er) {
             console.log(files, "files");
+            let found = false;
             files.forEach((file) => {
 
                 let name = file.replace("ota/" + device + "/", "");
                 name = name.replace("xsmart.ino." + device + ".", "");
                 name = name.replace(".bin", "");
-                console.log("name" , name);
+                console.log("name", name);
                 if (semver.valid(name)) {
                     console.log("valid");
                     console.log(version);
@@ -65,14 +66,16 @@ checkLatestVersionOTA = (version, device) => {
                         //update found
                         console.log("version grt update found");
                         cache.put(cacheKey, file, 1000 * 60 * 60 * 24);
-                        return name;
+                        found = true;
                     }
                 }
             })
-            //no update
-            console.log("update not found");
-            cache.put(cacheKey, "", 1000 * 60 * 60 * 24);
-            return "";
+            if (!found) {
+                //no update
+                console.log("update not found");
+                cache.put(cacheKey, "", 1000 * 60 * 60 * 24);
+                return "";
+            }
         }
     })
     return "";
