@@ -55,7 +55,7 @@ checkLatestVersionOTA = (version, device, type) => {
             console.log(files, "files");
             let ota = "";
             files.forEach((file) => {
-                let dirPath = "ota/" + device + "/" + type;
+                let dirPath = "ota/" + device + "/" + type + "/";
                 console.log(dirPath);
                 if (file.indexOf(dirPath) >= 0) {
                     let name = file.replace(dirPath, "");
