@@ -42,9 +42,9 @@ let devices = {};
 let apps = {};
 
 
-checkLatestVersionOTA = (version, device) => {
+checkLatestVersionOTA = (version, device, type) => {
     device = device.toLowerCase();
-    let cacheKey = device + "-" + version;
+    let cacheKey = device + "-" + version + "-" + type;
     console.log(cache.get(cacheKey), " cache value");
     // if (cache.get(cacheKey)) {
     //     return cache.get(cacheKey);
@@ -53,12 +53,11 @@ checkLatestVersionOTA = (version, device) => {
     glob("**/*.bin", function (er, files) {
         if (!er) {
             console.log(files, "files");
-            let found = false;
             let ota = "";
             files.forEach((file) => {
-                if (file.indexOf("device")) {
-                    let name = file.replace("ota/" + device + "/", "");
-                    name = name.replace("xsmart.ino." + device + ".", "");
+                let dirPath = "ota/" + device + "/" + type;
+                if (file.indexOf(dirPath) >= 0) {
+                    let name = file.replace(dirPath, "");
                     name = name.replace(".bin", "");
                     console.log("name", name);
                     if (semver.valid(name)) {
@@ -68,21 +67,13 @@ checkLatestVersionOTA = (version, device) => {
                             //update found
                             console.log("version grt update found");
                             file = file.replace("ota/", "");
-                            cache.put(cacheKey, "http://5.9.144.226:9030/" + file, 1000 * 60 * 60 * 24);
-                            found = true;
                             ota = "http://5.9.144.226:9030/" + file;
                         }
                     }
                 }
             })
-            if (!found) {
-                //no update
-                console.log("update not found");
-                cache.put(cacheKey, "", 1000 * 60 * 60 * 24);
-                return "";
-            }else{
-                return ota;
-            }
+            cache.put(cacheKey, ota, 1000 * 60 * 60 * 24);
+            return ota;
         }
     })
     return "";
@@ -235,7 +226,7 @@ ws.on('connection', function (w) {
                 w.chip = chip;
                 w.send(JSON.stringify({
                     type: "OK",
-                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'])
+                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'] , obj["type"] ? obj["type"] : "switch")
                 }));
 
                 if (apps[chip]) {
@@ -254,7 +245,7 @@ ws.on('connection', function (w) {
                                     version: devices[chip].version,
                                     found: true,
                                     deviceTime: devices[chip].deviceTime,
-                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id)
+                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id , devices[chip].type)
                                 }));
                             }
                         });
