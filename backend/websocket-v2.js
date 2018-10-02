@@ -45,7 +45,7 @@ let apps = {};
 checkLatestVersionOTA = (version, device) => {
     device = device.toLowerCase();
     let cacheKey = device + "-" + version;
-    console.log(cache.get(cacheKey), "xxxxxxxxxxxxxxx");
+    console.log(cache.get(cacheKey), " cache value");
     if (cache.get(cacheKey)) {
         return cache.get(cacheKey);
     }
@@ -66,7 +66,8 @@ checkLatestVersionOTA = (version, device) => {
                     if (semver.gt(name, version)) {
                         //update found
                         console.log("version grt update found");
-                        cache.put(cacheKey, file, 1000 * 60 * 60 * 24);
+                        file = file.replace("ota/", "");
+                        cache.put(cacheKey, "http://5.9.144.226:9030/" + file, 1000 * 60 * 60 * 24);
                         found = true;
                     }
                 }
