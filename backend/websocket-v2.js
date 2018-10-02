@@ -47,9 +47,9 @@ checkLatestVersionOTA = (version, device) => {
         return cache.get(cacheKey);
     }
 
-    glob("**/*" + device + ".bin", function (er, files) {
+    glob("./ota/"+device+"/*" + device + ".bin", function (er, files) {
         if (!er) {
-            console.log(files);
+            console.log(files, "files");
             files.forEach((file) => {
                 console.log(file);
                 let name = file.replace("." + device + ".bin");
