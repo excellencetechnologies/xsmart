@@ -1,8 +1,8 @@
-#define ESP8266
-//#define ESP32
+// #define ESP8266
+#define ESP32
 
-#define ISACCESS 1
-// #define ISSWITCH 1
+// #define ISACCESS 1
+#define ISSWITCH 1
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -33,17 +33,12 @@ OTA update = OTA();
 
 const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
+//Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
+String version = "0.0.3";
+String webID = "ESP32-SWITCH";  //this should be some no to identify device type. there should be different between switch/access
+
 #ifdef ESP8266
 #define LEDPIN LED_BUILTIN
-// String webID = "LOLIN32-LITE"; //this should be some no to identify device type
-//this pins for lolin32 large device
-//  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
-//String version = "0.0.1";
-
-
-//Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
-String version = "0.0.2";
-String webID = "ESP8266";             //this should be some no to identify device type
 
 #ifdef ISACCESS
 #include "MFRC522.h"
@@ -54,8 +49,6 @@ XAccess access = XAccess("/access.json");
 MFRC522 mfrc522(SS_PIN, RST_PIN); // Create MFRC522 instance
 const int PINS[] = {};            // these are pins from nodemcu we are using
 const int PIN_SIZE = 0;
-int delay_socket = 0;
-const int delay_socket_max = 1000;
 #define ACCESS_MODE_ADD_EMPLOYEE 0
 #define ACCESS_MODE_READ 1
 int access_mode = ACCESS_MODE_READ;
@@ -73,13 +66,6 @@ const byte interruptPin = 19;
 
 #ifdef ESP32
 #define LEDPIN 12
-// String webID = "LOLIN32-LITE"; //this should be some no to identify device type
-//this pins for lolin32 large device
-//  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
-//String version = "0.0.1";
-
-String version = "0.0.1";
-String webID = "ESP32"; //this should be some no to identify device type
 //this pint for lolin32 mini
 const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
 const int PIN_SIZE = 7;
@@ -87,6 +73,8 @@ const int PIN_SIZE = 7;
 const byte interruptPin = 19;
 #endif
 
+int delay_socket = 0;
+const int delay_socket_max = 1000;
 int current_wifi_status = WIFI_CONNECT_MODE;
 int previous_wifi_status = current_wifi_status; //this used to detect change
 
@@ -748,7 +736,7 @@ void pingPacket()
 #endif
     JsonArray &pins = root.createNestedArray("PINS");
 
-    StaticJsonBuffer<200> jsonBuffer5;
+    StaticJsonBuffer<300> jsonBuffer5;
     for (int i = 0; i < PIN_SIZE; i++)
     {
       JsonObject &pin = jsonBuffer5.createObject();

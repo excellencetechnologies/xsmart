@@ -57,4 +57,16 @@ router.get("/listDevice", middleware.validateToken, (req, res) => {
     })
 })
 
+router.get("/allDevices", (req, res) => {
+    Device.find({}, (err, obj) => {
+        if (err) {
+            res.status(500).json("mongodb internel problem while retrieving the device");
+        } else {
+            res.status(200).json(obj);
+        }
+    })
+})
+
+
+
 module.exports = router;

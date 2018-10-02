@@ -2,11 +2,16 @@
 #include "HardwareSerial.h"
 #include <FS.h>
 #ifdef ESP32
+#define JSON_SIZE 1024
 #include <SPIFFS.h>
 #endif
 #include <ArduinoJson.h>
 
-#define JSON_SIZE 512
+#ifdef ESP8266
+  #define JSON_SIZE 512
+#endif
+
+
 
 #ifndef FILE_WRITE
 #define FILE_WRITE "w"
