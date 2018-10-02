@@ -47,7 +47,7 @@ checkLatestVersionOTA = (version, device) => {
         return cache.get(cacheKey);
     }
 
-    glob("./ota/"+device+"/*" + device + ".bin", function (er, files) {
+    glob("./ota/" + device + "/**.*", function (er, files) {
         if (!er) {
             console.log(files, "files");
             files.forEach((file) => {
@@ -56,13 +56,13 @@ checkLatestVersionOTA = (version, device) => {
                 if (semver.valid(name)) {
                     if (semver.gt(name, version)) {
                         //update found
-                        cache.put(cacheKey , file, 1000 * 60 * 60 * 24);
+                        cache.put(cacheKey, file, 1000 * 60 * 60 * 24);
                         return file;
                     }
                 }
             })
             //no update
-            cache.put(cacheKey , "", 1000 * 60 * 60 * 24);
+            cache.put(cacheKey, "", 1000 * 60 * 60 * 24);
             return "";
         }
     })
@@ -216,7 +216,7 @@ ws.on('connection', function (w) {
                 w.chip = chip;
                 w.send(JSON.stringify({
                     type: "OK",
-                    ota : checkLatestVersionOTA(obj['version'], obj['WEBID'])
+                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'])
                 }));
 
                 if (apps[chip]) {
