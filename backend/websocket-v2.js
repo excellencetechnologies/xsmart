@@ -54,6 +54,7 @@ checkLatestVersionOTA = (version, device) => {
         if (!er) {
             console.log(files, "files");
             let found = false;
+            let ota = "";
             files.forEach((file) => {
                 if (file.indexOf("device")) {
                     let name = file.replace("ota/" + device + "/", "");
@@ -69,7 +70,7 @@ checkLatestVersionOTA = (version, device) => {
                             file = file.replace("ota/", "");
                             cache.put(cacheKey, "http://5.9.144.226:9030/" + file, 1000 * 60 * 60 * 24);
                             found = true;
-                            break;
+                            ota = "http://5.9.144.226:9030/" + file;
                         }
                     }
                 }
@@ -79,6 +80,8 @@ checkLatestVersionOTA = (version, device) => {
                 console.log("update not found");
                 cache.put(cacheKey, "", 1000 * 60 * 60 * 24);
                 return "";
+            }else{
+                return ota;
             }
         }
     })
