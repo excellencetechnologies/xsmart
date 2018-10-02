@@ -34,8 +34,8 @@ OTA update = OTA();
 const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
 //Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
-String version = "0.0.3";
-String webID = "ESP32-SWITCH";  //this should be some no to identify device type. there should be different between switch/access
+String version = "0.0.4";
+String webID = "ESP32";  //this should be some no to identify device type. there should be different between switch/access
 
 #ifdef ESP8266
 #define LEDPIN LED_BUILTIN
