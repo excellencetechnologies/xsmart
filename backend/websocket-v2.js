@@ -10,6 +10,12 @@ var bodyParser = require("body-parser");
 require('dotenv').config();
 var cors = require('cors');
 var expressValidator = require("express-validator");
+const semver = require('semver')
+var glob = require("glob")
+var cache = require('memory-cache');
+
+
+
 const app = express();
 
 app.use(expressValidator());
@@ -35,7 +41,34 @@ let devices = {};
 let apps = {};
 
 
+checkLatestVersionOTA = (version, device) => {
+    let cacheKey = device + "-" + version;
+    if (cache.get(cacheKey)) {
+        return cache.get(cacheKey);
+    }
 
+    glob("**/*" + device + ".bin", options, function (er, files) {
+        if (!er) {
+            console.log(files);
+            files.forEach((file) => {
+                console.log(file);
+                let name = file.replace("." + device + ".bin");
+                if (semver.valid(name)) {
+                    if (semver.gt(name, version)) {
+                        //update found
+                        cache.put(cacheKey , file, 1000 * 60 * 60 * 24);
+                        return file;
+                    }
+                }
+            })
+            //no update
+            cache.put(cacheKey , "", 1000 * 60 * 60 * 24);
+            return "";
+        }
+    })
+    return "";
+
+}
 
 //obj of type
 //obj.chip
@@ -107,8 +140,8 @@ handleProtocol = async (obj, ws, w) => {
         "device_set_time",
         "device_get_time"
     ];
-    if(obj.type === "device_set_delete_employee"){
-        if(obj.stage === "success"){
+    if (obj.type === "device_set_delete_employee") {
+        if (obj.stage === "success") {
             Card.deleteOne({
                 chip: obj["chip"],
                 emp_id: obj['emp_id']
@@ -173,15 +206,17 @@ ws.on('connection', function (w) {
 
                 devices[chip] = {
                     id: obj["WEBID"],
+                    version: obj['version'],
                     pins: obj['PINS'],
                     chip: obj['chip'],
                     time: time,
                     type: obj["type"] ? obj["type"] : "switch",
-                    deviceTime: obj["deviceTime"]
+                    deviceTime: obj["deviceTime"],
                 };
                 w.chip = chip;
                 w.send(JSON.stringify({
-                    type: "OK"
+                    type: "OK",
+                    ota : checkLatestVersionOTA(obj['version'], obj['WEBID'])
                 }));
 
                 if (apps[chip]) {
@@ -197,6 +232,7 @@ ws.on('connection', function (w) {
                                     status: devices[chip].status,
                                     chip: devices[chip].chip,
                                     time: devices[chip].time,
+                                    version: devices[chip].version,
                                     found: true,
                                     deviceTime: devices[chip].deviceTime
                                 }));
@@ -228,6 +264,7 @@ ws.on('connection', function (w) {
                         w.send(JSON.stringify({
                             type: "device_online_check_reply",
                             id: devices[c].id,
+                            version: devices[c].version,
                             pins: devices[c].pins,
                             chip: devices[c].chip,
                             found: true,

@@ -54,13 +54,14 @@ router.get('/wifisave', (req, res) => {
         return;
     }
     data.Wifi.forEach((wifi) => {
-        if (wifi.SSID == req.query.ssid) {
-            if (req.query.password == '123456789') {
-                res.status(200).json(wifi);
-            } else {
-                res.status(400).json( "check your wifi password. correct password is 123456789" );
-            }
-        }
+        res.status(200).json(wifi);
+        // if (wifi.SSID == req.query.ssid) {
+        //     if (req.query.password == '123456789') {
+        //         res.status(200).json(wifi);
+        //     } else {
+        //         res.status(400).json( "check your wifi password. correct password is 123456789" );
+        //     }
+        // }
     });
 
 });

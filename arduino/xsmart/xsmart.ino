@@ -31,6 +31,8 @@ OTA update = OTA();
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module
 
+const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
+
 #ifdef ESP8266
 #define LEDPIN LED_BUILTIN
 // String webID = "LOLIN32-LITE"; //this should be some no to identify device type
@@ -40,7 +42,6 @@ OTA update = OTA();
 
 String version = "0.0.1";
 String webID = "ESP8266";             //this should be some no to identify device type
-const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
 #ifdef ISACCESS
 #include "MFRC522.h"
