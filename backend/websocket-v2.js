@@ -50,34 +50,30 @@ checkLatestVersionOTA = (version, device, type) => {
     //     return cache.get(cacheKey);
     // }
 
-    glob("**/*.bin", function (er, files) {
-        if (!er) {
-            console.log(files, "files");
-            let ota = "";
-            files.forEach((file) => {
-                let dirPath = "ota/" + device + "/" + type + "/";
-                console.log(dirPath);
-                if (file.indexOf(dirPath) >= 0) {
-                    let name = file.replace(dirPath, "");
-                    name = name.replace(".bin", "");
-                    console.log("name", name);
-                    if (semver.valid(name)) {
-                        console.log("valid");
-                        console.log(version);
-                        if (semver.gt(name, version)) {
-                            //update found
-                            console.log("version grt update found");
-                            file = file.replace("ota/", "");
-                            ota = "http://5.9.144.226:9030/" + file;
-                        }
-                    }
+    let files = glob.sync("**/*.bin");
+    console.log(files, "files");
+    let ota = "";
+    files.forEach((file) => {
+        let dirPath = "ota/" + device + "/" + type + "/";
+        console.log(dirPath);
+        if (file.indexOf(dirPath) >= 0) {
+            let name = file.replace(dirPath, "");
+            name = name.replace(".bin", "");
+            console.log("name", name);
+            if (semver.valid(name)) {
+                console.log("valid");
+                console.log(version);
+                if (semver.gt(name, version)) {
+                    //update found
+                    file = file.replace("ota/", "");
+                    ota = "http://5.9.144.226:9030/" + file;
+                    console.log("version grt update found", ota);
                 }
-            })
-            cache.put(cacheKey, ota, 1000 * 60 * 60 * 24);
-            return ota;
+            }
         }
     })
-    return "";
+    cache.put(cacheKey, ota, 1000 * 60 * 60 * 24);
+    return ota;
 
 }
 
@@ -227,7 +223,7 @@ ws.on('connection', function (w) {
                 w.chip = chip;
                 w.send(JSON.stringify({
                     type: "OK",
-                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'] , obj["device_type"] ? obj["device_type"] : "switch")
+                    ota: checkLatestVersionOTA(obj['version'], obj['WEBID'], obj["device_type"] ? obj["device_type"] : "switch")
                 }));
 
                 if (apps[chip]) {
@@ -247,7 +243,7 @@ ws.on('connection', function (w) {
                                     found: true,
                                     deviceTime: devices[chip].deviceTime,
                                     device_type: devices[chip].device_type,
-                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id , devices[chip].device_type)
+                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id, devices[chip].device_type)
                                 }));
                             }
                         });
