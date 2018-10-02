@@ -46,29 +46,31 @@ checkLatestVersionOTA = (version, device) => {
     device = device.toLowerCase();
     let cacheKey = device + "-" + version;
     console.log(cache.get(cacheKey), " cache value");
-    if (cache.get(cacheKey)) {
-        return cache.get(cacheKey);
-    }
+    // if (cache.get(cacheKey)) {
+    //     return cache.get(cacheKey);
+    // }
 
     glob("**/*.bin", function (er, files) {
         if (!er) {
             console.log(files, "files");
             let found = false;
             files.forEach((file) => {
-
-                let name = file.replace("ota/" + device + "/", "");
-                name = name.replace("xsmart.ino." + device + ".", "");
-                name = name.replace(".bin", "");
-                console.log("name", name);
-                if (semver.valid(name)) {
-                    console.log("valid");
-                    console.log(version);
-                    if (semver.gt(name, version)) {
-                        //update found
-                        console.log("version grt update found");
-                        file = file.replace("ota/", "");
-                        cache.put(cacheKey, "http://5.9.144.226:9030/" + file, 1000 * 60 * 60 * 24);
-                        found = true;
+                if (file.indexOf("device")) {
+                    let name = file.replace("ota/" + device + "/", "");
+                    name = name.replace("xsmart.ino." + device + ".", "");
+                    name = name.replace(".bin", "");
+                    console.log("name", name);
+                    if (semver.valid(name)) {
+                        console.log("valid");
+                        console.log(version);
+                        if (semver.gt(name, version)) {
+                            //update found
+                            console.log("version grt update found");
+                            file = file.replace("ota/", "");
+                            cache.put(cacheKey, "http://5.9.144.226:9030/" + file, 1000 * 60 * 60 * 24);
+                            found = true;
+                            break;
+                        }
                     }
                 }
             })
