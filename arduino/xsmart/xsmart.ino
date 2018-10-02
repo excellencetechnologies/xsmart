@@ -40,7 +40,9 @@ const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g 
 //  const int PINS[] = {15, 2, 18, 4, 16, 17, 5}; // these are pins from nodemcu we are using
 //String version = "0.0.1";
 
-String version = "0.0.1";
+
+//Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
+String version = "0.0.2";
 String webID = "ESP8266";             //this should be some no to identify device type
 
 #ifdef ISACCESS
@@ -1091,6 +1093,9 @@ void loop()
             sendDeviceTime(ctime(&now), "device_get_time");
           }else if (type == "OK")
           {
+            if(root.get<String>("ota").length() > 0){
+              update.checkUpdate(root.get<String>("ota"));
+            }
             ok_ping_not_recieved_count = 0;
           }
 

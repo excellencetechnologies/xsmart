@@ -15,14 +15,14 @@ OTA::OTA()
 {
 }
 
-void OTA::checkUpdate(void)
+void OTA::checkUpdate(String url)
 {
     #ifdef ESP8266
         HTTPClient httpClient;
-        httpClient.begin( "http://excellencetechnologies.co.in/xsmart.ino.bin" );
+        httpClient.begin( url );
         int httpCode = httpClient.GET();
         if( httpCode == 200 ) {
-            t_httpUpdate_return ret = ESPhttpUpdate.update( "http://excellencetechnologies.co.in/xsmart.ino.bin" );
+            t_httpUpdate_return ret = ESPhttpUpdate.update( url );
 
             switch(ret) {
                 case HTTP_UPDATE_FAILED:
@@ -44,7 +44,7 @@ void OTA::checkUpdate(void)
     Serial.print("[HTTP] begin...\n");
 
     // configure server and url
-    http.begin("http://excellencetechnologies.co.in/xsmart.ino.bin");
+    http.begin(url);
     //http.begin("192.168.1.12", 80, "/test.html");
 
     Serial.print("[HTTP] GET...\n");

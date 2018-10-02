@@ -10,7 +10,7 @@ class OTA
   // user-accessible "public" interface
   public:
     OTA();
-    void checkUpdate(void);
+    void checkUpdate(String);
     
 
   // library-accessible "private" interface
