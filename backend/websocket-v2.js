@@ -47,12 +47,14 @@ checkLatestVersionOTA = (version, device) => {
         return cache.get(cacheKey);
     }
 
-    glob("ota/**/*.bin", function (er, files) {
+    glob("**/*.bin", function (er, files) {
         if (!er) {
             console.log(files, "files");
             files.forEach((file) => {
                 console.log(file);
-                let name = file.replace("." + device + ".bin");
+
+                let name = file.replace("ota/" + device + "/");
+                name = name.replace("." + device + ".bin");
                 if (semver.valid(name)) {
                     if (semver.gt(name, version)) {
                         //update found
