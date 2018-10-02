@@ -63,13 +63,14 @@ checkLatestVersionOTA = (version, device) => {
                     console.log(version);
                     if (semver.gt(name, version)) {
                         //update found
-                        console.log("version grt");
-                        cache.put(cacheKey, name, 1000 * 60 * 60 * 24);
+                        console.log("version grt update found");
+                        cache.put(cacheKey, file, 1000 * 60 * 60 * 24);
                         return name;
                     }
                 }
             })
             //no update
+            console.log("update not found");
             cache.put(cacheKey, "", 1000 * 60 * 60 * 24);
             return "";
         }
