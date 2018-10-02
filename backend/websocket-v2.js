@@ -18,6 +18,7 @@ var cache = require('memory-cache');
 
 const app = express();
 
+app.use(express.static('ota'))
 app.use(expressValidator());
 app.use(cors());
 app.use(bodyParser.json());
