@@ -122,7 +122,7 @@ void XConfig::deleteWifiSSID(String ssid)
   root.printTo(file);
   saveConfigFile(file.c_str());
 }
-JsonArray &XConfig::getWifiSSID(void)
+JsonObject &XConfig::getWifiSSID(void)
 {
   P("getWifiSSID");
   String file = loadConfigFile();
@@ -130,12 +130,18 @@ JsonArray &XConfig::getWifiSSID(void)
   StaticJsonBuffer<JSON_SIZE> jsonBuffer;
   JsonObject &root = jsonBuffer.parseObject(file);
   JsonArray &array1 = root["networks"].as<JsonArray>();
+
+
+   StaticJsonBuffer<400> jsonBuffer1;
+   JsonObject &networkobject = jsonBuffer1.createObject();
+
   for (int i = 0; i < array1.size(); i++)
   {
     JsonObject &obj = array1[i].as<JsonObject>();
     P(obj["ssid"].as<char *>());
+    networkobject.set(obj["ssid"].as<char *>() , obj["password"].as<char *>());
   }
-  return array1;
+  return networkobject;
 }
 void XConfig::addWifiSSID(String ssid, String password)
 {

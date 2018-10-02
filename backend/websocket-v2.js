@@ -47,7 +47,7 @@ checkLatestVersionOTA = (version, device) => {
         return cache.get(cacheKey);
     }
 
-    glob("**/*" + device + ".bin", options, function (er, files) {
+    glob("**/*" + device + ".bin", function (er, files) {
         if (!er) {
             console.log(files);
             files.forEach((file) => {

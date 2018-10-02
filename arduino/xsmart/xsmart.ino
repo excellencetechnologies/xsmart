@@ -383,7 +383,7 @@ void connectWifi()
   //  WiFi.begin(ssid, password);
 
   Serial.println("saved wifi details in config");
-  JsonArray &savedwifi = xconfig.getWifiSSID();
+  JsonObject &savedwifi = xconfig.getWifiSSID();
   Serial.print("found wifi saved");
   Serial.println(savedwifi.size());
   if (savedwifi.size() == 0)
@@ -391,13 +391,10 @@ void connectWifi()
     Serial.println("switching to ap mode, since no wifi details found");
     current_wifi_status = WIFI_AP_MODE;
     return;
-  }
-  for (int i = 0; i < savedwifi.size(); i++)
-  {
-    JsonObject &obj = savedwifi[i].as<JsonObject>();
-    Serial.println(obj["ssid"].as<char *>());
-    Serial.println(obj["password"].as<char *>());
-    wifiMulti.addAP(obj["ssid"].as<char *>(), obj["password"].as<char *>());
+  }else{
+    for (auto kv : savedwifi) {
+      wifiMulti.addAP(kv.key, kv.value.as<char*>());
+    }
   }
 
   int tries = 0;
@@ -424,9 +421,9 @@ void connectWifi()
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-    delay_connect_wifi = 5000;
     configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
   }
+  delay_connect_wifi = 5000;
   delay(delay_connect_wifi);
 }
 
@@ -1092,6 +1089,9 @@ void loop()
             Serial.println(ctime(&now));
             configTime(0, 0, "pool.ntp.org", "time.nist.gov");
             sendDeviceTime(ctime(&now), "device_get_time");
+          }else if (type == "OK")
+          {
+            ok_ping_not_recieved_count = 0;
           }
 
 #ifdef ISSWITCH
@@ -1134,10 +1134,6 @@ void loop()
               xconfig.setPinName(obj.get<int>("pin"), obj.get<String>("name"));
             }
             sendPinNamePack();
-          }
-          else if (type == "OK")
-          {
-            ok_ping_not_recieved_count = 0;
           }
 #endif
 #ifdef ISACCESS

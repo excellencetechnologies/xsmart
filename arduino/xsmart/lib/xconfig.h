@@ -14,7 +14,7 @@ class XConfig
     String loadConfigFile(void);
     void saveConfigFile(const char *);
     void deleteWifiSSID(String);
-    JsonArray& getWifiSSID(void);
+    JsonObject& getWifiSSID(void);
     void addWifiSSID(String, String);
     void setNickName(String);
     String getNickName();
