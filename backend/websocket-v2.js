@@ -52,8 +52,8 @@ checkLatestVersionOTA = (version, device) => {
             console.log(files, "files");
             files.forEach((file) => {
 
-                let name = file.replace("ota/" + device + "/");
-                name = name.replace("." + device + ".bin");
+                let name = file.replace("ota/" + device + "/", "");
+                name = name.replace("." + device + ".bin", "");
                 console.log("name" , name);
                 if (semver.valid(name)) {
                     console.log("valid");
