@@ -54,7 +54,8 @@ checkLatestVersionOTA = (version, device) => {
             files.forEach((file) => {
 
                 let name = file.replace("ota/" + device + "/", "");
-                name = name.replace("." + device + ".bin", "");
+                name = name.replace("xsmart.ino." + device + ".", "");
+                name = name.replace(".bin", "");
                 console.log("name" , name);
                 if (semver.valid(name)) {
                     console.log("valid");
