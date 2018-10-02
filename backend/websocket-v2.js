@@ -51,15 +51,18 @@ checkLatestVersionOTA = (version, device) => {
         if (!er) {
             console.log(files, "files");
             files.forEach((file) => {
-                console.log(file);
 
                 let name = file.replace("ota/" + device + "/");
                 name = name.replace("." + device + ".bin");
+                console.log("name" , name);
                 if (semver.valid(name)) {
+                    console.log("valid");
+                    console.log(version);
                     if (semver.gt(name, version)) {
                         //update found
-                        cache.put(cacheKey, file, 1000 * 60 * 60 * 24);
-                        return file;
+                        console.log("version grt");
+                        cache.put(cacheKey, name, 1000 * 60 * 60 * 24);
+                        return name;
                     }
                 }
             })
