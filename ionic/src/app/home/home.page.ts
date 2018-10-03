@@ -321,7 +321,7 @@ export class HomePage implements OnInit {
               }
             })
             this.deviceService.setDevices(allDevices);
-
+           
           }
         }
 
