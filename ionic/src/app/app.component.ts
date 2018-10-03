@@ -57,8 +57,6 @@ export class AppComponent implements OnDestroy {
     this.userSubscription = this._event.userImage.subscribe((res) => {
       this.image = localStorage.getItem('profile');
     })
-    // localStorage.setItem('live', JSON.stringify(this.live));
-
   }
 
   initializeApp() {
