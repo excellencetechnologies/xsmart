@@ -59,8 +59,6 @@ export class HomePage implements OnInit {
           this.checkDeviceLive();
         }
       });
-    console.log(localStorage.getItem('live'));
-
     if (localStorage.getItem('live') != undefined) {
       this.live = JSON.parse(localStorage.getItem("live"))
     }
@@ -70,8 +68,6 @@ export class HomePage implements OnInit {
     this.live = !this.live;
     localStorage.setItem('live', JSON.stringify(this.live));
     await location.reload();
-    console.log(this.live);
-    
   }
   async allDevice() {
     try {
@@ -209,8 +205,6 @@ export class HomePage implements OnInit {
               this.deviceService.setDevices(allDevices);
             } catch (e) {
               this.errorMessage = e['error']
-              console.log(e);
-
             }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
