@@ -36,7 +36,6 @@ export class AppComponent implements OnDestroy {
     private router: Router,
     public modalCtrl: ModalController,
     private _event: EventHandlerService,
-    // private toast: Toast
   ) {
     this.initializeApp();
     this.deviceId();

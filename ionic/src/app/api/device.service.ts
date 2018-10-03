@@ -139,14 +139,17 @@ export class DeviceService {
         this.setDevices(devices);
     }
     sendMessageToSocket(msg) {
-
         if (this.isSocketConnected) {
             socket.send(JSON.stringify(msg));
 
         } else {
             // 5.9.144.226:9030
             // http://192.168.1.114:9030/
-            socket = new WebSocket('ws://5.9.144.226:9030');
+            if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) {
+                socket = new WebSocket('ws://192.168.4.1');
+            }
+            else
+                socket = new WebSocket('ws://5.9.144.226:9030');
             // Connection opened
             socket.addEventListener('open', (event) => {
                 this.isSocketConnected = true;

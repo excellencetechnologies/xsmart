@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, } from '@angular/common/http';
-import { Ping, Wifi } from "./api"
+import { Ping, Wifi, Device } from "./api"
 import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
 import { User, newDevice, deleteDevice } from "../components/model/user"
+import { isUndefined } from 'util';
 export interface Message {
   author: string,
   message: string
@@ -26,8 +27,11 @@ export class ApiService {
   async checkPing() {
     // return await this.http.get<Ping>(this.base_url).toPromise();
     try {
-      return await this.http.get<Ping>(`${environment["deviceUrl"]}`).toPromise();
-
+      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
+        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+      } else { //live is not null and false
+        return await this.http.get<Ping>(`${environment["deviceUrl"]}`).toPromise();
+      }
     }
     catch (error) {
       throw (error);
@@ -37,8 +41,11 @@ export class ApiService {
   async getScanWifi() {
     // return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
     try {
-      return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}Wifi`).toPromise();
-
+      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
+        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+      } else { //live is not null and false
+        return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}Wifi`).toPromise();
+      }
     }
     catch (error) {
       throw (error);
@@ -48,8 +55,12 @@ export class ApiService {
   async setWifiPassword(ssid, password) {
     // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
     try {
-      return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
+      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
+        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+      } else { //live is not null and false
+        return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
 
+      }
     }
     catch (error) {
       throw (error);
@@ -58,7 +69,11 @@ export class ApiService {
   async setDeviceNickName(name: String, chip: string) {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
-      return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}&chip=${chip}`).toPromise();
+      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
+        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+      } else { //live is not null and false
+        return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}&chip=${chip}`).toPromise();
+      }
     }
     catch (error) {
       throw (error);
@@ -96,7 +111,6 @@ export class ApiService {
           headers: header
         }
       ).toPromise();
-
     }
     catch (error) {
       throw (error);
@@ -110,6 +124,33 @@ export class ApiService {
           headers: header
         }
       ).toPromise();
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  type: String;
+  async allDevices(devices?: Device) {
+    let header = new HttpHeaders().set('token', localStorage.getItem("token"));
+    try {
+      let response = await this.http.get<Device[]>(`${environment["base_url"]}device/allDevices`,
+        {
+          headers: header
+        }
+      ).toPromise();
+      let allDevices: Device[] = [];
+      response.forEach(element => {
+        allDevices.push({
+          name: element['meta']["name"],
+          device_id: null,
+          chip: element['chip_id'],
+          ttl: null,
+          online: null,
+          switches: [],
+          type: null
+        })
+      })
+      return allDevices;
     }
     catch (error) {
       throw (error);
