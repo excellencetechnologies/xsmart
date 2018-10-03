@@ -7,7 +7,6 @@ import { AlertController, MenuController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
 import { Device } from "../api/api"
 import { Ping, Wifi, Switch } from "../api/api"
-let socket = null;
 @Component({
   selector: 'app-about',
   templateUrl: 'switch.page.html',
