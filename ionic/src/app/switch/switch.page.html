@@ -7,30 +7,32 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
-  <ion-row>
-    <div class="devices" *ngIf="device.length">
-      <h3>Your Switches</h3>
+  <div *ngIf="mode === 'device'">
+    <ion-row>
+      <div class="devices" *ngIf="device.length">
+        <h3>Your Switches</h3>
+      </div>
+    </ion-row>
+    <div class="content">
+      <ion-grid>
+        <ion-row  align-items-start>
+          <ion-col   size="12">
+            <ion-list class="switchList" no-padding no-margin no-lines *ngFor="let switch of device;  trackBy: trackByDevice">
+              <ion-item class=" grid "*ngFor="let switches of switch.switches;trackBy: trackBySwitch" [ngClass]="{'blue' : switches.status}">
+                <ion-icon slot="start" mode="ios" name="bulb"></ion-icon>{{switches.name}}
+                <ion-buttons slot="start">
+                  <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switches.status === 0" color="medium">
+                    <ion-icon name="power" mod="md"></ion-icon>
+                  </ion-button>
+                  <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switches.status === 1" color="dark">
+                    <ion-icon name="power" mod="ios"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
-  </ion-row>
-  <div class="content">
-    <ion-grid>
-      <ion-row align-items-start>
-        <ion-col size="12">
-          <ion-list class="grid" no-lines *ngFor="let switch of device">
-            <ion-item class="grid-item" *ngFor="let switches of switch.switches" [ngClass]="{'blue' : switches.status}">
-              <ion-icon slot="start" mode="ios" name="bulb"></ion-icon>{{switches.name}}
-              <ion-buttons slot="start">
-                <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switches.status === 0" color="medium">
-                  <ion-icon name="power" mod="md"></ion-icon>
-                </ion-button>
-                <ion-button slot="icon-only" (click)="switchOff(switch,device)" *ngIf="switches.status === 1" color="dark">
-                  <ion-icon name="power" mod="ios"></ion-icon>
-                </ion-button>
-              </ion-buttons>
-            </ion-item>
-          </ion-list>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
   </div>
 </ion-content>

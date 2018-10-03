@@ -47,6 +47,7 @@ export class SetWifiPasswordComponent implements OnInit {
       this.passwordForm.reset();
       await this.api.setWifiPassword(this.ssid.wifi,formData.password);
       await this.modalController.dismiss();
+      await this.modalController.dismiss();
       this.router.navigate(["/tabs"]);
     } catch (err) {
       this.loading = false;

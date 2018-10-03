@@ -53,7 +53,7 @@ export class AddDevicesComponent implements OnInit {
       ])
     });
   }
-  async setDeviceName(name: String, chip: string, type: string, formData) {
+  async setDeviceName(name: String, chip: string, type: string,formData:newDevice) {
     try {
       await this.api.setDeviceNickName(name, chip);
       let newDevice: newDevice = {
@@ -125,11 +125,11 @@ export class AddDevicesComponent implements OnInit {
   }
   async askWifiPassword(wifi) {
     const data = { wifi: wifi.SSID };
-    const modal = await this.modalController.create({
+    const modal1 = await this.modalController.create({
       component: SetWifiPasswordComponent,
       componentProps: { ssid: data }
     });
-    return await modal.present();
+    return await modal1.present();
 
   }
   async pingDevices() {

@@ -26,7 +26,7 @@
           <div class="content">
             <p size="12">
               <span *ngIf="devices['meta']">
-                <b>Device Id </b> : {{devices.chip_id}}</span>
+                <b>Device Id </b> : {{devices.meta.device_id}}</span>
             </p>
             <div *ngIf="devices['meta']">
               <p *ngIf="devices.meta.switches.length > 0">

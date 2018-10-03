@@ -10,21 +10,21 @@
 }
 
 .yellow {
-    color: #ffc900;
+    color: var( --ion-color-tertiary-tint);
 }
 
 .exclm {
     font-family: 'Titillium Web', sans-serif;
-    color: gray;
+    color: var(--ion-color-medium);
 }
 
 .wifi {
     transform: scale(0.6);
-    color: gray;
+    color: var(--ion-color-medium);
 }
 
 .blue {
-    color: #11c1f3;
+    color:var(--ion-color-primary-tint);
 }
 
 .group {
@@ -56,12 +56,12 @@
 
 .item-padding {
     padding: 6px;
-    color: #666;
+    color: gray;
 }
 
 .content {
     --padding-top: 4px;
-    color: black;
+    color:var(--ion-color-light-contrast);
 }
 
 .devicename {

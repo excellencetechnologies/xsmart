@@ -18,6 +18,7 @@ export class switchPage {
   device: Device[] = [];
   errorMessage: string;
   devicePing: Ping;
+  mode: String = "device";
   xSmartConnect: boolean = false;
   isSocketConnected: boolean = false;
 
@@ -45,9 +46,9 @@ export class switchPage {
     try {
       this.device = await this.deviceService.getDevices();
       this.loading = false;
-      this.keepCheckingDeviceOnline()
-      console.log(this.device);
-      
+      if (this.device.length > 0) {
+        this.keepCheckingDeviceOnline();
+      }
     } catch (err) {
       this.loading = false;
       this.errorMessage = err.message;
@@ -63,7 +64,12 @@ export class switchPage {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    s.status = 0
+    if (this.keepCheckingDeviceOnline()) {
+      s.status = 0
+    }
+    else {
+      s.status != 0
+    }
   }
   async switchOn(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -75,7 +81,12 @@ export class switchPage {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    s.status = 1
+    if (this.keepCheckingDeviceOnline()) {
+      s.status = 1
+    }
+    else {
+      s.status != 1
+    }
   }
   trackByDevice(device: Device) {
     return device.chip;
@@ -88,6 +99,12 @@ export class switchPage {
       this.pingDevices();
       this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
+  }
+  async checkExistingDevice() {
+    this.device = await this.deviceService.getDevices();
+    if (this.device.length > 0) {
+      this.keepCheckingDeviceOnline();
+    }
   }
   async pingDevices() {
     this.device.forEach(async (device) => {

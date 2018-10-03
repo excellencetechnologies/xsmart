@@ -21,13 +21,13 @@
     <ion-list *ngIf="devices.length">
       <ion-card *ngFor="let device of devices; trackBy: trackByDevice">
         <ion-list class="grid-item-header">
-          <ion-item class="devicename" [ngClass]="{'yellow' : device.online}">
+          <ion-item class="devicename"  [ngClass]="{'yellow' :device.online}">
             <ion-icon slot="start" *ngIf="device && device.type !='access'" name="swap"></ion-icon>
             <ion-icon slot="start" *ngIf="device && device.type  == 'access' " name="infinite"></ion-icon>
-            <ion-label (click)="askDeviceName(device);">{{device.name}}</ion-label>
+            <ion-label >{{device.name}}</ion-label>
             <ion-icon slot="end" *ngIf="device && device.type !='access' && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
             <span slot="end" class="exclm" *ngIf="device && device.type!=='access' && !device.online" mode="md">!</span>
-            <span slot="end" *ngIf="device && device.type =='access' && device.online" mode="md">!</span>
+            <span slot="end" *ngIf="device && device.type =='access' && !device.online" mode="md">!</span>
           </ion-item>
         </ion-list>
 
@@ -106,7 +106,7 @@
                 </ion-button>
               </ion-col>
               <ion-col no-padding>
-                <ion-button expand="block" color="primary" fill="clear">
+                <ion-button expand="block" (click)="deviceName(device);" color="primary" fill="clear">
                   <ion-icon color="primary" name="qr-scanner"></ion-icon>
                   <ion-label class="iconlevel">Name</ion-label>
                 </ion-button>

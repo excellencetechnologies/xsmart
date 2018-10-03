@@ -8,6 +8,7 @@ import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
 import { Router, NavigationEnd } from '@angular/router';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 let socket = null;
 let wifiCheckInterval = null;
 
@@ -39,7 +40,8 @@ export class HomePage implements OnInit {
     private menuController: MenuController,
     private notifyService: NotifyService,
     private toastCtrl: ToastController,
-    private router: Router
+    private router: Router,
+    private nativeStorage: NativeStorage
   ) { }
 
   ngOnInit() {
@@ -64,7 +66,12 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    s.status = 0
+    if (this.keepCheckingDeviceOnline()) {
+      s.status = 0
+    }
+    else {
+      s.status != 0;
+    }
   }
   async switchOn(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -76,7 +83,12 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    s.status = 1
+    if (this.keepCheckingDeviceOnline()) {
+      s.status = 1;
+    }
+    else {
+      s.status != 1;
+    }
   }
   async setSwitchNamee(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -88,6 +100,7 @@ export class HomePage implements OnInit {
       stage: "init"
     })
   }
+
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
@@ -163,6 +176,7 @@ export class HomePage implements OnInit {
             } catch (e) {
               this.errorMessage = e['error']
               console.log(e);
+
             }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
@@ -179,7 +193,6 @@ export class HomePage implements OnInit {
   /** 
    * new test code by manish for access card
    */
-
   async addEmployee(device: Device) {
 
     const alert = await this.alertController.create({
@@ -198,6 +211,7 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
+
             this.deviceService.sendMessageToSocket({
               type: "device_set_add_employee",
               chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
@@ -247,6 +261,50 @@ export class HomePage implements OnInit {
     await alert.present();
 
   }
+  async deviceName(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Device Name',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            device['name'] = data.name;
+            this.deviceService.sendMessageToSocket({
+              type: "device_set_name",
+              chip: device.chip,
+              name: device.name,
+              app_id: await this.deviceService.getAppID(),
+              stage: "init"
+            })
+            const allDevices = await this.deviceService.getDevices();
+            allDevices.forEach(value => {
+              if (value['chip'] === device['chip']) {
+                data.name = value.name
+              }
+            })
+            this.deviceService.setDevices(allDevices);
+
+          }
+        }
+
+      ]
+    });
+
+    await alert.present();
+  }
+
+
+
   async disableEmployee(device: Device) {
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',

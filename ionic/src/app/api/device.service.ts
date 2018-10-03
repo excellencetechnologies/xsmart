@@ -12,6 +12,7 @@ let socket = null;
     providedIn: 'root',
 })
 export class DeviceService {
+    devices: Device[] = [];
     devicePing: Ping;
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
@@ -156,7 +157,6 @@ export class DeviceService {
             });
             // Listen for messages
             socket.addEventListener('message', async (event) => {
-
                 let res = JSON.parse(event.data);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
