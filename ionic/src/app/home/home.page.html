@@ -8,6 +8,12 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="content">
+  <ion-list>
+    <ion-item  class="grid-item-header">
+      <ion-label>Live</ion-label>
+      <ion-toggle (ngModelChange)="onliveMode()" [(ngModel)]="live"></ion-toggle>
+    </ion-item>
+  </ion-list>
   <div *ngIf="mode === 'device'">
     <div class="device">
       <h3 class="yourDevice">
@@ -21,10 +27,10 @@
     <ion-list *ngIf="devices.length">
       <ion-card *ngFor="let device of devices; trackBy: trackByDevice">
         <ion-list class="grid-item-header">
-          <ion-item class="devicename"  [ngClass]="{'yellow' :device.online}">
+          <ion-item class="devicename" [ngClass]="{'yellow' :device.online}">
             <ion-icon slot="start" *ngIf="device && device.type !='access'" name="swap"></ion-icon>
             <ion-icon slot="start" *ngIf="device && device.type  == 'access' " name="infinite"></ion-icon>
-            <ion-label >{{device.name}}</ion-label>
+            <ion-label>{{device.name}}</ion-label>
             <ion-icon slot="end" *ngIf="device && device.type !='access' && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
             <span slot="end" class="exclm" *ngIf="device && device.type!=='access' && !device.online" mode="md">!</span>
             <span slot="end" *ngIf="device && device.type =='access' && !device.online" mode="md">!</span>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, } from '@angular/common/http';
-import { Ping, Wifi } from "./api"
+import { Ping, Wifi, Device } from "./api"
 import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
 import { User, newDevice, deleteDevice } from "../components/model/user"
@@ -96,7 +96,6 @@ export class ApiService {
           headers: header
         }
       ).toPromise();
-
     }
     catch (error) {
       throw (error);
@@ -110,6 +109,33 @@ export class ApiService {
           headers: header
         }
       ).toPromise();
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  type: String;
+  async allDevices(devices?: Device) {
+    let header = new HttpHeaders().set('token', localStorage.getItem("token"));
+    try {
+      let response = await this.http.get<Device[]>(`${environment["base_url"]}device/allDevices`,
+        {
+          headers: header
+        }
+      ).toPromise();
+      let allDevices: Device[] = [];
+      response.forEach(element => {
+        allDevices.push({
+          name: element['meta']["name"],
+          device_id: null,
+          chip: element['chip_id'],
+          ttl: null,
+          online: null,
+          switches: [],
+          type: null
+        })
+      })
+      return allDevices;
     }
     catch (error) {
       throw (error);

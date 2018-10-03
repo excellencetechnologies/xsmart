@@ -9,6 +9,8 @@ import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
 import { Router, NavigationEnd } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { newDevice } from "../components/model/user";
+
 let socket = null;
 let wifiCheckInterval = null;
 
@@ -25,7 +27,9 @@ export class HomePage implements OnInit {
   mode: String = "device";
   isSocketConnected: boolean = false;
   loader: boolean;
+  device: newDevice[];
   errorMessage: string
+  live: boolean = false;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -47,14 +51,44 @@ export class HomePage implements OnInit {
   ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
-      this.checkExistingDevice();
+      this.checkDeviceLive();
     });
     this.router.events
       .subscribe((event) => {
         if (event instanceof NavigationEnd) {
-          this.checkExistingDevice();
+          this.checkDeviceLive();
         }
       });
+    console.log(localStorage.getItem('live'));
+
+    if (localStorage.getItem('live') != undefined) {
+      this.live = JSON.parse(localStorage.getItem("live"))
+    }
+  }
+
+ async onliveMode() {
+    this.live = !this.live;
+    localStorage.setItem('live', JSON.stringify(this.live));
+    await location.reload();
+    console.log(this.live);
+    
+  }
+  async allDevice() {
+    try {
+      this.devices = await this.api.allDevices();
+    } catch (err) {
+      this.notifyService.alertUser(this.errorMessage);
+      this.errorMessage = err['error'];
+    }
+  }
+  checkDeviceLive() {
+    this.live = JSON.parse(localStorage.getItem("live"))
+    if (this.live == true) {
+      this.allDevice();
+    }
+    else {
+      this.checkExistingDevice();
+    }
   }
   async switchOff(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({

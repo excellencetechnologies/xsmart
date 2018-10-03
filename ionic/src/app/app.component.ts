@@ -36,7 +36,6 @@ export class AppComponent implements OnDestroy {
     private router: Router,
     public modalCtrl: ModalController,
     private _event: EventHandlerService,
-    // private toast: Toast
   ) {
     this.initializeApp();
     this.deviceId();
@@ -58,6 +57,8 @@ export class AppComponent implements OnDestroy {
     this.userSubscription = this._event.userImage.subscribe((res) => {
       this.image = localStorage.getItem('profile');
     })
+    // localStorage.setItem('live', JSON.stringify(this.live));
+
   }
 
   initializeApp() {
