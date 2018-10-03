@@ -1,14 +1,7 @@
 .grid {
-    border: thin solid #a2a4ab78;
+    border: thin solid #EEE;
     border-bottom: none;
 }
-
-.grid-item-header {
-    border-bottom: thin solid #a2a4ab78;
-    padding: 6px;
-    font-size: 20px;
-}
-
 .menu {
     font-family: 'Titillium Web', sans-serif;
     transform: scale(1.0);
@@ -16,14 +9,9 @@
     font-size: 1.4em;
 }
 
-.grid-item {
-    border-bottom: thin solid #a2a4ab78;
+.switchList{
+    border-bottom: thin solid #EEE;
 }
-
-.list-ios>.item-block:last-child {
-    border-bottom: none;
-}
-
 .devices {
     margin: 0 auto;
 }
@@ -34,10 +22,13 @@
 }
 
 .wifi {
-    color: gray;
+    color: var(--ion-color-medium);
     transform: scale(0.6);
 }
 
 .exclemetry {
-    color: gray;
+    color: var(--ion-color-medium);
+}
+.blue {
+    color:var(--ion-color-primary-tint);
 }

@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMessage: string;
   loading: boolean;
-  user: User;
+  user: User
   constructor(
     public apiServices: ApiService,
     private router: Router,
@@ -24,7 +24,6 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.createLoginForm();
-    this.addDevice();
   }
   createLoginForm() {
     this.loginForm = new FormGroup({
@@ -39,31 +38,14 @@ export class LoginComponent implements OnInit {
   async onSubmit(formData) {
     this.loading = true;
     try {
-      this.user = await this.apiServices.postlogin(formData.value);
+      this.user = await this.apiServices.postlogin(formData.value)
       this.loading = false;
       this._event.setLoginEvent(this.user.name)
       this.loginForm.reset();
-      await this.addDevice();
       this.router.navigate(["/existing-devices"]);
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err['error'].message;
+      this.errorMessage = err['error'];
     }
   }
-
-  async addDevice() {
-    try {
-      let body = {};
-      body['chip_id'] = "chip1"
-      body['meta'] = { "name": "device" };
-      body['deviceId'] = await this.nativeStorage.getItem('id')
-      body['userId'] = localStorage.getItem("userId")
-      this.user = await this.apiServices.addDevices(body);
-      return;
-    }
-
-    catch (err) {
-    }
-  }
-
 }

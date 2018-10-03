@@ -4,6 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { DeviceService } from '../api/device.service';
 import { Router } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { Ping, Wifi, Device, Switch } from "../api/api"
+import { Platform } from '@ionic/angular';
+import { newDevice } from "../components/model/user";
+import { NotifyService } from '../api/notify.service';
 
 @Component({
   selector: 'app-existing-devices',
@@ -11,33 +15,63 @@ import { NativeStorage } from '@ionic-native/native-storage/ngx';
   styleUrls: ['./existing-devices.component.scss']
 })
 export class ExistingDevicesComponent implements OnInit {
-  listDevices: Array<any>;
+  devices: newDevice[];
+  device: Device[] = [];
   loading: boolean;
   errorMessage: string;
   constructor(
-    private http: HttpClient, 
+    private http: HttpClient,
     private apiServices: ApiService,
-    private deviceServices:DeviceService,
+    private deviceServices: DeviceService,
     private router: Router,
     private nativeStorage: NativeStorage,
+    private platform: Platform,
+    private deviceService: DeviceService,
+    private notifyService: NotifyService
   ) { }
 
   ngOnInit() {
     this.getDevice();
-  } 
+  }
+
   async getDevice() {
     this.loading = true;
     try {
-      const allDevices = await this.apiServices.listDevices();
-      this.listDevices = allDevices['devices'];
+      this.devices = await this.apiServices.listDevices();
       this.loading = false;
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err.message;
+      this.notifyService.alertUser(this.errorMessage);
+      this.errorMessage = err['error'];
     }
   }
- importDevices(){
-    // JSON.parse(localStorage.getItem('listDevices'));
-    localStorage.setItem("listDevices",JSON.stringify(this.listDevices)); 
+  importDevices() {
+    const enableDevices = [];
+    this.devices.forEach(device => {
+      if (device['status'] && device['meta']) {
+        enableDevices.push(device['meta']);
+      }
+    })
+    if (this.platform.is("cordova"))
+      this.nativeStorage.setItem('devices', enableDevices)
+    else {
+      localStorage.setItem("devices", JSON.stringify(enableDevices));
+    }
+    this.router.navigate(["/tabs"]);
+  } 
+  async deleteDevices(user_id, chip_id, device: Device) {
+    this.loading = true;
+    try {
+      await this.apiServices.deleteDevices({ user_id:user_id,chip_id:chip_id});
+      this.getDevice()
+      this.notifyService.alertUser("Successfully deleted ");
+      this.loading = false;
+    } catch (err) {
+      this.loading = false;
+      this.errorMessage = err["error"];
+      this.notifyService.alertUser("device not Delete ");
+    }
   }
+
 }
+

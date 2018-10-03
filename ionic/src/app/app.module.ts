@@ -20,9 +20,16 @@ import { SlidesComponent } from './slides/slides.component';
 import { AuthGuard } from './auth.guard';
 import { ProfileComponent } from './profile/profile.component';
 import { File } from '@ionic-native/file/ngx';
-import { FileTransfer, FileTransferObject} from '@ionic-native/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
-
+import { HttpModule } from '@angular/http';
+import { ScanDeviceComponent } from './scan-device/scan-device.component';
+import { PairDeviceComponent } from './pair-device/pair-device.component';
+import { SetWifiPasswordComponent } from './set-wifi-password/set-wifi-password.component';
+import { AddEmployeeComponent } from './add-employee/add-employee.component';
+import { ViewEmployeeComponent } from './view-employee/view-employee.component';
+import { SettingComponent } from './setting/setting.component';
+import { AddDevicesComponent } from './add-devices/add-devices.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,12 +37,20 @@ import { Camera } from '@ionic-native/camera/ngx';
     RegisterComponent,
     ExistingDevicesComponent,
     SlidesComponent,
-    ProfileComponent],
+    ProfileComponent,
+    ScanDeviceComponent,
+    PairDeviceComponent,
+    SetWifiPasswordComponent,
+    AddEmployeeComponent,
+    ViewEmployeeComponent,
+    SettingComponent,
+    AddDevicesComponent,
+  ],
   entryComponents: [],
   imports: [BrowserModule,
     HttpClientModule,
+    HttpModule,
     FormsModule,
-
     ReactiveFormsModule,
     IonicModule.forRoot(),
     AppRoutingModule],

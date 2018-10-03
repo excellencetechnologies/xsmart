@@ -1,76 +1,79 @@
-.menu{
+.menu {
     font-family: 'Titillium Web', sans-serif;
     transform: scale(1.0);
     padding: 10px;
     font-size: 1.4em;
 }
-.grid-item-header{
-    border-bottom: thin solid #a2a4ab78;
-    font-size:20px;
-}
-.yellow{
-    color:#ffc900;
-}
-.wifi{
-    transform: scale(0.6);
-    color: gray;
-}
-.device-ID{
-    font-weight: 800;
-    font-size:16px; 
-}
-.device_device_id{
-   font-weight: 100;
-    font-size: 16px;
-}
-.card_content{
-    padding: 10px 0px 0px 0px;
-}
-.content{
-    padding-left: 14px;
-}
-.rightborder {
-    border-right: 2px solid #387ef5;
-    color: #387ef5;
-    transform: scale(1.0);
-    font-size: 20px;
-    padding: 18px 0px 13px 2px;
+
+.grid-item-header {
+    border-bottom: thin solid #EEE;
 }
 
-.qr-scanner{
-    color: #387ef5;
-    transform: scale(1.0);
-    padding: 18px 0px 13px 19px;
-    font-size: 18px;
-    
+.yellow {
+    color: var( --ion-color-tertiary-tint);
 }
-.icons {
-    border: 2px solid #387ef5;
-    margin-bottom: 13px;
-    border-radius: 5px;
+
+.exclm {
+    font-family: 'Titillium Web', sans-serif;
+    color: var(--ion-color-medium);
 }
-.blue{
-    color:#11c1f3; 
+
+.wifi {
+    transform: scale(0.6);
+    color: var(--ion-color-medium);
 }
-.lightSwitches{
-    padding:0px 10px 10px 0px;
-    border-bottom:thin solid #a2a4ab78;
-    font-size: 18px;
-    color:gray;
+
+.blue {
+    color:var(--ion-color-primary-tint);
 }
-.scan{
-    padding: 25px;
-    font-size: 16px;
+
+.group {
+    padding-bottom: 10px;
 }
-.networkList{
-    border:thin solid #a2a4ab78;
+
+.button-radius {
+    --padding-bottom: 1.5em;
+    --padding-top: 1.5em;
+    text-transform: capitalize;
+    padding-left: 10px;
+    padding-right: 10px;
+    --border-radius: 5px;
 }
-.network{
-    border-bottom:thin solid #a2a4ab78;
+
+.yourDevice {
+    font-size: 25px;
+    font-weight: 600;
 }
-.devicess>h3{
-    font-weight: 800; 
+
+.border {
+    border: thin solid blue;
+    border-radius: 2px;
 }
-.devicess{
-    margin: 0 auto;
+
+.border ion-col:not(:last-child) {
+    border-right: thin solid blue
+}
+
+.item-padding {
+    padding: 6px;
+    color: gray;
+}
+
+.content {
+    --padding-top: 4px;
+    color:var(--ion-color-light-contrast);
+}
+
+.devicename {
+    border-bottom: thin solid #EEE;
+    font-size: 19px;
+}
+
+.device>h3 {
+    padding-left: 10px;
+}
+
+.iconlevel {
+    margin-bottom: 9.2px;
+    margin-left: 5px;
 }

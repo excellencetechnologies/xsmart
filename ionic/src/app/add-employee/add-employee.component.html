@@ -1,0 +1,32 @@
+<ion-header translucent>
+  <ion-toolbar mode="ios">
+    <ion-title>
+      Add Employee
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <div>
+    <div padding-left>
+      <h3>Add Employee</h3>
+    </div>
+    <form class="form-horizontal">
+      <ion-row>
+        <ion-col>
+          <ion-list class="login-Form">
+            <ion-label>Employee Id
+            </ion-label>
+            <ion-item>
+              <ion-input type="text" name="empId" required></ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-col class="signup-col">
+        <ion-button expand="block" color="tirtary" fill="outline"> Next
+          <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+        </ion-button>
+      </ion-col>
+    </form>
+  </div>
+</ion-content>

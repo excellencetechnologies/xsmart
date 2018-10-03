@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { Platform, MenuController } from '@ionic/angular';
+import { Platform, MenuController, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ApiService } from "../api/api.service";
@@ -7,8 +7,9 @@ import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
+import { Router, NavigationEnd } from '@angular/router';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 let socket = null;
-
 let wifiCheckInterval = null;
 
 @Component({
@@ -19,12 +20,12 @@ let wifiCheckInterval = null;
 export class HomePage implements OnInit {
   message: String = "test";
   xSmartConnect: boolean = false;
-  wifinetworks: Wifi[] = [];
   devicePing: Ping;
   devices: Device[] = [];
-  isScanningDevice: boolean = false;
   mode: String = "device";
   isSocketConnected: boolean = false;
+  loader: boolean;
+  errorMessage: string
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -37,161 +38,26 @@ export class HomePage implements OnInit {
     public alertController: AlertController,
     private deviceService: DeviceService,
     private menuController: MenuController,
-    private notifyService: NotifyService) { }
+    private notifyService: NotifyService,
+    private toastCtrl: ToastController,
+    private router: Router,
+    private nativeStorage: NativeStorage
+  ) { }
 
   ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
       this.checkExistingDevice();
     });
-  }
-  sendMessageToSocket(msg) {
-
-    if (this.isSocketConnected) {
-      console.log("socket msg send to", msg);
-      socket.send(JSON.stringify(msg));
-
-    } else {
-      // 5.9.144.226:9030
-      // http://192.168.1.114:9030/
-      socket = new WebSocket('ws://5.9.144.226:9030');
-      // Connection opened
-      socket.addEventListener('open', (event) => {
-        console.log("socket connected");
-        this.isSocketConnected = true;
-        socket.send(JSON.stringify(msg));
-      });
-
-      socket.addEventListener('close', () => {
-        console.log("socket closed");
-        this.isSocketConnected = false;
-      });
-
-      // Listen for messages
-      socket.addEventListener('message', async (event) => {
-
-        let res = JSON.parse(event.data);
-        console.log('Message from server ');
-        console.log(res);
-        if (res.type === "device_online_check_reply") {
-          this.updateDeviceStatus(res);
-        } else if (res.type === "device_pin_oper_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_pin_oper_notify") {
-          await this.deviceService.updateDevicePin(res.pin, res.status, res.chip, res.name);
-          this.devices = await this.deviceService.getDevices();
-          this.notifyService.alertUser("device performed the action!");
-        } else if (res.type === "device_bulk_pin_oper_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_bulk_pin_oper_notify") {
-          res.pins.forEach(async (p) => {
-            await this.deviceService.updateDevicePin(p.pin, p.status, res.chip, res.name);
-          })
-          //this is not working. the ui doesn't update all the pin status
-          this.devices = await this.deviceService.getDevices();
-          this.notifyService.alertUser("device performed the action!");
-        } else if (res.type === "device_set_add_employee_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_set_add_employee_notify") {
-          if (res.stage === "employee_add_failed") {
-            this.notifyService.alertUser("employee add failed on device. reason: " + res.message);
-          } else if (res.stage === "employee_add_success") {
-            this.notifyService.alertUser("device added card successful with card id ." + res.rfid + " and employee id " + res.emp_id);
-          } else {
-            this.notifyService.alertUser("device waiting to add employee. touch card.");
-          }
-        } else if (res.type === "device_set_delete_employee_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_set_delete_employee_notify") {
-          this.notifyService.alertUser("employee delete");
-        } else if (res.type === "device_set_disable_employee_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_set_disable_employee_notify") {
-          this.notifyService.alertUser("employee disable");
-        } else if (res.type === "device_set_enable_employee_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_set_enable_employee_notify") {
-          this.notifyService.alertUser("employee enabled");
-        }
-        else if (res.type === "device_set_list_employee_reply") {
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_set_list_employee_notify") {
-          console.log(res.data);
-          //remove disabled from this
-          //data will be of format card : emp_id
-          this.notifyService.alertUser("employee list recieved");
-        } else if(res.type === "device_set_time_reply"){
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_set_time_notify") {
-          console.log(res.data);
-          this.notifyService.alertUser("device time recieved");
-        } else if(res.type === "device_get_time_reply"){
-          if (res.found) {
-            this.notifyService.alertUser("operation sent to device");
-          } else {
-            this.notifyService.alertUser("unable to reach device. device not online");
-          }
-        } else if (res.type === "device_get_time_notify") {
-          console.log(res.data);
-          console.log(new Date(res.data));
-          console.log(new Date());
-          let deviceTime = new Date(res.data).getTime();
-          let currentTime = new Date().getTime();
-          let diff = currentTime - deviceTime;
-          console.log("difference in time " + (diff/(1000 * 60 * 60)))
-          if(Math.abs(diff) > 24 * 60 * 60 * 1000){
-            console.log("some thing wnent wrong. diff is very large " + diff);
-          }else if(Math.abs(diff) < .5 * 60 * 60 * 1000){
-            console.log("different in time less than 30min its fine")
-          }else{
-            this.sendMessageToSocket({
-              type: "device_set_time",
-              chip: res.chip,
-              app_id: await this.deviceService.getAppID(),
-              stage: "init",
-              diff: Math.round(diff/1000)
-            });
-          }
-          this.notifyService.alertUser("device time recieved");
+    this.router.events
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.checkExistingDevice();
         }
       });
-    }
   }
-
   async switchOff(s: Switch, d: Device) {
-    this.sendMessageToSocket({
+    this.deviceService.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
@@ -200,9 +66,15 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+    if (this.keepCheckingDeviceOnline()) {
+      s.status = 0
+    }
+    else {
+      s.status != 0;
+    }
   }
   async switchOn(s: Switch, d: Device) {
-    this.sendMessageToSocket({
+    this.deviceService.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
@@ -211,10 +83,16 @@ export class HomePage implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+    if (this.keepCheckingDeviceOnline()) {
+      s.status = 1;
+    }
+    else {
+      s.status != 1;
+    }
   }
   async setSwitchNamee(s: Switch, d: Device) {
-    this.sendMessageToSocket({
-      type: "set_switch_name",
+    this.deviceService.sendMessageToSocket({
+      type: "device_set_name",
       chip: d.chip,
       pin: s.pin,
       name: s.name,
@@ -223,19 +101,9 @@ export class HomePage implements OnInit {
     })
   }
 
-  async updateDeviceStatus(data) {
-    if (data.found) {
-      await this.deviceService.updateDevice(data);
-    } else {
-      await this.deviceService.updateDeviceNotFound(data);
-    }
-    this.devices = await this.deviceService.getDevices();
-  }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
-      console.log(this.devices);
-
       this.keepCheckingDeviceOnline();
     }
   }
@@ -250,97 +118,11 @@ export class HomePage implements OnInit {
     this.checkExistingDevice();
   }
   scanDevice() {
-    this.mode = "scan";
-    this.isScanningDevice = true;
-    this.wifinetworks = [];
-    this.devicePing = {
-      name: "",
-      chip: "",
-      webid: "",
-      isNew: false,
-      type: ""
-    }
-    this.keepCheckingWifiConnected();
-  }
-  keepCheckingWifiConnected() {
-    if (wifiCheckInterval)
-      clearInterval(wifiCheckInterval);
-    wifiCheckInterval = setInterval(async () => {
-      try {
-        this.devicePing = await this.api.checkPing();
-        if (this.devicePing.name.length > 0) {
-          this.devicePing.isNew = false;
-        } else {
-          this.devicePing.isNew = true;
-        }
-        console.log(this.devicePing);
-        this.isScanningDevice = false;
-        clearInterval(wifiCheckInterval);
-        this.mode = "discovery";
-      } catch (e) {
-        console.log(e)
-        this.isScanningDevice = true;
-        // this.xSmartConnect = false;
-      }
-    }, 1000);
-  }
-  async freshDevice() {
-    this.devicePing.name = "";
-    this.devicePing.isNew = true;
-  }
-  async askDeviceName() {
-
-  }
-  async setDeviceName(name: String, chip: string) {
-    try {
-      await this.api.setDeviceNickName(name, chip);
-      let newdevice: Device = {
-        name: name,
-        device_id: this.devicePing.webid,
-        chip: this.devicePing.chip,
-        ttl: 0,
-        online: false,
-        switches: [],
-        type: ''
-      };
-      if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        this.deviceService.addDevice(newdevice);
-      } else {
-        this.deviceService.updateDevice(newdevice);
-        const deviceData = await this.deviceService.getDevices();
-        deviceData.forEach((value, key) => {
-          if (value.chip === this.devicePing.chip) {
-            deviceData.splice(key, 1)
-            deviceData.push(newdevice);
-          }
-        })
-        this.deviceService.setDevices(deviceData)
-      }
-      this.checkExistingDevice();
-      this.mode = "scan";
-      this.xSmartConnect = true;
-      this.scanWifi();
-    } catch (e) {
-      console.log(e);
-      this.notifyService.alertUser("failed to set device name");
-    }
-  }
-
-
-  async scanWifi() {
-    try {
-      this.wifinetworks = await this.api.getScanWifi();
-      console.log(this.wifinetworks);
-    } catch (e) {
-      console.log(e)
-      this.isScanningDevice = true;
-
-    }
+    this.router.navigate(["/scan-device"]);
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      console.log("pinging device", device.chip);
-      this.sendMessageToSocket({
+      this.deviceService.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
         app_id: await this.deviceService.getAppID(),
@@ -352,45 +134,8 @@ export class HomePage implements OnInit {
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
-      console.log(this.isSocketConnected);
       this.keepCheckingDeviceOnline();
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
-  }
-  async askWifiPassword(wifi) {
-    const alert = await this.alertController.create({
-      header: 'Enter Wifi Password',
-      inputs: [
-        {
-          name: 'password',
-          type: 'text',
-        }
-      ],
-
-
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary'
-        }, {
-          text: 'Ok',
-          handler: async (data) => {
-            console.log('Confirm Ok')
-            console.log(data.password);
-            console.log(wifi.SSID);
-            try {
-              await this.api.setWifiPassword(wifi.SSID, data.password);
-            } catch (e) {
-              console.log(e);
-            }
-            this.keepCheckingDeviceOnline();
-            this.mode = "device";
-          }
-        }
-      ]
-    });
-
-    await alert.present();
   }
   async setSwitchName(s, d) {
     const alert = await this.alertController.create({
@@ -409,7 +154,6 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            console.log('Confirm Ok')
             try {
               s['name'] = data.name;
               d.switches.forEach(value => {
@@ -430,7 +174,9 @@ export class HomePage implements OnInit {
               })
               this.deviceService.setDevices(allDevices);
             } catch (e) {
+              this.errorMessage = e['error']
               console.log(e);
+
             }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
@@ -447,7 +193,6 @@ export class HomePage implements OnInit {
   /** 
    * new test code by manish for access card
    */
-
   async addEmployee(device: Device) {
 
     const alert = await this.alertController.create({
@@ -466,9 +211,10 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            this.sendMessageToSocket({
+
+            this.deviceService.sendMessageToSocket({
               type: "device_set_add_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -500,9 +246,9 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            this.sendMessageToSocket({
+            this.deviceService.sendMessageToSocket({
               type: "device_set_delete_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -515,6 +261,50 @@ export class HomePage implements OnInit {
     await alert.present();
 
   }
+  async deviceName(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Device Name',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            device['name'] = data.name;
+            this.deviceService.sendMessageToSocket({
+              type: "device_set_name",
+              chip: device.chip,
+              name: device.name,
+              app_id: await this.deviceService.getAppID(),
+              stage: "init"
+            })
+            const allDevices = await this.deviceService.getDevices();
+            allDevices.forEach(value => {
+              if (value['chip'] === device['chip']) {
+                data.name = value.name
+              }
+            })
+            this.deviceService.setDevices(allDevices);
+
+          }
+        }
+
+      ]
+    });
+
+    await alert.present();
+  }
+
+
+
   async disableEmployee(device: Device) {
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',
@@ -532,9 +322,9 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            this.sendMessageToSocket({
+            this.deviceService.sendMessageToSocket({
               type: "device_set_disable_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: this.devicePing.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -563,7 +353,7 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            this.sendMessageToSocket({
+            this.deviceService.sendMessageToSocket({
               type: "device_set_enable_employee",
               chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
@@ -574,27 +364,9 @@ export class HomePage implements OnInit {
         }
       ]
     });
-
     await alert.present();
   }
-  async listEmployee(device: Device) {
-
-    this.sendMessageToSocket({
-      type: "device_set_list_employee",
-      chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
-      app_id: await this.deviceService.getAppID(),
-      stage: "init"
-    })
-
+  wifi1() {
+    this.router.navigate(["/scan-device"]);
   }
-
-  async syncTime(device: Device){
-    this.sendMessageToSocket({
-      type: "device_get_time",
-      chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
-      app_id: await this.deviceService.getAppID(),
-      stage: "init"
-    })
-  }
-
 }

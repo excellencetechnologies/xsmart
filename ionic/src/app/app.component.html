@@ -5,13 +5,16 @@
         <ion-row>
           <ion-col no-padding>
             <ion-list class="sidemenulist">
-              <ion-item>
+              <div class="border-bottom">
                 <ion-avatar slot="start" *ngIf="image">
                   <img src="{{image}}">
                 </ion-avatar>
-                <ion-label>{{name}}</ion-label>
+                <p>{{name}}</p>
+                <p class="menudevice"> Devices:{{devices}}</p>
+              </div>
+              <ion-item class="border-bottom" (click)="setting()">
+                Settings
               </ion-item>
-              <ion-item class="border-bottom"> Devices:{{devices}}</ion-item>
               <ion-item class="border-bottom">
                 About US
               </ion-item>
@@ -26,10 +29,15 @@
               <ion-item class="border-bottom color" (click)="logout()">
                 Logout
               </ion-item>
+              <ion-item class="border-bottom">
+                Live
+              </ion-item>
+              <ion-item class="border-bottom">
+                Development
+              </ion-item>
             </ion-list>
           </ion-col>
         </ion-row>
-
       </ion-grid>
     </ion-content>
   </ion-menu>

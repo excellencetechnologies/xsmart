@@ -3,28 +3,31 @@
 @import "~@ionic/angular/css/structure.css";
 @import "~@ionic/angular/css/typography.css";
 @import "~@ionic/angular/css/colors.css";
-
 @import "~@ionic/angular/css/padding.css";
 @import "~@ionic/angular/css/float-elements.css";
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
-
-.border-bottom{
+.border-bottom {
   border-bottom: thin solid #a2a4ab78;
   padding: 5px;
 }
-.color{
+
+.color {
   color: red;
 }
+
 .avatar {
   width: 50px;
   height: 50px;
   border-radius: 50px;
   overflow: hidden
- }
- 
- .avatar img {
+}
+
+.avatar img {
   width: 100%;
   height: auto;
- }
+}
+.menudevice{
+  color:gray;
+}

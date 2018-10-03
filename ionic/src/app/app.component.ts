@@ -1,23 +1,30 @@
 import { Component, OnDestroy } from '@angular/core';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
-import { Platform } from '@ionic/angular';
+import { Platform, IonRouterOutlet, ModalController } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { DeviceService } from './api/device.service';
 import { MenuController } from '@ionic/angular'
 import { Router } from "@angular/router";
 import { EventHandlerService } from './api/event-handler.service';
+import { ViewChildren, QueryList } from '@angular/core';
+
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html'
 })
 export class AppComponent implements OnDestroy {
+  @ViewChildren(IonRouterOutlet) routerOutlets: any;
   loginSubscription: any;
   userSubscription: any;
   errorMessage: string;
   name: string;
   devices: string;
   image: string;
+  lastTimeBackPress = 0;
+  timePeriodToExit = 2000;
+  pressBackButton = false;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -27,7 +34,9 @@ export class AppComponent implements OnDestroy {
     private nativeStorage: NativeStorage,
     private menuControler: MenuController,
     private router: Router,
-    private _event: EventHandlerService
+    public modalCtrl: ModalController,
+    private _event: EventHandlerService,
+    // private toast: Toast
   ) {
     this.initializeApp();
     this.deviceId();
@@ -53,6 +62,7 @@ export class AppComponent implements OnDestroy {
 
   initializeApp() {
     this.platform.ready().then(() => {
+      this.backButtonEvent();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });
@@ -71,8 +81,7 @@ export class AppComponent implements OnDestroy {
 
   logout() {
     this.router.navigate(["/login"])
-    localStorage.removeItem('token')
-    localStorage.removeItem('username')
+    localStorage.clear();
     this.name = null;
     this.menuControler.toggle()
   }
@@ -80,7 +89,39 @@ export class AppComponent implements OnDestroy {
     this.router.navigate(["/profile"])
     this.menuControler.toggle()
   }
+  setting() {
+    this.router.navigate(["/setting"])
+    this.menuControler.toggle()
+  }
   ngOnDestroy() {
     this.loginSubscription.unsubscribe()
+  }
+  backButtonEvent() {
+    this.platform.backButton.subscribe(async () => {
+      try {
+        const element = await this.modalCtrl.getTop();
+        if (element) {
+          element.dismiss();
+          return;
+        }
+      } catch (error) {
+        this.errorMessage = error;
+      }
+      this.routerOutlets.forEach((outlet: IonRouterOutlet) => {
+        if (outlet && outlet.canGoBack()) {
+          outlet.pop();
+        }
+        else {
+          if (!this.pressBackButton) {
+            this.pressBackButton = true;
+            setTimeout(() => this.pressBackButton = false, 2000);
+            return;
+          } else {
+            navigator['app'].exitApp();
+          }
+        }
+      }
+      );
+    });
   }
 }
