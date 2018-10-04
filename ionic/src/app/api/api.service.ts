@@ -70,9 +70,9 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
       if (this.isLive) {
-        return await this.http.get(`${environment["live_url"]}setnickname?name=${name}&chip=${chip}`).toPromise();
+        return await this.http.get(`${environment["live_url"]}setnickname?name=${name}`).toPromise();
       } else { 
-        return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}`).toPromise();
+        return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}&chip=${chip}`).toPromise();
       }
     }
     catch (error) {

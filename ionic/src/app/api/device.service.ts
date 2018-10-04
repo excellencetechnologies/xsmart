@@ -260,6 +260,7 @@ export class DeviceService {
                 }
                 else if (res.type === "device_set_name_notify") {
                     this.notifyService.alertUser("device name recieved")
+                    this.updateDeviceName(res)
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
@@ -281,7 +282,14 @@ export class DeviceService {
             });
         }
     }
-
+    async updateDeviceName(name: string) {
+        const allDevices = await this.getDevices()
+        allDevices.forEach((value, key) => {
+            if (allDevices[key]['chip'] === device['chip']) {
+                value.name = name
+            }
+        })
+    }
     async updateDeviceStatus(data) {
         try {
             if (data.found) {
@@ -294,6 +302,11 @@ export class DeviceService {
         catch (e) {
             this.notifyService.alertUser("device not found");
         }
+    }
+    async keepCheckingDeviceOnline() {
+        setTimeout(async () => {
+            this.keepCheckingDeviceOnline();
+        }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
     }
 
 }

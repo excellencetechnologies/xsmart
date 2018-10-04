@@ -108,7 +108,7 @@ export class AddDevicesComponent implements OnInit {
         }
       });
       this.loader = false
-      this.keepCheckingDeviceOnline() 
+      this.deviceService.keepCheckingDeviceOnline() 
     } catch (e) {
       this.loader = false;
       this.errorMessage = e['error']
@@ -116,12 +116,6 @@ export class AddDevicesComponent implements OnInit {
       this.isScanningDevice = true;
 
     }
-  }
-  async keepCheckingDeviceOnline() {
-    setTimeout(async () => {
-      this.pingDevices();
-      this.keepCheckingDeviceOnline();
-    }, this.deviceService.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async askWifiPassword(wifi) {
     const data = { wifi: wifi.SSID };

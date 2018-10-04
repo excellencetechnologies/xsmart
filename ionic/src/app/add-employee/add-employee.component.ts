@@ -7,20 +7,20 @@ import { DeviceService } from "../api/device.service"
   styleUrls: ['./add-employee.component.scss']
 })
 export class AddEmployeeComponent implements OnInit {
-
+  devices: Device[] = [];
   constructor(
     private deviceService: DeviceService,
   ) { }
 
   ngOnInit() {
   }
-  async setEmployeeID(d: Device) {
+  async setEmployeeID(devices: Device) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
-      // chip: d.chip // this is just temporary code. will remove hard coded chip id with actual device
-      // app_id: await this.deviceService.getAppID(),
-      // emp_id: emp_id,
-      // stage: "init"
+      chip: devices.chip,// this is just temporary code. will remove hard coded chip id with actual device
+      app_id: await this.deviceService.getAppID(),
+      emp_id: data.emp_id,
+      stage: "init"
     })
   }
  
