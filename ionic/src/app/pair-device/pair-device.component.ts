@@ -39,11 +39,13 @@ export class PairDeviceComponent implements OnInit {
     wifiCheckInterval = setInterval(async () => {
       try {
         const data = await this.api.checkPing();
-        this.devicePing = data['data']
-        if (this.devicePing.name.length > 0) {
-          this.devicePing.isNew = false;
-        } else {
-          this.devicePing.isNew = true;
+        this.devicePing=data;
+        if(this.devicePing) {
+          if (this.devicePing.name && this.devicePing.name.length > 0) {
+            this.devicePing.isNew = false;
+          } else {
+            this.devicePing.isNew = true;
+          }
         }
         this.isScanningDevice = false;
         clearInterval(wifiCheckInterval);
@@ -57,6 +59,8 @@ export class PairDeviceComponent implements OnInit {
       } catch (e) {
         this.isScanningDevice = true;
         this.errorMessage = e;
+        console.log(e);
+        
       }
     }, 5000);
   }

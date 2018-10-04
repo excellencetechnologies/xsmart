@@ -99,7 +99,7 @@ export class AddDevicesComponent implements OnInit {
     this.loader = true;
     try {
       const resData = await this.api.getScanWifi();
-      this.wifinetworks = resData['data'].sort(function (RSSI1, RSSI2) {
+      this.wifinetworks = resData.sort(function (RSSI1, RSSI2) {
         if (RSSI1['RSSI'] > RSSI2['RSSI']) {
           return -1;
         } else if (RSSI1['RSSI'] < RSSI2['RSSI']) {
@@ -109,6 +109,7 @@ export class AddDevicesComponent implements OnInit {
         }
       });
       this.loader = false
+      this.keepCheckingDeviceOnline() 
     } catch (e) {
       this.loader = false;
       this.errorMessage = e['error']

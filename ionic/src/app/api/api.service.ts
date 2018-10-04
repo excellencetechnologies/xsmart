@@ -42,7 +42,7 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
     try {
       if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
-        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+        return await this.http.get<Wifi[]>(`${environment["live_url"]}wifi`).toPromise();
       } else { //live is not null and false
         return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}Wifi`).toPromise();
       }
@@ -56,9 +56,9 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
     try {
       if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
-        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+        return await this.http.get<Ping[]>(`${environment["live_url"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
       } else { //live is not null and false
-        return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
+        return await this.http.get<Ping[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
 
       }
     }
@@ -70,7 +70,7 @@ export class ApiService {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
       if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
-        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
+        return await this.http.get(`${environment["live_url"]}setnickname?name=${name}&chip=${chip}`).toPromise();
       } else { //live is not null and false
         return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}&chip=${chip}`).toPromise();
       }

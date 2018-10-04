@@ -7,7 +7,7 @@ export class EventHandlerService {
 
   @Output() loginData = new EventEmitter();
   @Output() userImage =new EventEmitter();
-
+  @Output() devices =new EventEmitter();
   constructor() { }
 
   setLoginEvent(loginData) {
@@ -15,5 +15,8 @@ export class EventHandlerService {
   }
   setUserImageEvent(userImage){
     this.userImage.emit(userImage);
+  }
+  setDevices(devices){
+    this.devices.emit(devices);
   }
 }

@@ -5,6 +5,7 @@ import { ApiService } from '../api/api.service';
 import { Ping, Wifi, Device, Switch } from "../api/api"
 import { NotifyService } from '../api/notify.service';
 import { NavParams, ModalController } from '@ionic/angular';
+import { DeviceService } from '../api/device.service';
 @Component({
   selector: 'app-set-wifi-password',
   templateUrl: './set-wifi-password.component.html',
@@ -23,7 +24,8 @@ export class SetWifiPasswordComponent implements OnInit {
     private api:ApiService,
     private notifyService: NotifyService,
     private navParams: NavParams,
-    public modalController: ModalController
+    public modalController: ModalController,
+    private deviceService:DeviceService
   ) { }
 
   ngOnInit() {
@@ -54,6 +56,10 @@ export class SetWifiPasswordComponent implements OnInit {
       this.errorMessage = err['error'];
     }
   }
-
+  async keepCheckingDeviceOnline() {
+    setTimeout(async () => {
+      this.keepCheckingDeviceOnline();
+    }, this.deviceService.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
+  }
 
 }
