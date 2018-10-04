@@ -59,8 +59,6 @@ export class PairDeviceComponent implements OnInit {
       } catch (e) {
         this.isScanningDevice = true;
         this.errorMessage = e;
-        console.log(e);
-        
       }
     }, 5000);
   }

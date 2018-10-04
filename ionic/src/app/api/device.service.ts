@@ -104,8 +104,6 @@ export class DeviceService {
                 } else {
                     device.online = true;
                 }
-                console.log(device.online);
-                
                 device.switches = [];
                 data.pins.forEach((pin: Switch) => {
                     let swtich: Switch = {
@@ -260,7 +258,7 @@ export class DeviceService {
                         this.notifyService.alertUser("unable to reach device.device is not online");
                     }
                 }
-                else if(res.type==="device_set_name_notify"){
+                else if (res.type === "device_set_name_notify") {
                     this.notifyService.alertUser("device name recieved")
                 }
                 else if (res.type === "device_get_time_notify") {

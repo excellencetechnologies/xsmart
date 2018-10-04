@@ -30,7 +30,7 @@ export class HomePage implements OnInit {
   device: newDevice[];
   errorMessage: string
   live: boolean = false;
-  time:any;
+  time: any;
   deviceSubscription: any;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
@@ -67,7 +67,7 @@ export class HomePage implements OnInit {
     }
   }
 
- async onliveMode() {
+  async onliveMode() {
     this.live = !this.live;
     localStorage.setItem('live', JSON.stringify(this.live));
     await location.reload();
@@ -112,7 +112,7 @@ export class HomePage implements OnInit {
       this.keepCheckingDeviceOnline();
     }
     this.deviceSubscription = this._event.devices.subscribe(async (res) => {
-      this.time=res.deviceTime;
+      this.time = res.deviceTime;
       this.devices = await this.deviceService.getDevices();
     })
   }
@@ -290,8 +290,8 @@ export class HomePage implements OnInit {
               stage: "init"
             })
             const allDevices = await this.deviceService.getDevices();
-            allDevices.forEach((value,key) => {
-              console.log("allDevices[key]",allDevices[key])
+            allDevices.forEach((value, key) => {
+              console.log("allDevices[key]", allDevices[key])
               if (allDevices[key]['chip'] === device['chip']) {
                 value.name = data.name
               }
@@ -331,7 +331,7 @@ export class HomePage implements OnInit {
               emp_id: data.emp_id,
               stage: "init"
             })
-            
+
           }
         }
       ]

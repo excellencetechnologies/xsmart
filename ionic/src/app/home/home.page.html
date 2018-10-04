@@ -9,7 +9,7 @@
 </ion-header>
 <ion-content class="content">
   <ion-list>
-    <ion-item  class="grid-item-header">
+    <ion-item class="grid-item-header">
       <ion-label>Live</ion-label>
       <ion-toggle (ngModelChange)="onliveMode()" [(ngModel)]="live"></ion-toggle>
     </ion-item>
@@ -26,29 +26,20 @@
     </div>
     <ion-list *ngIf="devices.length">
       <ion-card *ngFor="let device of devices; trackBy: trackByDevice">
-        <ion-list  class="grid-item-header">
+        <ion-list class="grid-item-header">
           <ion-item class="devicename" [ngClass]="{'yellow' :device.online}">
             <ion-icon slot="start" *ngIf="device && device.type !='access'" name="swap"></ion-icon>
             <ion-icon slot="start" *ngIf="device && device.type  == 'access' " name="infinite"></ion-icon>
-            <ion-label (click)="deviceName(device);" >{{device.name}}</ion-label>
+            <ion-label (click)="deviceName(device);">{{device.name}}</ion-label>
             <ion-icon slot="end" *ngIf="device && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
             <span slot="end" class="exclm" *ngIf="device && !device.online" mode="md">!</span>
           </ion-item>
         </ion-list>
         <ion-list class="grid-item-header">
           <ion-item class="grid-item-header">
-            <!-- <div class="content"> -->
-              <!-- <p size="12">
-                <b>
-                  <span size="4">Device ID:</span>
-                </b>
-                <span class="item">{{device.device_id}}</span>
-              </p>
-              <p *ngIf="device.switches.length > 0">
-                <span>Switch {{device.switches.length}}</span>
-              </p> -->
-            <!-- </div> -->
-            <ion-label sloat="start">Device ID:<span class="item">{{device.device_id}}</span></ion-label>
+            <ion-label sloat="start">Device ID:
+              <span class="item">{{device.device_id}}</span>
+            </ion-label>
             <ion-label class="time">{{time}}</ion-label>
           </ion-item>
         </ion-list>
