@@ -289,6 +289,13 @@ export class HomePage implements OnInit {
               app_id: await this.deviceService.getAppID(),
               stage: "init"
             })
+            const allDevices = await this.deviceService.getDevices();
+            allDevices.forEach((value, key) => {
+              if (allDevices[key]['chip'] === device['chip']) {
+                value.name = data.name;
+              }
+            })
+            this.deviceService.setDevices(allDevices);
           }
         }
       ]
@@ -296,9 +303,6 @@ export class HomePage implements OnInit {
 
     await alert.present();
   }
-
-
-
   async disableEmployee(device: Device) {
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',

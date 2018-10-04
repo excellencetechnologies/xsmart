@@ -14,14 +14,5 @@ export class AddEmployeeComponent implements OnInit {
 
   ngOnInit() {
   }
-  async setEmployeeID(devices: Device) {
-    this.deviceService.sendMessageToSocket({
-      type: "device_set_add_employee",
-      chip: devices.chip,// this is just temporary code. will remove hard coded chip id with actual device
-      app_id: await this.deviceService.getAppID(),
-      emp_id: data.emp_id,
-      stage: "init"
-    })
-  }
- 
+
 }

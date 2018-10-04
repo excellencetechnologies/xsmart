@@ -258,10 +258,6 @@ export class DeviceService {
                         this.notifyService.alertUser("unable to reach device.device is not online");
                     }
                 }
-                else if (res.type === "device_set_name_notify") {
-                    this.notifyService.alertUser("device name recieved")
-                    this.updateDeviceName(res)
-                }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
                     let currentTime = new Date().getTime();
@@ -281,14 +277,6 @@ export class DeviceService {
                 }
             });
         }
-    }
-    async updateDeviceName(name: string) {
-        const allDevices = await this.getDevices()
-        allDevices.forEach((value, key) => {
-            if (allDevices[key]['chip'] === device['chip']) {
-                value.name = name
-            }
-        })
     }
     async updateDeviceStatus(data) {
         try {
