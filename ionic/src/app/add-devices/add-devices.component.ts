@@ -84,7 +84,6 @@ export class AddDevicesComponent implements OnInit {
         })
         this.deviceService.setDevices(deviceData)
         this.notifyService.alertUser("Device Update Successfully");
-        this.keepCheckingDeviceOnline();
       }
       this.router.navigate(["/add-devices"]);
       this.mode = "scan";

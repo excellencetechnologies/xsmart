@@ -14,13 +14,14 @@ export class AddEmployeeComponent implements OnInit {
 
   ngOnInit() {
   }
-  async setSwitchNamee(d: Device) {
+  async setEmployeeID(d: Device) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
-      chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
-      app_id: await this.deviceService.getAppID(),
-      // emp_id: data.emp_id,
-      // stage: "init
+      // chip: d.chip // this is just temporary code. will remove hard coded chip id with actual device
+      // app_id: await this.deviceService.getAppID(),
+      // emp_id: emp_id,
+      // stage: "init"
     })
   }
+ 
 }

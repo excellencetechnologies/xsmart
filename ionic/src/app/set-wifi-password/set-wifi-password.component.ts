@@ -56,10 +56,4 @@ export class SetWifiPasswordComponent implements OnInit {
       this.errorMessage = err['error'];
     }
   }
-  async keepCheckingDeviceOnline() {
-    setTimeout(async () => {
-      this.keepCheckingDeviceOnline();
-    }, this.deviceService.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
-  }
-
 }

@@ -97,7 +97,7 @@ export class HomePage implements OnInit {
   }
   async setSwitchNamee(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
-      type: "device_set_name",
+      type: "device_switch-name",
       chip: d.chip,
       pin: s.pin,
       name: s.name,
@@ -113,7 +113,7 @@ export class HomePage implements OnInit {
     }
     this.deviceSubscription = this._event.devices.subscribe(async (res) => {
       this.time = res.deviceTime;
-      this.devices = await this.deviceService.getDevices();
+      this.devices = await this.deviceService.getDevices();  
     })
   }
   trackByDevice(device: Device) {
@@ -220,7 +220,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_add_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip:device.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -251,7 +251,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_delete_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -291,12 +291,11 @@ export class HomePage implements OnInit {
             })
             const allDevices = await this.deviceService.getDevices();
             allDevices.forEach((value, key) => {
-              console.log("allDevices[key]", allDevices[key])
               if (allDevices[key]['chip'] === device['chip']) {
-                value.name = data.name
+                value.name = data.name;
               }
             })
-            this.deviceService.setDevices(allDevices);
+            // this.deviceService.setDevices(allDevices);
           }
         }
       ]
@@ -326,7 +325,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_disable_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -358,7 +357,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_enable_employee",
-              chip: "xSmart-1602506", // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
