@@ -9,7 +9,6 @@ export class EventHandlerService {
   @Output() userImage =new EventEmitter();
   @Output() devices =new EventEmitter();
   @Output() devicesName =new EventEmitter();
-
   constructor() { }
 
   setLoginEvent(loginData) {

@@ -167,7 +167,6 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data);
-                console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                     this._event.setDevices(res);
@@ -265,9 +264,6 @@ export class DeviceService {
                 } else if (res.type == "device_set_name_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("opertaion send to device")
-                        // console.log(res, "name");
-                        // this.updateDeviceName(res)
-                        // this._event.setDevicesName(res);
                     }
                     else {
                         this.notifyService.alertUser("unable to reach device.device is not online");
@@ -276,8 +272,6 @@ export class DeviceService {
                 }
                 else if (res.type === "device_set_name_notify") {
                     this.updateDeviceName(res)
-
-                    console.log(res, "name");
                     this.notifyService.alertUser("device name recived")
                 }
                 else if (res.type === "device_get_time_notify") {

@@ -16,7 +16,7 @@ export class AddEmployeeComponent implements OnInit {
   }
   createemployeeId() {
     this.employeeID = new FormGroup({
-      password: new FormControl("", [
+      emp_Id: new FormControl("", [
         Validators.required
       ])
     });
@@ -24,7 +24,7 @@ export class AddEmployeeComponent implements OnInit {
   async setemployeeId(d: Device, formData) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
-      chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+      // chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
       app_id: await this.deviceService.getAppID(),
       emp_id: formData.emp_id,
       stage: "init"
