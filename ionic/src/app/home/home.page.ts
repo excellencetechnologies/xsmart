@@ -32,6 +32,8 @@ export class HomePage implements OnInit {
   live: boolean = false;
   time: any;
   deviceSubscription: any;
+  deviceNameSubscription: any;
+
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -113,7 +115,7 @@ export class HomePage implements OnInit {
     }
     this.deviceSubscription = this._event.devices.subscribe(async (res) => {
       this.time = res.deviceTime;
-      this.devices = await this.deviceService.getDevices();  
+      this.devices = await this.deviceService.getDevices();
     })
   }
   trackByDevice(device: Device) {
@@ -220,7 +222,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_add_employee",
-              chip:device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -285,22 +287,17 @@ export class HomePage implements OnInit {
             this.deviceService.sendMessageToSocket({
               type: "device_set_name",
               chip: device.chip,
-              name: device.name,
+              name: data.name,
               app_id: await this.deviceService.getAppID(),
               stage: "init"
             })
-            const allDevices = await this.deviceService.getDevices();
-            allDevices.forEach((value, key) => {
-              if (allDevices[key]['chip'] === device['chip']) {
-                value.name = data.name;
-              }
-            })
-            this.deviceService.setDevices(allDevices);
+            const name = data.name
+            this._event.setDevices(name);
           }
         }
       ]
     });
-
+    this.keepCheckingDeviceOnline();
     await alert.present();
   }
   async disableEmployee(device: Device) {

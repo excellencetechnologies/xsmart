@@ -108,7 +108,6 @@ export class AddDevicesComponent implements OnInit {
         }
       });
       this.loader = false
-      this.deviceService.keepCheckingDeviceOnline() 
     } catch (e) {
       this.loader = false;
       this.errorMessage = e['error']

@@ -8,6 +8,7 @@ import { NotifyService } from './notify.service';
 import { ApiService } from './api.service';
 import { OnInit, EventEmitter } from '@angular/core';
 import { EventHandlerService } from './event-handler.service';
+
 let wifiCheckInterval = null;
 let socket = null;
 @Injectable({
@@ -19,6 +20,7 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
+    deviceNameSubscription: any;
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -27,6 +29,7 @@ export class DeviceService {
         private notifyService: NotifyService,
         private api: ApiService,
         private _event: EventHandlerService
+
     ) {
     }
     //random id to identify the current app
@@ -83,6 +86,7 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
+
     async updateDeviceNotFound(data) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
@@ -113,11 +117,20 @@ export class DeviceService {
                     }
                     device.switches.push(swtich);
                 })
-
             }
             return device;
         })
         await this.setDevices(devices);
+    }
+    async updateDeviceName(data) {
+        let devices = await this.getDevices();
+        devices = devices.map((device: Device) => {
+            if (device.chip === data.chip) {
+                device.name = data.name
+            }
+            return device;
+        })
+        this.setDevices(devices);
     }
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
@@ -127,8 +140,6 @@ export class DeviceService {
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
         }
-
-
     }
     async deleteDevice(deleteDevice: Device) {
         let devices = await this.getDevices();
@@ -156,6 +167,7 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data);
+                console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                     this._event.setDevices(res);
@@ -253,10 +265,20 @@ export class DeviceService {
                 } else if (res.type == "device_set_name_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("opertaion send to device")
+                        // console.log(res, "name");
+                        // this.updateDeviceName(res)
+                        // this._event.setDevicesName(res);
                     }
                     else {
                         this.notifyService.alertUser("unable to reach device.device is not online");
+
                     }
+                }
+                else if (res.type === "device_set_name_notify") {
+                    this.updateDeviceName(res)
+
+                    console.log(res, "name");
+                    this.notifyService.alertUser("device name recived")
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
@@ -282,7 +304,8 @@ export class DeviceService {
         try {
             if (data.found) {
                 await this.updateDevice(data);
-            } else {
+            }
+            else {
                 await this.updateDeviceNotFound(data);
             }
             this.getDevices();
@@ -298,4 +321,5 @@ export class DeviceService {
     }
 
 }
+
 

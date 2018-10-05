@@ -8,6 +8,8 @@ export class EventHandlerService {
   @Output() loginData = new EventEmitter();
   @Output() userImage =new EventEmitter();
   @Output() devices =new EventEmitter();
+  @Output() devicesName =new EventEmitter();
+
   constructor() { }
 
   setLoginEvent(loginData) {
@@ -18,5 +20,8 @@ export class EventHandlerService {
   }
   setDevices(devices){
     this.devices.emit(devices);
+  }
+  setDevicesName(devicesName){
+    this.devicesName.emit(devicesName);
   }
 }

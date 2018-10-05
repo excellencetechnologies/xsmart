@@ -55,7 +55,7 @@ export class ApiService {
   async setWifiPassword(ssid, password) {
     // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
     try {
-      if (this.isLive) { 
+      if (this.isLive()) { 
         return await this.http.get<Ping[]>(`${environment["live_url"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
       } else { 
         return await this.http.get<Ping[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
@@ -69,7 +69,7 @@ export class ApiService {
   async setDeviceNickName(name: String, chip: string) {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
-      if (this.isLive) {
+      if (this.isLive()) {
         return await this.http.get(`${environment["live_url"]}setnickname?name=${name}`).toPromise();
       } else { 
         return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}&chip=${chip}`).toPromise();

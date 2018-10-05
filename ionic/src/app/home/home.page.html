@@ -30,7 +30,7 @@
           <ion-item class="devicename" [ngClass]="{'yellow' :device.online}">
             <ion-icon slot="start" *ngIf="device && device.type !='access'" name="swap"></ion-icon>
             <ion-icon slot="start" *ngIf="device && device.type  == 'access' " name="infinite"></ion-icon>
-            <ion-label (click)="deviceName(device);">{{device.name}}</ion-label>
+            <ion-label>{{device.name}}</ion-label>
             <ion-icon slot="end" *ngIf="device && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
             <span slot="end" class="exclm" *ngIf="device && !device.online" mode="md">!</span>
           </ion-item>
