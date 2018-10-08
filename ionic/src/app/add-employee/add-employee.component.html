@@ -10,7 +10,7 @@
     <div padding-left>
       <h3>Add Employee</h3>
     </div>
-    <form class="form-horizontal" [formGroup]="employeeID">
+    <form class="form-horizontal" [formGroup]="employeeForm">
       <ion-row>
         <ion-col>
           <ion-list class="employeeForm">
@@ -23,7 +23,7 @@
         </ion-col>
       </ion-row>
       <ion-col class="signup-col">
-        <ion-button expand="block" color="tirtary" fill="outline" (click)="setemployeeId(formData)"> Next
+        <ion-button expand="block" color="tirtary" fill="outline" (click)="employeeData(formData)"> Next
           <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
         </ion-button>
       </ion-col>
