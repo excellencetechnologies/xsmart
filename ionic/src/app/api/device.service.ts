@@ -272,7 +272,7 @@ export class DeviceService {
                 else if (res.type === "device_set_name_notify") {
                     this.updateDeviceName(res.chip, res.name)
                 }
-                else if (res.type == "set_switch_name") {
+                else if (res.type == "set_switch_name_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("opertaion send to device")
                     }
