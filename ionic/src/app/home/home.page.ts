@@ -271,8 +271,6 @@ export class HomePage implements OnInit {
               app_id: await this.deviceService.getAppID(),
               stage: "init"
             })
-            const name = data.name
-            this._event.setDevices(name);
           }
         }
       ]
