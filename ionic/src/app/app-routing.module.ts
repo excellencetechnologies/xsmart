@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: "scan-device", canActivate:[AuthGuard],component:ScanDeviceComponent}, 
   { path: "pair-device",canActivate:[AuthGuard],component:PairDeviceComponent},
   { path: "set-Wifi-Password", canActivate:[AuthGuard],component:SetWifiPasswordComponent},
-  { path :"add-employee",canActivate:[AuthGuard],component:AddEmployeeComponent},
+  { path :"add-employee/:id",canActivate:[AuthGuard],component:AddEmployeeComponent},
   { path :"view-employee",canActivate:[AuthGuard],component:ViewEmployeeComponent},
   { path:"setting",canActivate:[AuthGuard],component:SettingComponent},
   { path:"add-devices",canActivate:[AuthGuard],component:AddDevicesComponent},

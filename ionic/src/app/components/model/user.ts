@@ -16,3 +16,6 @@ export interface deleteDevice {
     chip_id: string;
     user_id: string;
 }
+export interface employee{
+    emp_id:string;
+}

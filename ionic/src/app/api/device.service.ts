@@ -87,10 +87,10 @@ export class DeviceService {
         this.setDevices(devices);
     }
 
-    async updateDeviceNotFound(data) {
+    async updateDeviceNotFound(chip:string,name:string) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
-            if (device.chip === data.chip) {
+            if (device.chip ===chip) {
                 device.online = false;
             }
             return device;
@@ -167,6 +167,7 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data);
+
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                     this._event.setDevices(res);
@@ -272,7 +273,7 @@ export class DeviceService {
                 }
                 else if (res.type === "device_set_name_notify") {
                     this.updateDeviceName(res)
-                    this.notifyService.alertUser("device name recived")
+
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();

@@ -1,30 +1,37 @@
 import { Component, OnInit } from '@angular/core';
-import { DeviceService } from "../api/device.service"
+import { employee } from "../components/model/user";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { DeviceService } from '../api/device.service';
+import { ActivatedRoute } from '@angular/router'
 @Component({
   selector: 'app-add-employee',
   templateUrl: './add-employee.component.html',
   styleUrls: ['./add-employee.component.scss']
 })
 export class AddEmployeeComponent implements OnInit {
-  employeeID: FormGroup
+  employee: FormGroup;
+  deviceId: string;
   constructor(
     private deviceService: DeviceService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
+    this.employeeId()
+    this.route.params.subscribe(params => (this.deviceId = params.id));
   }
-  createemployeeId() {
-    this.employeeID = new FormGroup({
+
+  employeeId() {
+    this.employee = new FormGroup({
       emp_Id: new FormControl("", [
         Validators.required
       ])
     });
   }
-  async setemployeeId(d: Device, formData) {
+  async setemployeeId(formData: employee) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
-      // chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+      chip: this.deviceId, // this is just temporary code. will remove hard coded chip id with actual device
       app_id: await this.deviceService.getAppID(),
       emp_id: formData.emp_id,
       stage: "init"

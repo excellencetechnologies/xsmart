@@ -32,8 +32,6 @@ export class HomePage implements OnInit {
   live: boolean = false;
   time: any;
   deviceSubscription: any;
-  deviceNameSubscription: any;
-
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -71,7 +69,12 @@ export class HomePage implements OnInit {
 
   async onliveMode() {
     this.live = !this.live;
-    localStorage.setItem('live', JSON.stringify(this.live));
+    if (this.platform.is("cordova")) {
+      this.nativeStorage.setItem('live', JSON.stringify(this.live))
+    }
+    else {
+      localStorage.setItem('live', JSON.stringify(this.live));
+    }
     await location.reload();
   }
 
@@ -202,37 +205,42 @@ export class HomePage implements OnInit {
   /** 
    * new test code by manish for access card
    */
-  async addEmployee(device: Device) {
-
-    const alert = await this.alertController.create({
-      header: 'Enter Employee ID',
-      inputs: [
-        {
-          name: 'emp_id',
-          type: 'text',
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary'
-        }, {
-          text: 'Ok',
-          handler: async (data) => {
-            this.deviceService.sendMessageToSocket({
-              type: "device_set_add_employee",
-              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
-              app_id: await this.deviceService.getAppID(),
-              emp_id: data.emp_id,
-              stage: "init"
-            })
-          }
-        }
-      ]
-    });
-    await alert.present();
+  addEmployee(device: Device) {
+    console.log(device);
+    
+    this.router.navigate(["/add-employee",device.chip]);
   }
+  // async addEmployee(device: Device) {
+
+  //   const alert = await this.alertController.create({
+  //     header: 'Enter Employee ID',
+  //     inputs: [
+  //       {
+  //         name: 'emp_id',
+  //         type: 'text',
+  //       }
+  //     ],
+  //     buttons: [
+  //       {
+  //         text: 'Cancel',
+  //         role: 'cancel',
+  //         cssClass: 'secondary'
+  //       }, {
+  //         text: 'Ok',
+  //         handler: async (data) => {
+  //           this.deviceService.sendMessageToSocket({
+  //             type: "device_set_add_employee",
+  //             chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+  //             app_id: await this.deviceService.getAppID(),
+  //             emp_id: data.emp_id,
+  //             stage: "init"
+  //           })
+  //         }
+  //       }
+  //     ]
+  //   });
+  //   await alert.present();
+  // }
   async deleteEmployee(device: Device) {
 
     const alert = await this.alertController.create({
