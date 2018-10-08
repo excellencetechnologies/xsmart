@@ -51,7 +51,7 @@ export class HomePage implements OnInit {
     private _event: EventHandlerService,
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
       this.checkExistingDevice();
@@ -65,11 +65,16 @@ export class HomePage implements OnInit {
     if (localStorage.getItem('live') != undefined) {
       this.live = JSON.parse(localStorage.getItem("live"))
     }
+    else if (this.platform.is("cordova")) {
+      const liveStatus = await this.nativeStorage.getItem('live')
+      if (liveStatus != undefined)
+        this.live = liveStatus;
+    }
   }
 
   async onliveMode() {
     this.live = !this.live;
-    if (this.platform.is("cordova")) {
+    if (this.platform.is("mobile")) {
       this.nativeStorage.setItem('live', JSON.stringify(this.live))
     }
     else {
@@ -100,17 +105,17 @@ export class HomePage implements OnInit {
       stage: "init"
     })
   }
-  async setSwitchNamee(s: Switch, d: Device) {
+  async set_switch_name(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
-      type: "device_switch-name",
+      type: "set_switch_name",
       chip: d.chip,
       pin: s.pin,
+      status: "HIGH",
       name: s.name,
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
   }
-
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
     if (this.devices.length > 0) {
@@ -149,8 +154,9 @@ export class HomePage implements OnInit {
     setTimeout(async () => {
       this.pingDevices();
       this.keepCheckingDeviceOnline();
-    }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
+    }, this.isSocketConnected ? 1000 * 60 : 1000);
   }
+
   async setSwitchName(s, d) {
     const alert = await this.alertController.create({
       header: 'Enter Switch Name',
@@ -175,7 +181,7 @@ export class HomePage implements OnInit {
                   value = s;
                 }
               })
-              this.setSwitchNamee(s, d);
+              this.set_switch_name(s, d);
               const allDevices = await this.deviceService.getDevices();
               allDevices.forEach(value => {
                 if (value['chip'] === d['chip']) {
@@ -202,45 +208,11 @@ export class HomePage implements OnInit {
   menu() {
     this.menuController.toggle()
   }
-  /** 
-   * new test code by manish for access card
-   */
-  addEmployee(device: Device) {
-    console.log(device);
-    
-    this.router.navigate(["/add-employee",device.chip]);
-  }
-  // async addEmployee(device: Device) {
 
-  //   const alert = await this.alertController.create({
-  //     header: 'Enter Employee ID',
-  //     inputs: [
-  //       {
-  //         name: 'emp_id',
-  //         type: 'text',
-  //       }
-  //     ],
-  //     buttons: [
-  //       {
-  //         text: 'Cancel',
-  //         role: 'cancel',
-  //         cssClass: 'secondary'
-  //       }, {
-  //         text: 'Ok',
-  //         handler: async (data) => {
-  //           this.deviceService.sendMessageToSocket({
-  //             type: "device_set_add_employee",
-  //             chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
-  //             app_id: await this.deviceService.getAppID(),
-  //             emp_id: data.emp_id,
-  //             stage: "init"
-  //           })
-  //         }
-  //       }
-  //     ]
-  //   });
-  //   await alert.present();
-  // }
+  addEmployee(device: Device) {
+    this.router.navigate(["/add-employee", device.chip]);
+  }
+
   async deleteEmployee(device: Device) {
 
     const alert = await this.alertController.create({
@@ -261,7 +233,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_delete_employee",
-              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip,
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -327,7 +299,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_disable_employee",
-              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip,
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"
@@ -359,7 +331,7 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             this.deviceService.sendMessageToSocket({
               type: "device_set_enable_employee",
-              chip: device.chip, // this is just temporary code. will remove hard coded chip id with actual device
+              chip: device.chip,
               app_id: await this.deviceService.getAppID(),
               emp_id: data.emp_id,
               stage: "init"

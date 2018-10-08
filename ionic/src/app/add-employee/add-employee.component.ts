@@ -9,7 +9,7 @@ import { ActivatedRoute } from '@angular/router'
   styleUrls: ['./add-employee.component.scss']
 })
 export class AddEmployeeComponent implements OnInit {
-  employeeForm : FormGroup;
+  employeeForm: FormGroup;
   deviceId: string;
   constructor(
     private deviceService: DeviceService,
@@ -31,7 +31,7 @@ export class AddEmployeeComponent implements OnInit {
   async employeeData(formData: employee) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
-      chip: this.deviceId, // this is just temporary code. will remove hard coded chip id with actual device
+      chip: this.deviceId,
       app_id: await this.deviceService.getAppID(),
       emp_id: formData.emp_id,
       stage: "init"

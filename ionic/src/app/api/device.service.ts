@@ -20,7 +20,6 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
-    deviceNameSubscription: any;
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -41,8 +40,8 @@ export class DeviceService {
         }
     }
     async getDevices(): Promise<Device[]> {
-        if (this.platform.is("mobile"))
-            return await this.nativeStorage.getItem('devices') as Device[];
+        if (this.platform.is("cordova"))
+            return await (this.nativeStorage.getItem('devices')) as Device[];
         else {
             if (localStorage.getItem('devices')) {
                 return JSON.parse(localStorage.getItem('devices')) as Device[];
@@ -64,7 +63,7 @@ export class DeviceService {
         return device;
     }
     async setDevices(devices: Device[]) {
-        if (this.platform.is("mobile")) {
+        if (this.platform.is("cordova")) {
             await this.nativeStorage.setItem('devices', devices);
         } else {
             localStorage.setItem('devices', JSON.stringify(devices));
@@ -122,10 +121,10 @@ export class DeviceService {
         })
         await this.setDevices(devices);
     }
-    async updateDeviceName(chip_id: string, name: string) {
+    async updateDeviceName(chip: string, name: string) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
-            if (device.chip === chip_id) {
+            if (device.chip === chip) {
                 device.name = name
             }
             return device;
@@ -135,7 +134,7 @@ export class DeviceService {
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
         devices.push(device);
-        if (this.platform.is("mobile")) {
+        if (this.platform.is("cordova")) {
             return await this.nativeStorage.setItem("devices", devices)
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
@@ -167,7 +166,6 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data);
-
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                     this._event.setDevices(res);
@@ -272,7 +270,19 @@ export class DeviceService {
                     }
                 }
                 else if (res.type === "device_set_name_notify") {
-                    this.updateDeviceName(res.chip_id, res.name)
+                    this.updateDeviceName(res.chip, res.name)
+                }
+                else if (res.type == "set_switch_name") {
+                    if (res.found) {
+                        this.notifyService.alertUser("opertaion send to device")
+                    }
+                    else {
+                        this.notifyService.alertUser("unable to reach device.device is not online");
+
+                    }
+                }
+                else if (res.type === "set_switch_name_notify") {
+                    this.updateDeviceName(res.chip, res.name)
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
