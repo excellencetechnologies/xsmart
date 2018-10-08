@@ -87,10 +87,10 @@ export class DeviceService {
         this.setDevices(devices);
     }
 
-    async updateDeviceNotFound(chip:string,name:string) {
+    async updateDeviceNotFound(data) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
-            if (device.chip ===chip) {
+            if (device.chip === data.chip) {
                 device.online = false;
             }
             return device;
@@ -122,11 +122,11 @@ export class DeviceService {
         })
         await this.setDevices(devices);
     }
-    async updateDeviceName(data) {
+    async updateDeviceName(chip_id: string, name: string) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
-            if (device.chip === data.chip) {
-                device.name = data.name
+            if (device.chip === chip_id) {
+                device.name = name
             }
             return device;
         })
@@ -272,8 +272,7 @@ export class DeviceService {
                     }
                 }
                 else if (res.type === "device_set_name_notify") {
-                    this.updateDeviceName(res)
-
+                    this.updateDeviceName(res.chip_id, res.name)
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
