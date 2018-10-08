@@ -281,8 +281,7 @@ export class DeviceService {
 
                     }
                 }
-                else if (res.type === "set_switch_name_notify") {
-                    this.updateDeviceName(res.chip, res.name)
+                else if (res.type === "set_switch_name_notify") 
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
