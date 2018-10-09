@@ -1,5 +1,8 @@
-<ion-header translucent>
+<ion-header>
   <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>
       Add Employee
     </ion-title>
@@ -24,9 +27,14 @@
       </ion-row>
       <ion-col class="signup-col">
         <ion-button expand="block" color="tirtary" fill="outline" (click)="employeeData(employeeForm.value)"> Next
-          <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+          <!-- <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner> -->
         </ion-button>
       </ion-col>
     </form>
+    <ion-label padding class="loder" expand="block" color="medium" fill="outline" >
+      <ion-icon mode="ios" class="logo" name="logo-ionic"></ion-icon>
+      Searching..<ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+    </ion-label>
+
   </div>
 </ion-content>

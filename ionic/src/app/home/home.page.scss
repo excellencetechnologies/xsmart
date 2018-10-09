@@ -24,7 +24,7 @@
 }
 
 .blue {
-    color:var(--ion-color-primary-tint);
+    color: var(--ion-color-primary-tint);
 }
 
 .group {
@@ -38,6 +38,10 @@
     padding-left: 10px;
     padding-right: 10px;
     --border-radius: 5px;
+}
+
+.button {
+    text-transform: capitalize;
 }
 
 .yourDevice {
@@ -61,7 +65,7 @@
 
 .content {
     --padding-top: 4px;
-    color:var(--ion-color-light-contrast);
+    color: var(--ion-color-light-contrast);
 }
 
 .devicename {
@@ -77,7 +81,8 @@
     margin-bottom: 9.2px;
     margin-left: 5px;
 }
-.time{
-    float:right;
+
+.time {
+    float: right;
     font-size: 10px;
 }

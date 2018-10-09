@@ -57,6 +57,8 @@ export class PairDeviceComponent implements OnInit {
         });
         return await modal.present();
       } catch (e) {
+        console.log(e,"error");
+        
         this.isScanningDevice = true;
         this.errorMessage = e;
       }

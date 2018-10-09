@@ -65,7 +65,7 @@ export class HomePage implements OnInit {
     if (localStorage.getItem('live') != undefined) {
       this.live = JSON.parse(localStorage.getItem("live"))
     }
-    else if (this.platform.is("cordova")) {
+    else if (this.platform.is("mobile")) {
       const liveStatus = await this.nativeStorage.getItem('live')
       if (liveStatus != undefined)
         this.live = liveStatus;
@@ -80,7 +80,6 @@ export class HomePage implements OnInit {
     else {
       localStorage.setItem('live', JSON.stringify(this.live));
     }
-    await location.reload();
   }
 
   async switchOff(s: Switch, d: Device) {
@@ -270,9 +269,7 @@ export class HomePage implements OnInit {
               name: data.name,
               app_id: await this.deviceService.getAppID(),
               stage: "init"
-            })
-            const name = data.name
-            this._event.setDevices(name);
+            });
           }
         }
       ]
@@ -342,6 +339,7 @@ export class HomePage implements OnInit {
     });
     await alert.present();
   }
+  
   wifi1() {
     this.router.navigate(["/scan-device"]);
   }
