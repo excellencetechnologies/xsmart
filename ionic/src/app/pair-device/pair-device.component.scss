@@ -1,4 +1,19 @@
-.error{
+.error {
     text-align: center;
-    color:var(--ion-color-danger);
-} 
+    color: var(--ion-color-danger);
+}
+
+.knob {
+    margin: 20px;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    color:black;
+}
+.loader{
+    color:gray;
+}
+.loading {
+    transform: scale(0.6);
+    vertical-align: middle;
+}

@@ -19,6 +19,7 @@ export class PairDeviceComponent implements OnInit {
   devicePing: Ping;
   isScanningDevice: boolean = false;
   mode: String = "device";
+  loader:boolean=true;
   errorMessage: string;
   constructor(
     private router: Router,
@@ -39,8 +40,9 @@ export class PairDeviceComponent implements OnInit {
     wifiCheckInterval = setInterval(async () => {
       try {
         const data = await this.api.checkPing();
-        this.devicePing=data;
-        if(this.devicePing) {
+        this.loader=false;
+        this.devicePing = data['data'];
+        if (this.devicePing) {
           if (this.devicePing.name && this.devicePing.name.length > 0) {
             this.devicePing.isNew = false;
           } else {
@@ -57,8 +59,6 @@ export class PairDeviceComponent implements OnInit {
         });
         return await modal.present();
       } catch (e) {
-        console.log(e,"error");
-        
         this.isScanningDevice = true;
         this.errorMessage = e;
       }
@@ -77,4 +77,5 @@ export class PairDeviceComponent implements OnInit {
     }
     this.keepCheckingWifiConnected();
   }
+
 }

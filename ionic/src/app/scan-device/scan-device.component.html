@@ -1,18 +1,30 @@
 <ion-header>
-    <ion-toolbar mode="ios">
-      <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-      </ion-buttons>
-      <ion-title>
-       Scan Devices
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Scan Devices
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content padding>
   <div padding-left>
     <h3>Pair devices</h3>
   </div>
   <div>
+    <circle-progress [percent]="0" [radius]="100" [outerStrokeWidth]="16" [innerStrokeWidth]="8" [outerStrokeColor]="'#6298ef'"
+      [innerStrokeColor]="'#EEE'" [animation]="true" [animationDuration]="300">
+    </circle-progress>
+    <p text-center>Bring device close to Router</p>
+    <div class="loader">
+      <p>
+        <ion-spinner class="loading" name="crescent"></ion-spinner>Device Connected</p>
+      <p>
+        <ion-spinner class="loading" name="crescent"></ion-spinner>Message sent to device</p>
+      <p>
+        <ion-spinner class="loading" name="crescent"></ion-spinner>Connecting device to network</p>
+    </div>
     <p> Turn on Access point on your device!</p>
     <p>Press the button on your device for 3 Sec and it should trun on the access point mode.</p>
     <p>You should see the status LED,to start to blink continuesly</p>

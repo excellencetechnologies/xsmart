@@ -9,7 +9,7 @@
 
 .wifiNetwork {
     float: right;
-    color:gray;
+    color: gray;
 }
 
 .button-radius {
@@ -18,15 +18,32 @@
     text-transform: capitalize;
     font-size: 17px;
 }
-.newDevice{
-    font-size:15px;
+
+.newDevice {
+    font-size: 15px;
 }
-.content{
-    --padding-top:4px;
+
+.content {
+    --padding-top: 4px;
 }
-.listPassword{
-    padding:5px;
+
+.listPassword {
+    padding: 5px;
 }
-.wifiSSid{
+
+.wifiSSid {
     margin-bottom: 6.2px;
+}
+
+.checkMark {
+    color: green;
+    margin: 0 7px
+}
+
+.loading {
+    transform: scale(0.6);
+    vertical-align: middle;
+}
+.loader{
+    color:gray;
 }

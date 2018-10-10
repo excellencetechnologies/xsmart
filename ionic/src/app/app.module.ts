@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterModule, RouteReuseStrategy } from '@angular/router';
-
 import { IonicModule, IonicRouteStrategy, Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -30,6 +29,7 @@ import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 @NgModule({
   declarations: [
     AppComponent,
@@ -53,7 +53,17 @@ import { AddDevicesComponent } from './add-devices/add-devices.component';
     FormsModule,
     ReactiveFormsModule,
     IonicModule.forRoot(),
-    AppRoutingModule],
+    AppRoutingModule,
+    NgCircleProgressModule.forRoot({
+      // set defaults here
+      radius: 100,
+      outerStrokeWidth: 16,
+      innerStrokeWidth: 8,
+      outerStrokeColor: "#78C000",
+      innerStrokeColor: "#C7E596",
+      animationDuration: 300,
+    })
+    ],
   providers: [
     StatusBar,
     SplashScreen,

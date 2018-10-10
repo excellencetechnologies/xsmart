@@ -21,10 +21,11 @@ export class AddDevicesComponent implements OnInit {
   wifinetworks: Wifi[] = [];
   devices: Device[] = [];
   devicePing: Ping;
+  progressBarInfo: number = 0;
   isScanningDevice: boolean = false;
   mode: String = "device";
   errorMessage: string;
-  loader: boolean;
+  progressBar: any;
   constructor(
     private router: Router,
     private notifyService: NotifyService,
@@ -37,6 +38,11 @@ export class AddDevicesComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.progressBar = {
+      isDeviceConnected: false,
+      isMessageSent: false,
+      isNetworkConnect: false
+    }
     this.getPingDevice()
     this.createSetNameForm()
     this.scanWifi()
@@ -44,6 +50,10 @@ export class AddDevicesComponent implements OnInit {
   getPingDevice() {
     const devicePingData = this.navParm.get('pingDevice')
     this.devicePing = devicePingData['pingDevice']
+    if (this.devicePing) {
+      this.progressBarInfo = 20;
+      this.progressBar.isDeviceConnected = true;
+    }
   }
 
   createSetNameForm() {
@@ -53,7 +63,7 @@ export class AddDevicesComponent implements OnInit {
       ])
     });
   }
-  async setDeviceName(name: String, chip: string, type: string,formData:newDevice) {
+  async setDeviceName(name: String, chip: string, type: string, formData: newDevice) {
     try {
       await this.api.setDeviceNickName(name, chip);
       let newDevice: newDevice = {
@@ -70,9 +80,13 @@ export class AddDevicesComponent implements OnInit {
         }
       };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        await this.api.addDevices(newDevice);
+        // await this.api.addDevices(newDevice);
         this.deviceService.addDevice(newDevice['meta']);
         this.notifyService.alertUser("Device added Successfully");
+        if (newDevice) {
+          this.progressBarInfo = 30;
+          this.progressBar.isMessageSent=true;
+        }
       } else {
         this.deviceService.updateDevice(newDevice['meta']);
         const deviceData = await this.deviceService.getDevices();
@@ -84,6 +98,10 @@ export class AddDevicesComponent implements OnInit {
         })
         this.deviceService.setDevices(deviceData)
         this.notifyService.alertUser("Device Update Successfully");
+        if (newDevice) {
+          this.progressBarInfo = 30;
+          this.progressBar.isMessageSent=true;
+        }
       }
       this.router.navigate(["/add-devices"]);
       this.mode = "scan";
@@ -95,10 +113,10 @@ export class AddDevicesComponent implements OnInit {
     }
   }
   async scanWifi() {
-    this.loader = true;
     try {
+
       const resData = await this.api.getScanWifi();
-      this.wifinetworks = resData.sort(function (RSSI1, RSSI2) {
+      this.wifinetworks = resData['data'].sort(function (RSSI1, RSSI2) {
         if (RSSI1['RSSI'] > RSSI2['RSSI']) {
           return -1;
         } else if (RSSI1['RSSI'] < RSSI2['RSSI']) {
@@ -107,9 +125,7 @@ export class AddDevicesComponent implements OnInit {
           return 0;
         }
       });
-      this.loader = false
     } catch (e) {
-      this.loader = false;
       this.errorMessage = e['error']
       this.notifyService.alertUser("Can not get Wifi");
       this.isScanningDevice = true;
