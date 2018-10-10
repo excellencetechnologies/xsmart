@@ -9,7 +9,7 @@
 </ion-header>
 <ion-content class="content">
   <ion-list>
-    <ion-item  class="grid-item-header">
+    <ion-item class="grid-item-header">
       <ion-label>Live</ion-label>
       <ion-toggle (ngModelChange)="onliveMode()" [(ngModel)]="live"></ion-toggle>
     </ion-item>
@@ -31,25 +31,16 @@
             <ion-icon slot="start" *ngIf="device && device.type !='access'" name="swap"></ion-icon>
             <ion-icon slot="start" *ngIf="device && device.type  == 'access' " name="infinite"></ion-icon>
             <ion-label>{{device.name}}</ion-label>
-            <ion-icon slot="end" *ngIf="device && device.type !='access' && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
-            <span slot="end" class="exclm" *ngIf="device && device.type!=='access' && !device.online" mode="md">!</span>
-            <span slot="end" *ngIf="device && device.type =='access' && !device.online" mode="md">!</span>
+            <ion-icon slot="end" *ngIf="device && device.online" mode="md" class="wifi" name="wifi"></ion-icon>
+            <span slot="end" class="exclm" *ngIf="device && !device.online" mode="md">!</span>
           </ion-item>
         </ion-list>
-
         <ion-list class="grid-item-header">
           <ion-item class="grid-item-header">
-            <div class="content">
-              <p size="12">
-                <b>
-                  <span size="4">Device ID:</span>
-                </b>
-                <span class="item">{{device.device_id}}</span>
-              </p>
-              <p *ngIf="device.switches.length > 0">
-                <span>Switch {{device.switches.length}}</span>
-              </p>
-            </div>
+            <ion-label sloat="start"><b>Device ID:</b>
+              <span class="item">{{device.device_id}}</span>
+            </ion-label>
+            <ion-label class="time">{{time}}</ion-label>
           </ion-item>
         </ion-list>
         <ion-list class="grid-item-header" *ngIf="device && device.type !='access'">
@@ -100,7 +91,7 @@
           <ion-grid no-padding class="group">
             <ion-row color="primary" class="border">
               <ion-col no-padding>
-                <ion-button expand="block" (click)="wifi1()" class="warranty" color="primary" fill="clear">
+                <ion-button expand="block" (click)="wifi1()" class="button" color="primary" fill="clear">
                   <ion-icon mode="ios" name="wifi"></ion-icon>
                   <ion-label class="iconlevel">Wifi</ion-label>
                 </ion-button>

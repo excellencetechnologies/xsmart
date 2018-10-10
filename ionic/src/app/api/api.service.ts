@@ -5,6 +5,8 @@ import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
 import { User, newDevice, deleteDevice } from "../components/model/user"
 import { isUndefined } from 'util';
+import { Platform } from '@ionic/angular';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
 export interface Message {
   author: string,
   message: string
@@ -22,12 +24,17 @@ export class ApiService {
   };
   // ************************************************************************************************
   base_url: string = environment['base_url'];
-  constructor(private http: HttpClient, private httpOld: Http) { }
+  constructor(private http: HttpClient,
+    private httpOld: Http,
+    private platform: Platform,
+    private nativeStorage: NativeStorage,
+
+  ) { }
 
   async checkPing() {
     // return await this.http.get<Ping>(this.base_url).toPromise();
     try {
-      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
+      if (await this.isLive()) { //live is not null and true
         return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
       } else { //live is not null and false
         return await this.http.get<Ping>(`${environment["deviceUrl"]}`).toPromise();
@@ -41,9 +48,9 @@ export class ApiService {
   async getScanWifi() {
     // return await this.http.get<Wifi[]>(this.base_url + "wifi").toPromise();
     try {
-      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
-        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
-      } else { //live is not null and false
+      if (await this.isLive()) {
+        return await this.http.get<Wifi[]>(`${environment["live_url"]}wifi`).toPromise();
+      } else {
         return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}Wifi`).toPromise();
       }
     }
@@ -55,10 +62,10 @@ export class ApiService {
   async setWifiPassword(ssid, password) {
     // return await this.http.get<Wifi[]>(this.base_url + "wifisave?SSID=" + ssid + "&password=" + password).toPromise();
     try {
-      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
-        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
-      } else { //live is not null and false
-        return await this.http.get<Wifi[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
+      if (await this.isLive()) {
+        return await this.http.get<Ping[]>(`${environment["live_url"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
+      } else {
+        return await this.http.get<Ping[]>(`${environment["deviceUrl"]}wifisave?ssid=${ssid}&password=${password}`).toPromise();
 
       }
     }
@@ -69,9 +76,9 @@ export class ApiService {
   async setDeviceNickName(name: String, chip: string) {
     // return await this.http.get<Wifi[]>(this.base_url + "setnickname?name=" + name).toPromise();
     try {
-      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) { //live is not null and true
-        return await this.http.get<Ping>(`${environment["live_url"]}`).toPromise();
-      } else { //live is not null and false
+      if (await this.isLive()) {
+        return await this.http.get(`${environment["live_url"]}setnickname?name=${name}`).toPromise();
+      } else {
         return await this.http.get(`${environment["deviceUrl"]}setnickname?name=${name}&chip=${chip}`).toPromise();
       }
     }
@@ -169,5 +176,24 @@ export class ApiService {
       throw (error);
     }
   }
+
+  async isLive() {
+    if (this.platform.is("mobile")) {
+      const isLive = await this.nativeStorage.getItem('live');
+      if (isLive != undefined ) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  }
+
 }
 

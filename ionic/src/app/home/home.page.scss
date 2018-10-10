@@ -6,7 +6,7 @@
 }
 
 .grid-item-header {
-    border-bottom: thin solid #EEE;
+    border-bottom: thin solid var(--ion-color-light-tint);
 }
 
 .yellow {
@@ -24,7 +24,7 @@
 }
 
 .blue {
-    color:var(--ion-color-primary-tint);
+    color: var(--ion-color-primary-tint);
 }
 
 .group {
@@ -40,32 +40,36 @@
     --border-radius: 5px;
 }
 
+.button {
+    text-transform: capitalize;
+}
+
 .yourDevice {
     font-size: 25px;
     font-weight: 600;
 }
 
 .border {
-    border: thin solid blue;
+    border: thin solid var(--ion-color-primary-shade);
     border-radius: 2px;
 }
 
 .border ion-col:not(:last-child) {
-    border-right: thin solid blue
+    border-right: thin solid var(--ion-color-primary-shade)
 }
 
 .item-padding {
     padding: 6px;
-    color: gray;
+    color:var(--ion-color-medium-shade)
 }
 
 .content {
     --padding-top: 4px;
-    color:var(--ion-color-light-contrast);
+    color: var(--ion-color-light-contrast);
 }
 
 .devicename {
-    border-bottom: thin solid #EEE;
+    border-bottom: thin solid var(--ion-color-light-tint);
     font-size: 19px;
 }
 
@@ -74,6 +78,11 @@
 }
 
 .iconlevel {
-    margin-bottom: 9.2px;
+    vertical-align: middle;
     margin-left: 5px;
+}
+
+.time {
+    float: right;
+    font-size: 10px;
 }

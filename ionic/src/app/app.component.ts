@@ -50,7 +50,6 @@ export class AppComponent implements OnDestroy {
     if (this.devices) {
       this.devices = JSON.parse(this.devices).length;
     }
-
     if (localStorage.getItem('profile')) {
       this.image = localStorage.getItem('profile');
     }
