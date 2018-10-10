@@ -6,9 +6,15 @@ import { Router } from '@angular/router';
   styleUrls: ['./scan-device.component.scss']
 })
 export class ScanDeviceComponent implements OnInit {
+  progressBar:any;
   constructor(private router: Router) { }
 
   ngOnInit() {
+    this.progressBar = {
+      isDeviceConnected: false,
+      isMessageSent: false,
+      isNetworkConnect: false
+    }
   }
   next() {
     this.router.navigate(["/pair-device"]);

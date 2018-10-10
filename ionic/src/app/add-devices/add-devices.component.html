@@ -26,6 +26,21 @@
         </p>
       </div>
     </div>
+    <div text-center>
+      <circle-progress [percent]="progressBarInfo"></circle-progress>
+    </div>
+    <p text-center>Bring device close to Router</p>
+    <div class="loader">
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected
+      </p>
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
+      <p>
+        <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnected" name="crescent"></ion-spinner>Connecting device to network</p>
+    </div>
     <form [formGroup]="setNameForm">
       <div>
         <ion-item>

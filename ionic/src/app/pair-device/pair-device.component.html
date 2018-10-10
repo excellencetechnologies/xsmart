@@ -13,6 +13,20 @@
     <h3>Connect To Device</h3>
   </div>
   <div>
+    <div text-center>
+      <circle-progress [percent]="20"></circle-progress>
+    </div>
+    <p text-center>Bring device close to Router</p>
+    <div class="loader">
+      <p>
+        <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected</p>
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isNetworkConnect" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnect" name="crescent"></ion-spinner>Connecting device to network</p>
+    </div>
     <p> Once the pair mode start on device,connect to the device wifi network</p>
     <p>A wifi network named</p>
     <p>
@@ -26,5 +40,5 @@
   <div class="error">
     <p *ngIf="errorMessage">Make sure device is close to your mobile and you are connect to the wifi network</p>
   </div>
-  <ion-button class="button-radius" expand="block" color="primary" fill="outline">Waiting..</ion-button>
+  <ion-button class="button-radius" expand="block" color="primary" (click)="scanDevice()" fill="outline">Waiting..</ion-button>
 </ion-content>

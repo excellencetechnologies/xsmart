@@ -1,6 +1,13 @@
 .employeeForm{
-    border:1px solid #EEE;
+    border: thin solid var(--ion-color-light-tint);
 }
 .employeeId{
     margin-left:10px;
+}
+.loder{
+    color: var(--ion-color-medium);
+}
+.logo {
+    transform: scale(1.6);
+    color: var(--ion-color-medium);
 }

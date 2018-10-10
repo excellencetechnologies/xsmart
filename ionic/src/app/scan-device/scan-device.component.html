@@ -1,18 +1,34 @@
 <ion-header>
-    <ion-toolbar mode="ios">
-      <ion-buttons slot="start">
-        <ion-back-button></ion-back-button>
-      </ion-buttons>
-      <ion-title>
-       Scan Devices
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Scan Devices
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
 <ion-content padding>
   <div padding-left>
     <h3>Pair devices</h3>
   </div>
   <div>
+    <div text-center>
+      <circle-progress [percent]="0">
+      </circle-progress>
+    </div>
+    <p text-center>Bring device close to Router</p>
+    <div class="loader">
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected</p>
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isNetworkConnect" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnect" name="crescent"></ion-spinner>Connecting device to network</p>
+    </div>
     <p> Turn on Access point on your device!</p>
     <p>Press the button on your device for 3 Sec and it should trun on the access point mode.</p>
     <p>You should see the status LED,to start to blink continuesly</p>

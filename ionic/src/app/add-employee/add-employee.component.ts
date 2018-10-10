@@ -11,6 +11,7 @@ import { ActivatedRoute } from '@angular/router'
 export class AddEmployeeComponent implements OnInit {
   employeeForm: FormGroup;
   deviceId: string;
+  loading:boolean;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute
@@ -36,5 +37,6 @@ export class AddEmployeeComponent implements OnInit {
       emp_id: formData.emp_id,
       stage: "init"
     })
+    this.loading=true;
   }
 }

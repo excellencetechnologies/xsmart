@@ -40,7 +40,7 @@ export class DeviceService {
         }
     }
     async getDevices(): Promise<Device[]> {
-        if (this.platform.is("cordova"))
+        if (this.platform.is("mobile"))
             return await (this.nativeStorage.getItem('devices')) as Device[];
         else {
             if (localStorage.getItem('devices')) {
@@ -63,7 +63,7 @@ export class DeviceService {
         return device;
     }
     async setDevices(devices: Device[]) {
-        if (this.platform.is("cordova")) {
+        if (this.platform.is("mobile")) {
             await this.nativeStorage.setItem('devices', devices);
         } else {
             localStorage.setItem('devices', JSON.stringify(devices));
@@ -131,10 +131,11 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
+    
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
         devices.push(device);
-        if (this.platform.is("cordova")) {
+        if (this.platform.is("mobile")) {
             return await this.nativeStorage.setItem("devices", devices)
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
@@ -281,7 +282,7 @@ export class DeviceService {
 
                     }
                 }
-                else if (res.type === "set_switch_name_notify") 
+                else if (res.type === "set_switch_name_notify") {
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
