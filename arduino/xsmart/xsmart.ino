@@ -31,10 +31,16 @@ OTA update = OTA();
 #define WIFI_AP_MODE 1      //acts as access point
 #define WIFI_CONNECT_MODE 2 //acts a normal wifi module
 
+#ifdef ISSWITCH
+const bool canWorkWithoutWifi = false; //i.e should device work without wifi e.g access control can work offline
+#endif 
+
+#ifdef ISACCESS
 const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
+#endif 
 //Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
-String version = "0.0.4";
+String version = "0.0.3";
 String webID = "ESP32";  //this should be some no to identify device type. there should be different between switch/access
 
 #ifdef ESP8266
@@ -641,7 +647,7 @@ void sendPinNamePack()
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_bulk_pin_name_reply";
+  root["type"] = "device_set_pin_name_reply";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
 
@@ -1081,9 +1087,9 @@ void loop()
             sendDeviceTime(ctime(&now), "device_get_time");
           }else if (type == "OK")
           {
-            if(root.get<String>("ota").length() > 0){
-              update.checkUpdate(root.get<String>("ota"));
-            }
+            // if(root.get<String>("ota").length() > 0){
+            //   update.checkUpdate(root.get<String>("ota"));
+            // }
             ok_ping_not_recieved_count = 0;
           }
 
@@ -1118,7 +1124,7 @@ void loop()
             }
             sendBulkIOPack();
           }
-          else if (type == "PIN_NAME")
+          else if (type == "device_set_pin_name")
           {
             JsonArray &pinnames = root["pinnames"].as<JsonArray>();
             for (int i = 0; i < pinnames.size(); i++)

@@ -98,9 +98,9 @@ void OTA::checkUpdate(String url)
                     {
                           Update.printError(Serial);
                     }
-                    Serial.println(len);
-                    Serial.println(c);
-                    Serial.println(".");
+                    // Serial.println(len);
+                    // Serial.println(c);
+                    // Serial.println(".");
                     if (len > 0)
                     {
                         len -= c;

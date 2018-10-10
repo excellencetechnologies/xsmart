@@ -97,6 +97,8 @@ sendToDevice = (obj, ws, w) => {
 
 
 sendToApp = (obj, found, w) => {
+    console.log("sending to app");
+    console.log(obj);
     w.send(JSON.stringify({
         type: obj.type + "_reply",
         found: found,
@@ -137,6 +139,7 @@ sendNotifyToApp = (obj, ws, w) => {
 handleProtocol = async (obj, ws, w) => {
     let methods = [
         "device_pin_oper",
+        "device_set_pin_name",
         "device_bulk_pin_oper",
         "device_set_name",
         "device_set_add_employee",
@@ -199,10 +202,9 @@ ws.on('connection', function (w) {
 
     w.on('message', function (msg) {
         try {
-            console.log('message from client', msg);
             let obj = JSON.parse(msg);
-            console.log("device ping", obj);
             if (obj.type === "device_ping") {
+                console.log("device ping", obj);
                 //this is basically the event which a device like esp32, 8266 
                 // send every 1sec. this is ping from the device.
                 let chip = obj['chip'];

@@ -35,7 +35,7 @@ router.get('/', (req, res) => {
     } else {
         ping.isNew = false;
     }
-    res.status(200).json({ status: 1, message: "OK", data: ping });
+    res.status(200).json(ping);
 });
 
 router.get('/wifi', (req, res) => {
@@ -46,7 +46,7 @@ router.get('/wifi', (req, res) => {
         res.status(200).json({});
         return;
     }
-    res.status(200).json({ data: data.Wifi });
+    res.status(200).json(data.Wifi);
 });
 
 router.get('/wifisave', (req, res) => {
