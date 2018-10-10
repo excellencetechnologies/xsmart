@@ -51,7 +51,7 @@ export class AddDevicesComponent implements OnInit {
     const devicePingData = this.navParm.get('pingDevice')
     this.devicePing = devicePingData['pingDevice']
     if (this.devicePing) {
-      this.progressBarInfo = 20;
+      this.progressBarInfo = 40;
       this.progressBar.isDeviceConnected = true;
     }
   }
@@ -80,7 +80,7 @@ export class AddDevicesComponent implements OnInit {
         }
       };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        // await this.api.addDevices(newDevice);
+        await this.api.addDevices(newDevice);
         this.deviceService.addDevice(newDevice['meta']);
         this.notifyService.alertUser("Device added Successfully");
         if (newDevice) {
@@ -99,7 +99,7 @@ export class AddDevicesComponent implements OnInit {
         this.deviceService.setDevices(deviceData)
         this.notifyService.alertUser("Device Update Successfully");
         if (newDevice) {
-          this.progressBarInfo = 30;
+          this.progressBarInfo = 60;
           this.progressBar.isMessageSent=true;
         }
       }

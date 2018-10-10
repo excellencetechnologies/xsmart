@@ -6,6 +6,7 @@ import { Ping, Wifi, Device, Switch } from "../api/api"
 import { NotifyService } from '../api/notify.service';
 import { NavParams, ModalController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
+import { timer } from 'rxjs';
 @Component({
   selector: 'app-set-wifi-password',
   templateUrl: './set-wifi-password.component.html',
@@ -16,7 +17,6 @@ export class SetWifiPasswordComponent implements OnInit {
   passwordForm: FormGroup;
   loading: boolean;
   errorMessage: string;
-  loader: boolean;
   progressBarInfo: number = 0;
   isScanningDevice: boolean = false;
   ssid: any;
@@ -27,7 +27,7 @@ export class SetWifiPasswordComponent implements OnInit {
     private notifyService: NotifyService,
     private navParams: NavParams,
     public modalController: ModalController,
-    private deviceService: DeviceService
+    private deviceService: DeviceService,
   ) { }
 
   ngOnInit() {
@@ -41,7 +41,7 @@ export class SetWifiPasswordComponent implements OnInit {
   }
   getSsid() {
     this.ssid = this.navParams.get('ssid')
-    this.progressBarInfo = 30;
+    this.progressBarInfo = 60;
     this.progressBar.isDeviceConnected = true;
     this.progressBar.isMessageSent = true;
   }
@@ -56,12 +56,13 @@ export class SetWifiPasswordComponent implements OnInit {
     this.loading = true;
     try {
       this.loading = false;
-      this.passwordForm.reset();
       await this.api.setWifiPassword(this.ssid.wifi, formData.password);
       this.progressBarInfo = 100;
       this.progressBar.isNetworkConnect = true;
-      await this.modalController.dismiss();
-      await this.modalController.dismiss();
+      timer(10000).subscribe(() => {
+        this.modalController.dismiss();
+        this.modalController.dismiss();
+      });
       this.router.navigate(["/tabs"]);
     } catch (err) {
       this.loading = false;

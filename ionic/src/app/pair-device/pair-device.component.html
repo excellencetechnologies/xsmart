@@ -13,16 +13,19 @@
     <h3>Connect To Device</h3>
   </div>
   <div>
-    <circle-progress [percent]="10" [radius]="100" [outerStrokeWidth]="16" [innerStrokeWidth]="8" [outerStrokeColor]="'#6298ef'"
-      [innerStrokeColor]="'#EEE'" [animation]="true" [animationDuration]="300"></circle-progress>
+    <div text-center>
+      <circle-progress [percent]="20"></circle-progress>
+    </div>
     <p text-center>Bring device close to Router</p>
     <div class="loader">
       <p>
-        <ion-spinner class="loading" *ngIf="loader" name="crescent"></ion-spinner>Device Connected</p>
+        <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected</p>
       <p>
-        <ion-spinner class="loading" name="crescent"></ion-spinner>Message sent to device</p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
       <p>
-        <ion-spinner  class="loading" name="crescent"></ion-spinner>Connecting device to network</p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isNetworkConnect" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnect" name="crescent"></ion-spinner>Connecting device to network</p>
     </div>
     <p> Once the pair mode start on device,connect to the device wifi network</p>
     <p>A wifi network named</p>

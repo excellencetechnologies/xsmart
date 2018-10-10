@@ -19,8 +19,9 @@ export class PairDeviceComponent implements OnInit {
   devicePing: Ping;
   isScanningDevice: boolean = false;
   mode: String = "device";
-  loader:boolean=true;
+  loader: boolean = true;
   errorMessage: string;
+  progressBar: any;
   constructor(
     private router: Router,
     private api: ApiService,
@@ -30,6 +31,11 @@ export class PairDeviceComponent implements OnInit {
 
   ngOnInit() {
     this.scanDevice();
+    this.progressBar = {
+      isDeviceConnected: false,
+      isMessageSent: false,
+      isNetworkConnect: false
+    }
   }
   addDevice() {
     this.router.navigate(["/add-devices"]);
@@ -40,7 +46,7 @@ export class PairDeviceComponent implements OnInit {
     wifiCheckInterval = setInterval(async () => {
       try {
         const data = await this.api.checkPing();
-        this.loader=false;
+        this.loader = false;
         this.devicePing = data['data'];
         if (this.devicePing) {
           if (this.devicePing.name && this.devicePing.name.length > 0) {
@@ -50,6 +56,7 @@ export class PairDeviceComponent implements OnInit {
           }
         }
         this.isScanningDevice = false;
+        this.progressBar.isDeviceConnected = true;
         clearInterval(wifiCheckInterval);
         this.mode = "discovery";
         const data2 = { pingDevice: this.devicePing };
@@ -59,6 +66,7 @@ export class PairDeviceComponent implements OnInit {
         });
         return await modal.present();
       } catch (e) {
+        this.router.navigate(["/tabs"]);
         this.isScanningDevice = true;
         this.errorMessage = e;
       }

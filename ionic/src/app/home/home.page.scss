@@ -6,7 +6,7 @@
 }
 
 .grid-item-header {
-    border-bottom: thin solid #EEE;
+    border-bottom: thin solid var(--ion-color-light-tint);
 }
 
 .yellow {
@@ -50,17 +50,17 @@
 }
 
 .border {
-    border: thin solid blue;
+    border: thin solid var(--ion-color-primary-shade);
     border-radius: 2px;
 }
 
 .border ion-col:not(:last-child) {
-    border-right: thin solid blue
+    border-right: thin solid var(--ion-color-primary-shade)
 }
 
 .item-padding {
     padding: 6px;
-    color: gray;
+    color:var(--ion-color-medium-shade)
 }
 
 .content {
@@ -69,7 +69,7 @@
 }
 
 .devicename {
-    border-bottom: thin solid #EEE;
+    border-bottom: thin solid var(--ion-color-light-tint);
     font-size: 19px;
 }
 
@@ -78,7 +78,7 @@
 }
 
 .iconlevel {
-    margin-bottom: 9.2px;
+    vertical-align: middle;
     margin-left: 5px;
 }
 

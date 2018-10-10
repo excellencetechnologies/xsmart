@@ -3,13 +3,13 @@
 }
 
 .networklist {
-    border: thin solid #EEE;
+    border: thin solid var(--ion-color-light-tint);
     margin: unset;
 }
 
 .wifiNetwork {
     float: right;
-    color: gray;
+    color: var(--ion-color-light-tint);
 }
 
 .button-radius {
@@ -36,7 +36,6 @@
 }
 
 .checkMark {
-    color: green;
     margin: 0 7px
 }
 
@@ -44,6 +43,7 @@
     transform: scale(0.6);
     vertical-align: middle;
 }
-.loader{
-    color:gray;
+
+.loader {
+    color: var(--ion-color-medium-shade)
 }

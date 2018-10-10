@@ -13,17 +13,21 @@
     <h3>Pair devices</h3>
   </div>
   <div>
-    <circle-progress [percent]="0" [radius]="100" [outerStrokeWidth]="16" [innerStrokeWidth]="8" [outerStrokeColor]="'#6298ef'"
-      [innerStrokeColor]="'#EEE'" [animation]="true" [animationDuration]="300">
-    </circle-progress>
+    <div text-center>
+      <circle-progress [percent]="0">
+      </circle-progress>
+    </div>
     <p text-center>Bring device close to Router</p>
     <div class="loader">
       <p>
-        <ion-spinner class="loading" name="crescent"></ion-spinner>Device Connected</p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected</p>
       <p>
-        <ion-spinner class="loading" name="crescent"></ion-spinner>Message sent to device</p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
       <p>
-        <ion-spinner class="loading" name="crescent"></ion-spinner>Connecting device to network</p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isNetworkConnect" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnect" name="crescent"></ion-spinner>Connecting device to network</p>
     </div>
     <p> Turn on Access point on your device!</p>
     <p>Press the button on your device for 3 Sec and it should trun on the access point mode.</p>

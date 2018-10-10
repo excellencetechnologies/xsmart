@@ -56,12 +56,13 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     AppRoutingModule,
     NgCircleProgressModule.forRoot({
       // set defaults here
-      radius: 100,
-      outerStrokeWidth: 16,
+      radius: 60,
+      space: -10,
+      outerStrokeWidth: 10,
       innerStrokeWidth: 8,
-      outerStrokeColor: "#78C000",
-      innerStrokeColor: "#C7E596",
-      animationDuration: 300,
+      outerStrokeColor: "#488aff",
+      innerStrokeColor: "#f5f5f5",
+      animationDuration: 1000,
     })
     ],
   providers: [
