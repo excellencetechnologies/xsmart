@@ -62,6 +62,7 @@ export class SetWifiPasswordComponent implements OnInit {
       timer(10000).subscribe(() => {
         this.modalController.dismiss();
         this.modalController.dismiss();
+        this.modalController.dismiss();
       });
       this.router.navigate(["/tabs"]);
     } catch (err) {

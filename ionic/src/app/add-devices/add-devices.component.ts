@@ -8,8 +8,8 @@ import { ApiService } from '../api/api.service';
 import { HttpClient } from '@angular/common/http';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { newDevice } from '../components/model/user';
-import { SetWifiPasswordComponent } from '../set-wifi-password/set-wifi-password.component';
-
+import { timer } from 'rxjs';
+import { WifiNetworkComponent } from '../wifi-network/wifi-network.component';
 let wifiCheckInterval = null;
 @Component({
   selector: 'app-add-devices',
@@ -44,8 +44,7 @@ export class AddDevicesComponent implements OnInit {
       isNetworkConnect: false
     }
     this.getPingDevice()
-    this.createSetNameForm()
-    this.scanWifi()
+    this.createSetNameForm();
   }
   getPingDevice() {
     const devicePingData = this.navParm.get('pingDevice')
@@ -84,7 +83,7 @@ export class AddDevicesComponent implements OnInit {
         this.deviceService.addDevice(newDevice['meta']);
         this.notifyService.alertUser("Device added Successfully");
         if (newDevice) {
-          this.progressBarInfo = 30;
+          this.progressBarInfo = 60;
           this.progressBar.isMessageSent=true;
         }
       } else {
@@ -105,41 +104,17 @@ export class AddDevicesComponent implements OnInit {
       }
       this.router.navigate(["/add-devices"]);
       this.mode = "scan";
-      this.scanWifi();
     } catch (e) {
       this.errorMessage = e["error"];
       this.notifyService.alertUser("Please Provide valid unique chip ID");
-
     }
   }
   async scanWifi() {
-    try {
-
-      const resData = await this.api.getScanWifi();
-      this.wifinetworks = resData['data'].sort(function (RSSI1, RSSI2) {
-        if (RSSI1['RSSI'] > RSSI2['RSSI']) {
-          return -1;
-        } else if (RSSI1['RSSI'] < RSSI2['RSSI']) {
-          return 1;
-        } else {
-          return 0;
-        }
+      const modal1 = await this.modalController.create({
+        component:WifiNetworkComponent,
+        componentProps: {}
       });
-    } catch (e) {
-      this.errorMessage = e['error']
-      this.notifyService.alertUser("Can not get Wifi");
-      this.isScanningDevice = true;
-
-    }
-  }
-  async askWifiPassword(wifi) {
-    const data = { wifi: wifi.SSID };
-    const modal1 = await this.modalController.create({
-      component: SetWifiPasswordComponent,
-      componentProps: { ssid: data }
-    });
-    return await modal1.present();
-
+      return await modal1.present();
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {

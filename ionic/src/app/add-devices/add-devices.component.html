@@ -4,16 +4,13 @@
       <ion-back-button></ion-back-button>
     </ion-buttons>
     <ion-title>
-      Add Devices
+       Device Found
     </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding class="content">
   <div no-padding>
     <div padding-left>
-      <h3>
-        <b>Device Found</b>
-      </h3>
     </div>
     <div>
       <div class="content">
@@ -29,7 +26,6 @@
     <div text-center>
       <circle-progress [percent]="progressBarInfo"></circle-progress>
     </div>
-    <p text-center>Bring device close to Router</p>
     <div class="loader">
       <p>
         <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>

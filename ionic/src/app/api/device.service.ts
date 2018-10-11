@@ -131,7 +131,7 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
-    
+
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
         devices.push(device);
@@ -167,6 +167,7 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data);
+                // console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                     this._event.setDevices(res);
@@ -176,7 +177,8 @@ export class DeviceService {
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
-                } else if (res.type === "device_bulk_io_notify") {
+                }
+                else if (res.type === "device_bulk_io_notify") {
                     res.pins.forEach(async (p) => {
                         this.updateDevicePin(p.pin, p.status, res.chip, res.name);
                     })

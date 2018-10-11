@@ -1,0 +1,21 @@
+.networklist {
+    border: thin solid var(--ion-color-light-tint);
+    margin: unset;
+}
+
+.wifiNetwork {
+    float: right;
+    color: gray;;
+}
+.loading {
+    transform: scale(0.6);
+    vertical-align: middle;
+}
+.checkMark {
+    margin: 0 7px
+}
+
+.loading {
+    transform: scale(0.6);
+    vertical-align: middle;
+}

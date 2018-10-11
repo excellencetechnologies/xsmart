@@ -47,7 +47,7 @@ export class PairDeviceComponent implements OnInit {
       try {
         const data = await this.api.checkPing();
         this.loader = false;
-        this.devicePing = data['data'];
+        this.devicePing = data;
         if (this.devicePing) {
           if (this.devicePing.name && this.devicePing.name.length > 0) {
             this.devicePing.isNew = false;
