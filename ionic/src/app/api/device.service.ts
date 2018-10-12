@@ -6,6 +6,9 @@ import { Ping, Wifi, Device, Switch } from "../api/api"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
 import { ApiService } from './api.service';
+import { OnInit, EventEmitter } from '@angular/core';
+import { EventHandlerService } from './event-handler.service';
+
 let wifiCheckInterval = null;
 let socket = null;
 @Injectable({
@@ -24,6 +27,8 @@ export class DeviceService {
         private toastCtrl: ToastController,
         private notifyService: NotifyService,
         private api: ApiService,
+        private _event: EventHandlerService
+
     ) {
     }
     //random id to identify the current app
@@ -36,7 +41,7 @@ export class DeviceService {
     }
     async getDevices(): Promise<Device[]> {
         if (this.platform.is("mobile"))
-            return await this.nativeStorage.getItem('devices') as Device[];
+            return await (this.nativeStorage.getItem('devices')) as Device[];
         else {
             if (localStorage.getItem('devices')) {
                 return JSON.parse(localStorage.getItem('devices')) as Device[];
@@ -80,6 +85,7 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
+
     async updateDeviceNotFound(data) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
@@ -109,14 +115,23 @@ export class DeviceService {
                         "name": pin.name
                     }
                     device.switches.push(swtich);
-
                 })
-
             }
             return device;
         })
         await this.setDevices(devices);
     }
+    async updateDeviceName(chip: string, name: string) {
+        let devices = await this.getDevices();
+        devices = devices.map((device: Device) => {
+            if (device.chip === chip) {
+                device.name = name
+            }
+            return device;
+        })
+        this.setDevices(devices);
+    }
+    
     async addDevice(device: Device) {
         let devices: Device[] = await this.getDevices();
         devices.push(device);
@@ -125,8 +140,6 @@ export class DeviceService {
         } else {
             return localStorage.setItem('devices', JSON.stringify(devices));
         }
-
-
     }
     async deleteDevice(deleteDevice: Device) {
         let devices = await this.getDevices();
@@ -141,15 +154,8 @@ export class DeviceService {
     sendMessageToSocket(msg) {
         if (this.isSocketConnected) {
             socket.send(JSON.stringify(msg));
-
         } else {
-            // 5.9.144.226:9030
-            // http://192.168.1.114:9030/
-            if (localStorage.getItem('live') != undefined && JSON.parse(localStorage.getItem('live'))) {
-                socket = new WebSocket('ws://192.168.4.1');
-            }
-            else
-                socket = new WebSocket('ws://5.9.144.226:9030');
+            socket = new WebSocket('ws://5.9.144.226:9030');
             // Connection opened
             socket.addEventListener('open', (event) => {
                 this.isSocketConnected = true;
@@ -163,6 +169,7 @@ export class DeviceService {
                 let res = JSON.parse(event.data);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
+                    this._event.setDevices(res);
                 } else if (res.type === "device_pin_oper_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("operation sent to device");
@@ -254,13 +261,28 @@ export class DeviceService {
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
-                } else if (res.type == "device_set_name") {
+                } else if (res.type == "device_set_name_reply") {
                     if (res.found) {
-                        this.notifyService.alertUser("device name recived")
+                        this.notifyService.alertUser("opertaion send to device")
                     }
                     else {
-                        this.notifyService.alertUser("unable to reach device name");
+                        this.notifyService.alertUser("unable to reach device.device is not online");
+
                     }
+                }
+                else if (res.type === "device_set_name_notify") {
+                    this.updateDeviceName(res.chip, res.name)
+                }
+                else if (res.type == "set_switch_name_reply") {
+                    if (res.found) {
+                        this.notifyService.alertUser("opertaion send to device")
+                    }
+                    else {
+                        this.notifyService.alertUser("unable to reach device.device is not online");
+
+                    }
+                }
+                else if (res.type === "set_switch_name_notify") {
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();
@@ -282,12 +304,12 @@ export class DeviceService {
             });
         }
     }
-
     async updateDeviceStatus(data) {
         try {
             if (data.found) {
                 await this.updateDevice(data);
-            } else {
+            }
+            else {
                 await this.updateDeviceNotFound(data);
             }
             this.getDevices();
@@ -296,6 +318,12 @@ export class DeviceService {
             this.notifyService.alertUser("device not found");
         }
     }
+    async keepCheckingDeviceOnline() {
+        setTimeout(async () => {
+            this.keepCheckingDeviceOnline();
+        }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
+    }
 
 }
+
 

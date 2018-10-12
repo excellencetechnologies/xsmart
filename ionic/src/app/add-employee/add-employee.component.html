@@ -1,5 +1,8 @@
-<ion-header translucent>
+<ion-header>
   <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
     <ion-title>
       Add Employee
     </ion-title>
@@ -10,23 +13,28 @@
     <div padding-left>
       <h3>Add Employee</h3>
     </div>
-    <form class="form-horizontal">
+    <form class="form-horizontal" [formGroup]="employeeForm">
       <ion-row>
         <ion-col>
-          <ion-list class="login-Form">
-            <ion-label>Employee Id
+          <ion-list class="employeeForm">
+            <ion-label class="employeeId">Employee Id
             </ion-label>
             <ion-item>
-              <ion-input type="text" name="empId" required></ion-input>
+              <ion-input type="text" formControlName="emp_id" name="emp_Id" required></ion-input>
             </ion-item>
           </ion-list>
         </ion-col>
       </ion-row>
       <ion-col class="signup-col">
-        <ion-button expand="block" color="tirtary" fill="outline"> Next
+        <ion-button expand="block" color="tirtary" fill="outline" (click)="employeeData(employeeForm.value)"> Next
           <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
         </ion-button>
       </ion-col>
     </form>
+    <ion-label padding class="loder" expand="block" color="medium" fill="outline" >
+      <ion-icon mode="ios" class="logo" name="logo-ionic"></ion-icon>
+      Searching..<ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+    </ion-label>
+
   </div>
 </ion-content>
