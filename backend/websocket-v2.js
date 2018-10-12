@@ -46,20 +46,20 @@ checkLatestVersionOTA = (version, device, type) => {
     device = device.toLowerCase();
     let cacheKey = device + "-" + version + "-" + type;
     // console.log(cache.get(cacheKey), " cache value");
-    // if (cache.get(cacheKey)) {
-    //     return cache.get(cacheKey);
-    // }
+    if (cache.get(cacheKey)) {
+        return cache.get(cacheKey);
+    }
 
     let files = glob.sync("**/*.bin");
-    console.log(files, "files");
+    // console.log(files, "files");
     let ota = "";
     files.forEach((file) => {
         let dirPath = "ota/" + device + "/" + type + "/";
-        console.log(dirPath);
+        // console.log(dirPath);
         if (file.indexOf(dirPath) >= 0) {
             let name = file.replace(dirPath, "");
             name = name.replace(".bin", "");
-            console.log("name", name);
+            // console.log("name", name);
             if (semver.valid(name)) {
                 console.log("valid");
                 console.log(version);

@@ -1,8 +1,8 @@
-// #define ESP8266
-#define ESP32
+#define ESP8266
+// #define ESP32
 
-// #define ISACCESS 1
-#define ISSWITCH 1
+#define ISACCESS 1
+// #define ISSWITCH 1
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -41,11 +41,10 @@ const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g 
 #endif 
 //Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
 String version = "0.0.3";
-String webID = "ESP32";  //this should be some no to identify device type. there should be different between switch/access
 
 #ifdef ESP8266
 #define LEDPIN LED_BUILTIN
-
+String webID = "ESP8266";  //this should be some no to identify device type. there should be different between switch/access
 #ifdef ISACCESS
 #include "MFRC522.h"
 #include <access.h>
@@ -71,6 +70,7 @@ const byte interruptPin = 19;
 #endif
 
 #ifdef ESP32
+String webID = "ESP32";  //this should be some no to identify device type. there should be different between switch/access
 #define LEDPIN 12
 //this pint for lolin32 mini
 const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using

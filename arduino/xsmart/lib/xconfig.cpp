@@ -170,6 +170,7 @@ void XConfig::addWifiSSID(String ssid, String password)
   }
   else
   {
+    deleteWifiSSID(ssid);
     JsonArray &array1 = root["networks"];
     StaticJsonBuffer<100> jsonBuffer1;
     JsonObject &object1 = jsonBuffer1.createObject();
