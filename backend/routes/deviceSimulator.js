@@ -55,6 +55,7 @@ router.get('/wifisave', (req, res) => {
     }
     data.Wifi.forEach((wifi) => {
         res.status(200).json(wifi);
+        return;
         // if (wifi.SSID == req.query.ssid) {
         //     if (req.query.password == '123456789') {
         //         res.status(200).json(wifi);
