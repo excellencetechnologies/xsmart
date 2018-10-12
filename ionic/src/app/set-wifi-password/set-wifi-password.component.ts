@@ -17,10 +17,12 @@ export class SetWifiPasswordComponent implements OnInit {
   passwordForm: FormGroup;
   loading: boolean;
   errorMessage: string;
-  progressBarInfo: number = 0;
+  progressBarInfo: number = 80;
   isScanningDevice: boolean = false;
   ssid: any;
   progressBar: any;
+  public type = 'password';
+  public showPass = false;
   constructor(
     private router: Router,
     private api: ApiService,
@@ -41,7 +43,7 @@ export class SetWifiPasswordComponent implements OnInit {
   }
   getSsid() {
     this.ssid = this.navParams.get('ssid')
-    this.progressBarInfo = 60;
+    this.progressBarInfo = 80;
     this.progressBar.isDeviceConnected = true;
     this.progressBar.isMessageSent = true;
   }
@@ -62,6 +64,7 @@ export class SetWifiPasswordComponent implements OnInit {
       timer(10000).subscribe(() => {
         this.modalController.dismiss();
         this.modalController.dismiss();
+        this.modalController.dismiss();
       });
       this.router.navigate(["/tabs"]);
     } catch (err) {
@@ -69,4 +72,13 @@ export class SetWifiPasswordComponent implements OnInit {
       this.errorMessage = err['error'];
     }
   }
+  showPassword() {
+    this.showPass = !this.showPass;
+    if (this.showPass) {
+      this.type = 'text';
+    } else {
+      this.type = 'password';
+    }
+  }
+
 }

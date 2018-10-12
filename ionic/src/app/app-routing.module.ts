@@ -13,6 +13,7 @@ import { AddEmployeeComponent } from './add-employee/add-employee.component';
 import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
+import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
 const routes: Routes = [
   { path: "", redirectTo: "login", pathMatch: "full" },
   { path: "login", canActivate: [AuthGuard],component: LoginComponent },
@@ -27,6 +28,7 @@ const routes: Routes = [
   { path :"view-employee",canActivate:[AuthGuard],component:ViewEmployeeComponent},
   { path:"setting",canActivate:[AuthGuard],component:SettingComponent},
   { path:"add-devices",canActivate:[AuthGuard],component:AddDevicesComponent},
+  { path:"wifi-network",canActivate:[AuthGuard],component:WifiNetworkComponent},
   { path: '',canActivate: [AuthGuard], loadChildren: './tabs/tabs.module#TabsPageModule' },
 ];
 @NgModule({

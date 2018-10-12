@@ -32,6 +32,7 @@ export class HomePage implements OnInit {
   live: boolean = false;
   time: any;
   deviceSubscription: any;
+  deviceONOFF = false;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -70,6 +71,10 @@ export class HomePage implements OnInit {
       if (liveStatus != undefined)
         this.live = liveStatus;
     }
+    this.deviceSubscription = this._event.devices.subscribe(async (res) => {
+      this.time = res.deviceTime;
+      this.devices = await this.deviceService.getDevices();
+    })
   }
 
   async onliveMode() {
@@ -106,7 +111,7 @@ export class HomePage implements OnInit {
   }
   async set_switch_name(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
-      type: "set_switch_name",
+      type: "device_set_pin_name",
       chip: d.chip,
       pin: s.pin,
       status: "HIGH",
@@ -120,10 +125,6 @@ export class HomePage implements OnInit {
     if (this.devices.length > 0) {
       this.keepCheckingDeviceOnline();
     }
-    this.deviceSubscription = this._event.devices.subscribe(async (res) => {
-      this.time = res.deviceTime;
-      this.devices = await this.deviceService.getDevices();
-    })
   }
   trackByDevice(device: Device) {
     return device.chip;

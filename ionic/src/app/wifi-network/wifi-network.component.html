@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Getting wifi Network
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <div text-center>
+    <circle-progress [percent]="progressBarInfo"></circle-progress>
+  </div>
+  <div class="loader">
+    <p>
+      <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>
+      <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected
+    </p>
+    <p>
+      <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
+      <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
+    <p>
+      <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnected" name="crescent"></ion-spinner>Connecting device to network</p>
+  </div>
+  <div>
+    <ion-list class="networklist" *ngFor="let wifi of wifinetworks">
+      <ion-item class="listPassword" (click)="askWifiPassword(wifi)">
+        <ion-icon slot="start" mode="ios" name="wifi"></ion-icon>
+        <ion-label class="wifiSSid"> {{wifi.SSID}}</ion-label>
+        <ion-label sl ot="end" color="stable">
+          <div no-padding class="wifiNetwork">
+            {{wifi.RSSI >= -50 ? 'Strong' : (wifi.RSSI >= -60 && wifi.RSSI
+            < -50) ? 'Good' : (wifi.RSSI>= -70 && wifi.RSSI
+              < -60) ? 'Fair' : 'Weak'}} </div>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+    </div>
+</ion-content>

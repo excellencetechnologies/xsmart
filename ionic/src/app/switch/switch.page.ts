@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component ,OnInit, EventEmitter } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -7,6 +7,7 @@ import { AlertController, MenuController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
 import { Device } from "../api/api"
 import { Ping, Wifi, Switch } from "../api/api"
+import { EventHandlerService } from '../api/event-handler.service';
 @Component({
   selector: 'app-about',
   templateUrl: 'switch.page.html',
@@ -14,19 +15,21 @@ import { Ping, Wifi, Switch } from "../api/api"
 })
 export class switchPage {
   loading: boolean;
-  device: Device[] = [];
+  devices: Device[] = [];
   errorMessage: string;
   devicePing: Ping;
   mode: String = "device";
   xSmartConnect: boolean = false;
   isSocketConnected: boolean = false;
-
+  deviceSubscription: any;
   ngOnInit() {
     this.getDevice();
+    this.checkExistingDevice();
     this.router.events
       .subscribe((event) => {
         if (event instanceof NavigationEnd) {
           this.getDevice();
+          this.checkExistingDevice();
         }
       });
   }
@@ -38,14 +41,15 @@ export class switchPage {
     private api: ApiService,
     public alertController: AlertController,
     private deviceService: DeviceService,
-    private menuController: MenuController
+    private menuController: MenuController,
+    private _event: EventHandlerService
   ) { }
   async getDevice() {
     this.loading = true;
     try {
-      this.device = await this.deviceService.getDevices();
+      this.devices = await this.deviceService.getDevices();
       this.loading = false;
-      if (this.device.length > 0) {
+      if (this.devices.length > 0) {
         this.keepCheckingDeviceOnline();
       }
     } catch (err) {
@@ -63,12 +67,6 @@ export class switchPage {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    if (this.keepCheckingDeviceOnline()) {
-      s.status = 0
-    }
-    else {
-      s.status != 0
-    }
   }
   async switchOn(s: Switch, d: Device) {
     this.deviceService.sendMessageToSocket({
@@ -80,12 +78,6 @@ export class switchPage {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
-    if (this.keepCheckingDeviceOnline()) {
-      s.status = 1
-    }
-    else {
-      s.status != 1
-    }
   }
   trackByDevice(device: Device) {
     return device.chip;
@@ -100,13 +92,16 @@ export class switchPage {
     }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
   }
   async checkExistingDevice() {
-    this.device = await this.deviceService.getDevices();
-    if (this.device.length > 0) {
+    this.devices = await this.deviceService.getDevices();
+    if (this.devices.length > 0) {
       this.keepCheckingDeviceOnline();
     }
+    this.deviceSubscription = this._event.devices.subscribe(async (res) => {
+      this.devices = await this.deviceService.getDevices();
+    })
   }
   async pingDevices() {
-    this.device.forEach(async (device) => {
+    this.devices.forEach(async (device) => {
       this.deviceService.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
