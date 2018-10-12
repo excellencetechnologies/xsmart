@@ -21,7 +21,7 @@ export class AddDevicesComponent implements OnInit {
   wifinetworks: Wifi[] = [];
   devices: Device[] = [];
   devicePing: Ping;
-  progressBarInfo: number = 0;
+  progressBarInfo: number = 40;
   isScanningDevice: boolean = false;
   mode: String = "device";
   errorMessage: string;

@@ -66,7 +66,6 @@ export class PairDeviceComponent implements OnInit {
         });
         return await modal.present();
       } catch (e) {
-        this.router.navigate(["/tabs"]);
         this.isScanningDevice = true;
         this.errorMessage = e;
       }

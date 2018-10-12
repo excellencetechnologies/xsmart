@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component ,OnInit, EventEmitter } from '@angular/core';
 import { ApiService } from '../api/api.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -7,6 +7,7 @@ import { AlertController, MenuController } from '@ionic/angular';
 import { DeviceService } from '../api/device.service';
 import { Device } from "../api/api"
 import { Ping, Wifi, Switch } from "../api/api"
+import { EventHandlerService } from '../api/event-handler.service';
 @Component({
   selector: 'app-about',
   templateUrl: 'switch.page.html',
@@ -20,13 +21,15 @@ export class switchPage {
   mode: String = "device";
   xSmartConnect: boolean = false;
   isSocketConnected: boolean = false;
-
+  deviceSubscription: any;
   ngOnInit() {
     this.getDevice();
+    this.checkExistingDevice();
     this.router.events
       .subscribe((event) => {
         if (event instanceof NavigationEnd) {
           this.getDevice();
+          this.checkExistingDevice();
         }
       });
   }
@@ -38,7 +41,8 @@ export class switchPage {
     private api: ApiService,
     public alertController: AlertController,
     private deviceService: DeviceService,
-    private menuController: MenuController
+    private menuController: MenuController,
+    private _event: EventHandlerService
   ) { }
   async getDevice() {
     this.loading = true;
@@ -92,6 +96,9 @@ export class switchPage {
     if (this.devices.length > 0) {
       this.keepCheckingDeviceOnline();
     }
+    this.deviceSubscription = this._event.devices.subscribe(async (res) => {
+      this.devices = await this.deviceService.getDevices();
+    })
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {

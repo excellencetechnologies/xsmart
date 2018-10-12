@@ -64,7 +64,7 @@ import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
       innerStrokeWidth: 8,
       outerStrokeColor: "#488aff",
       innerStrokeColor: "#f5f5f5",
-      animationDuration: 1000,
+      animationDuration: 100,
     })
     ],
   providers: [

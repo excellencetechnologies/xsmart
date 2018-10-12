@@ -167,7 +167,7 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data);
-                // console.log(res);
+                console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
                     this._event.setDevices(res);
@@ -185,11 +185,13 @@ export class DeviceService {
                     //this is not working. the ui doesn't update all the pin status
                     await this.getDevices();
                     this.notifyService.alertUser("device performed the action!");
-                } else if (res.type === "device_io_notify") {
+                }
+                else if (res.type === "device_io_notify") {
                     await this.updateDevicePin(res.pin, res.status, res.chip, res.name);
                     await this.getDevices();
                     this.notifyService.alertUser("device performed the action!");
-                } else if (res.type === "device_bulk_pin_oper_reply") {
+                }
+                else if (res.type === "device_bulk_pin_oper_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("operation sent to device");
                     } else {
@@ -275,7 +277,7 @@ export class DeviceService {
                 else if (res.type === "device_set_name_notify") {
                     this.updateDeviceName(res.chip, res.name)
                 }
-                else if (res.type == "set_switch_name_reply") {
+                else if (res.type == "device_set_pin_name_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("opertaion send to device")
                     }
@@ -284,7 +286,8 @@ export class DeviceService {
 
                     }
                 }
-                else if (res.type === "set_switch_name_notify") {
+                else if (res.type === "device_set_pin_name_notify") {
+                    await this.updateDevicePin(res.pin, res.status, res.chip, res.name);
                 }
                 else if (res.type === "device_get_time_notify") {
                     let deviceTime = new Date(res.data).getTime();

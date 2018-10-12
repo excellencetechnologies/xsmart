@@ -14,7 +14,7 @@ import { SetWifiPasswordComponent } from '../set-wifi-password/set-wifi-password
 export class WifiNetworkComponent implements OnInit {
   isScanningDevice: boolean = false;
   wifinetworks: Wifi[] = [];
-  progressBarInfo: number = 0;
+  progressBarInfo: number = 60;
   progressBar: any;
   errorMessage: string;
   constructor(
@@ -28,7 +28,7 @@ export class WifiNetworkComponent implements OnInit {
 
   ngOnInit() {
     this.scanWifi();
-    this.progressBarInfo = 0;
+    this.progressBarInfo = 60;
     this.progressBar = {
       isDeviceConnected: false,
       isMessageSent: false,
@@ -47,7 +47,7 @@ export class WifiNetworkComponent implements OnInit {
           return 0;
         }
       });
-      this.progressBarInfo = 80;
+      this.progressBarInfo = 60;
       this.progressBar.isMessageSent = true;
       this.progressBar.isDeviceConnected = true;
     } catch (e) {
