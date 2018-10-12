@@ -30,6 +30,7 @@ import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
+import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -45,6 +46,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
     ViewEmployeeComponent,
     SettingComponent,
     AddDevicesComponent,
+    WifiNetworkComponent,
   ],
   entryComponents: [],
   imports: [BrowserModule,
@@ -62,7 +64,7 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
       innerStrokeWidth: 8,
       outerStrokeColor: "#488aff",
       innerStrokeColor: "#f5f5f5",
-      animationDuration: 1000,
+      animationDuration: 100,
     })
     ],
   providers: [

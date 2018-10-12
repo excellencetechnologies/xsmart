@@ -15,12 +15,14 @@
     </ion-item>
   </ion-list>
   <div *ngIf="mode === 'device'">
-    <div class="device">
-      <h3 class="yourDevice">
+    <div class="device" >
+      <h3 class="yourDevice" *ngIf="devices.length">
         Your Devices
       </h3>
       <div *ngIf="!devices.length">
-        No Devices Found!
+        <h3 class="yourDevice" padding>
+          No Devices Found!
+        </h3>
       </div>
       <ion-button class="button-radius" (click)="scanDevice()" expand="block" color="primary">Scan For devices</ion-button>
     </div>
@@ -37,16 +39,17 @@
         </ion-list>
         <ion-list class="grid-item-header">
           <ion-item class="grid-item-header">
-            <ion-label sloat="start"><b>Device ID:</b>
+            <ion-label sloat="start">
+              <b>Device ID:</b>
               <span class="item">{{device.device_id}}</span>
             </ion-label>
             <ion-label class="time">{{time}}</ion-label>
           </ion-item>
         </ion-list>
         <ion-list class="grid-item-header" *ngIf="device && device.type !='access'">
-          <ion-item class="grid-item-header" *ngFor="let switch of device.switches; trackBy: trackBySwitch">
+          <ion-item class="grid-item-header" *ngFor="let switch of device.switches; trackBy: trackBySwitch; let i = index">
             <ion-icon [ngClass]="{'blue' : switch.status}" slot="start" mode="ios" name="bulb"></ion-icon>
-            <span (click)="setSwitchName(switch, device)" [ngClass]="{'blue' : switch.status}">{{switch.name}}</span>
+            <span (click)="setSwitchName(switch, device)" [ngClass]="{'blue' : switch.status}">{{(switch.name && switch.name.length) ? switch.name : 'Switch ' + (i+1) }}</span>
             <ion-buttons slot="start">
               <ion-button slot="icon-only" (click)="switchOn(switch,device)" *ngIf="switch.status === 0" color="medium">
                 <ion-icon name="power" mod="md"></ion-icon>
