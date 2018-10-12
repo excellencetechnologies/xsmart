@@ -88,6 +88,8 @@ sendToDevice = (obj, ws, w) => {
     let found = false;
     ws.clients.forEach((client) => {
         if (client.chip && client.chip === chip) {
+            console.log("sending to chip " + chip);
+            console.log(obj);
             client.send(JSON.stringify(obj));
             found = true;
         }
