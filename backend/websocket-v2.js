@@ -173,6 +173,7 @@ handleProtocol = async (obj, ws, w) => {
         } else if (obj.stage === "employee_add_failed") {
             sendNotifyToApp(obj, ws, w);
         } else if (obj.stage = "employee_add_success") {
+            console.log("employee adding to db");
             Card.findOneAndUpdate({
                 chip: obj["chip"],
                 emp_id: obj['emp_id'],
