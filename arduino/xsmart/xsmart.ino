@@ -1,8 +1,8 @@
-#define ESP8266
-// #define ESP32
+// #define ESP8266
+#define ESP32
 
-#define ISACCESS 1
-// #define ISSWITCH 1
+// #define ISACCESS 1
+#define ISSWITCH 1
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
@@ -33,18 +33,18 @@ OTA update = OTA();
 
 #ifdef ISSWITCH
 const bool canWorkWithoutWifi = false; //i.e should device work without wifi e.g access control can work offline
-#endif 
+#endif
 
 #ifdef ISACCESS
 const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g access control can work offline
 
-#endif 
-//Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder 
+#endif
+//Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder
 String version = "0.0.3";
 
 #ifdef ESP8266
 #define LEDPIN LED_BUILTIN
-String webID = "ESP8266";  //this should be some no to identify device type. there should be different between switch/access
+String webID = "ESP8266"; //this should be some no to identify device type. there should be different between switch/access
 #ifdef ISACCESS
 #include "MFRC522.h"
 #include <access.h>
@@ -70,7 +70,7 @@ const byte interruptPin = 19;
 #endif
 
 #ifdef ESP32
-String webID = "ESP32";  //this should be some no to identify device type. there should be different between switch/access
+String webID = "ESP32"; //this should be some no to identify device type. there should be different between switch/access
 #define LEDPIN 12
 //this pint for lolin32 mini
 const int PINS[] = {13, 15, 2, 4, 18, 23, 5}; // these are pins from nodemcu we are using
@@ -139,7 +139,7 @@ void startWifiAP()
     WiFi.mode(WIFI_AP_STA);
     AP_STARTED = 1;
 
-      //  WiFi.config(ip, gateway, subnet);
+    //  WiFi.config(ip, gateway, subnet);
 
     Serial.println(device_ssid);
     Serial.println("Configuring  access point for wifi network ...");
@@ -157,13 +157,13 @@ void startWifiAP()
 
     server.on("/", HTTP_GET, []() {
       Serial.println("ping");
-      String name = xconfig.getNickName();
+      // String name = xconfig.getNickName();
 
       StaticJsonBuffer<512> jsonBuffer;
       JsonObject &root = jsonBuffer.createObject();
       root["webid"] = webID;
       root["chip"] = device_ssid;
-      root["name"] = name;
+      // root["name"] = name;
       root["version"] = version;
 #ifdef ISACCESS
       root["type"] = "access";
@@ -236,17 +236,17 @@ void startWifiAP()
       server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", json);
     });
-    server.on("/setnickname", HTTP_GET, []() {
-      if (server.args() == 0)
-        return server.send(500, "text/plain", "BAD ARGS");
+    // server.on("/setnickname", HTTP_GET, []() {
+    //   if (server.args() == 0)
+    //     return server.send(500, "text/plain", "BAD ARGS");
 
-      String name = server.arg("name");
-      xconfig.setNickName(name);
+    //   String name = server.arg("name");
+    //   xconfig.setNickName(name);
 
-      server.sendHeader("Access-Control-Allow-Origin", "*");
-      server.sendHeader("Access-Control-Allow-Methods", "*");
-      server.send(200, "application/json", "{ \"name\": \" " + xconfig.getNickName() + " \" }");
-    });
+    //   server.sendHeader("Access-Control-Allow-Origin", "*");
+    //   server.sendHeader("Access-Control-Allow-Methods", "*");
+    //   server.send(200, "application/json", "{ \"name\": \" " + xconfig.getNickName() + " \" }");
+    // });
 
     server.on("/wifisave", HTTP_GET, []() {
       store_wifi_api_connect_result = -1;
@@ -387,9 +387,12 @@ void connectWifi()
     Serial.println("switching to ap mode, since no wifi details found");
     current_wifi_status = WIFI_AP_MODE;
     return;
-  }else{
-    for (auto kv : savedwifi) {
-      wifiMulti.addAP(kv.key, kv.value.as<char*>());
+  }
+  else
+  {
+    for (auto kv : savedwifi)
+    {
+      wifiMulti.addAP(kv.key, kv.value.as<char *>());
     }
   }
 
@@ -417,7 +420,11 @@ void connectWifi()
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
-    configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
+    // if(config.getDeviceTimezone() != 0){
+      // configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
+    // }else{
+      configTime(5.5 * 60 * 60, 0, "pool.ntp.org", "time.nist.gov");
+    // }
   }
   delay_connect_wifi = 5000;
   delay(delay_connect_wifi);
@@ -629,7 +636,7 @@ void checkCardEmployee(String uid)
     root["emp_id"] = emp_id;
 
     time_t now = time(nullptr);
-    struct tm * p = localtime(&now);
+    struct tm *p = localtime(&now);
     char s[1000];
     strftime(s, 1000, "%X-%x", p);
     Serial.print(s);
@@ -649,38 +656,39 @@ void checkCardEmployee(String uid)
 }
 #endif
 #ifdef ISSWITCH
-void sendPinNamePack()
-{
-  ping_packet_count = 0;
-  StaticJsonBuffer<500> jsonBuffer;
-  JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_pin_name";
-  root["stage"] = "success";
-  root["WEBID"] = webID;
-  root["chip"] = device_ssid;
+// void sendPinNamePack()
+// {
+//   ping_packet_count = 0;
+//   StaticJsonBuffer<500> jsonBuffer;
+//   JsonObject &root = jsonBuffer.createObject();
+//   root["type"] = "device_set_pin_name";
+//   root["stage"] = "success";
+//   root["WEBID"] = webID;
+//   root["chip"] = device_ssid;
 
-  JsonArray &pins = root.createNestedArray("PINS");
+//   JsonArray &pins = root.createNestedArray("PINS");
 
-  StaticJsonBuffer<200> jsonBuffer5;
-  for (int i = 0; i < PIN_SIZE; i++)
-  {
-    String pin_name = xconfig.getPinName(PINS[i]);
-    if(pin_name.length() > 0 ){
-      JsonObject &pin = jsonBuffer5.createObject();
-      pin["pin"] = PINS[i];
-      pin["status"] = PINS_STATUS[i];
-      pin["name"] = pin_name;
-      pins.add(pin);
-    }
-  }
+//   StaticJsonBuffer<200> jsonBuffer5;
+//   for (int i = 0; i < PIN_SIZE; i++)
+//   {
+//     // String pin_name = xconfig.getPinName(PINS[i]);
+//     if (pin_name.length() > 0)
+//     {
+//       JsonObject &pin = jsonBuffer5.createObject();
+//       pin["pin"] = PINS[i];
+//       pin["status"] = PINS_STATUS[i];
+//       // pin["name"] = pin_name;
+//       pins.add(pin);
+//     }
+//   }
 
-  String json = "";
-  root.printTo(json);
-  Serial.println(json);
-  webSocketClient.sendData(json);
-  delay(10);
-  ping_packet_count++;
-}
+//   String json = "";
+//   root.printTo(json);
+//   Serial.println(json);
+//   webSocketClient.sendData(json);
+//   delay(10);
+//   ping_packet_count++;
+// }
 void sendBulkIOPack()
 {
   ping_packet_count = 0;
@@ -741,7 +749,7 @@ void pingPacket()
     root["version"] = version;
     root["chip"] = device_ssid;
     time_t now = time(nullptr);
-    struct tm * p = localtime(&now);
+    struct tm *p = localtime(&now);
     char s[1000];
     strftime(s, 1000, "%c", p);
     root["deviceTime"] = s;
@@ -753,12 +761,13 @@ void pingPacket()
 #endif
     JsonArray &pins = root.createNestedArray("PINS");
 
-    StaticJsonBuffer<300> jsonBuffer5;
+    StaticJsonBuffer<512> jsonBuffer5;
     for (int i = 0; i < PIN_SIZE; i++)
     {
       JsonObject &pin = jsonBuffer5.createObject();
       pin["pin"] = PINS[i];
       pin["status"] = PINS_STATUS[i];
+      // pin["name"] = xconfig.getPinName(PINS[i]);
       pins.add(pin);
     }
 
@@ -939,8 +948,8 @@ void setup()
 
   // Serial.println(xconfig.getPinName(5));
 
-  Serial.println("device name");
-  Serial.println(xconfig.getNickName());
+  // Serial.println("device name");
+  // Serial.println(xconfig.getNickName());
 
   pinMode(interruptPin, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(interruptPin), handleInterrupt, CHANGE);
@@ -1075,12 +1084,13 @@ void loop()
           root.printTo(Serial);
           String type = root["type"];
 
-          if (type == "device_set_name")
-          {
-            xconfig.setNickName(root.get<String>("name"));
-            sendNamePack(root.get<String>("name"));
-          }
-          else if (type == "device_set_time")
+          // if (type == "device_set_name")
+          // {
+          //   xconfig.setNickName(root.get<String>("name"));
+          //   sendNamePack(root.get<String>("name"));
+          // }
+          // else 
+          if (type == "device_set_time")
           {
             int diff = root.get<int>("diff");
             xconfig.setDeviceTimezone(diff);
@@ -1095,7 +1105,8 @@ void loop()
             Serial.println(ctime(&now));
             configTime(0, 0, "pool.ntp.org", "time.nist.gov");
             sendDeviceTime(ctime(&now), "device_get_time");
-          }else if (type == "OK")
+          }
+          else if (type == "OK")
           {
             // if(root.get<String>("ota").length() > 0){
             //   update.checkUpdate(root.get<String>("ota"));
@@ -1134,17 +1145,11 @@ void loop()
             }
             sendBulkIOPack();
           }
-          else if (type == "device_set_pin_name")
-          {
-            // JsonArray &pinnames = root["pinnames"].as<JsonArray>();
-            // for (int i = 0; i < pinnames.size(); i++)
-            // {
-            //   JsonObject &obj = pinnames[i].as<JsonObject>();
-            //   xconfig.setPinName(obj.get<int>("pin"), obj.get<String>("name"));
-            // }
-            xconfig.setPinName(root.get<int>("pin"), root.get<String>("name"));
-            sendPinNamePack();
-          }
+          // else if (type == "device_set_pin_name")
+          // {
+          //   xconfig.setPinName(root.get<int>("pin"), root.get<String>("name"));
+          //   sendPinNamePack();
+          // }
 #endif
 #ifdef ISACCESS
           if (type == "device_set_add_employee")

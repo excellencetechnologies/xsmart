@@ -217,38 +217,38 @@ int XConfig::getDeviceTimezone()
   }
 }
 
-void XConfig::setNickName(String deviceName)
-{
-  P("setNickName");
-  String file = loadConfigFile();
-  P(file);
-  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
-  JsonObject &root = jsonBuffer.parseObject(file);
+// void XConfig::setNickName(String deviceName)
+// {
+//   P("setNickName");
+//   String file = loadConfigFile();
+//   P(file);
+//   StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+//   JsonObject &root = jsonBuffer.parseObject(file);
 
-  root["nickname"] = deviceName;
+//   root["nickname"] = deviceName;
 
-  root.printTo(Serial);
-  file = "";
-  root.printTo(file);
-  saveConfigFile(file.c_str());
-}
-String XConfig::getNickName()
-{
-  P("getNickName");
-  String file = loadConfigFile();
-  P(file);
-  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
-  JsonObject &root = jsonBuffer.parseObject(file);
-  String nick = root.get<String>("nickname");
-  if (nick)
-  {
-    return nick;
-  }
-  else
-  {
-    return "";
-  }
-}
+//   root.printTo(Serial);
+//   file = "";
+//   root.printTo(file);
+//   saveConfigFile(file.c_str());
+// }
+// String XConfig::getNickName()
+// {
+//   P("getNickName");
+//   String file = loadConfigFile();
+//   P(file);
+//   StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+//   JsonObject &root = jsonBuffer.parseObject(file);
+//   String nick = root.get<String>("nickname");
+//   if (nick)
+//   {
+//     return nick;
+//   }
+//   else
+//   {
+//     return "";
+//   }
+// }
 JsonArray &XConfig::getPinConfig()
 {
   P("getPinConfig");
@@ -302,89 +302,90 @@ void XConfig::setPinConfig(JsonArray &pinsConfig)
   saveConfigFile(file.c_str());
 }
 
-String XConfig::getPinName(int pin)
-{
-  P("getPinName");
-  String file = loadConfigFile();
-  P(file);
-  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
-  JsonObject &root = jsonBuffer.parseObject(file);
+// String XConfig::getPinName(int pin)
+// {
+//   P("getPinName");
+//   String file = loadConfigFile();
+//   P(file);
+//   StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+//   JsonObject &root = jsonBuffer.parseObject(file);
 
-  root.printTo(Serial);
+//   root.printTo(Serial);
 
-  JsonArray &array1 = root["switches"].as<JsonArray>();
+//   JsonArray &array1 = root["switches"].as<JsonArray>();
 
-  String pinName = "";
+//   String pinName = "";
 
-  for (int i = 0; i < array1.size(); i++)
-  {
-    JsonObject &obj = array1[i].as<JsonObject>();
-    P(obj["pin"].as<char *>());
-    if (pin == obj["pin"].as<int>())
-    {
-      pinName = obj["name"].as<String>();
-    }
-  }
-  return pinName;
-}
-void XConfig::setPinName(int pin, String name)
-{
-  P("setPinName");
-  String file = loadConfigFile();
-  P(file);
-  StaticJsonBuffer<JSON_SIZE> jsonBuffer;
-  JsonObject &root = jsonBuffer.parseObject(file);
+//   for (int i = 0; i < array1.size(); i++)
+//   {
+//     JsonObject &obj = array1[i].as<JsonObject>();
+//     P(obj["pin"].as<char *>());
+//     if (pin == obj["pin"].as<int>())
+//     {
+//       pinName = obj["name"].as<String>();
+//     }
+//   }
+//   return pinName;
+// }
+// void XConfig::setPinName(int pin, String name)
+// {
+//   P("setPinName");
+//   String file = loadConfigFile();
+//   P(file);
+//   StaticJsonBuffer<JSON_SIZE> jsonBuffer;
+//   JsonObject &root = jsonBuffer.parseObject(file);
 
-  JsonVariant switches = root["switches"];
+//   JsonVariant switches = root["switches"];
 
-  if (!switches)
-  {
-    P("no switches in config file");
-    JsonArray &array1 = root.createNestedArray("switches");
-    StaticJsonBuffer<200> jsonBuffer1;
-    JsonObject &object1 = jsonBuffer1.createObject();
-    object1["pin"] = pin;
-    object1["name"] = name;
-    array1.add(object1);
-  }
-  else
-  {
+//   if (!switches)
+//   {
+//     P("no switches in config file");
+//     JsonArray &array1 = root.createNestedArray("switches");
+//     StaticJsonBuffer<200> jsonBuffer1;
+//     JsonObject &object1 = jsonBuffer1.createObject();
+//     object1["pin"] = pin;
+//     object1["name"] = name;
+//     array1.add(object1);
+//   }
+//   else
+//   {
 
-    //first delete
+//     //first delete
 
-    JsonArray &array1 = root["switches"].as<JsonArray>();
+//     JsonArray &array1 = root["switches"].as<JsonArray>();
 
-    StaticJsonBuffer<500> jsonBuffer2;
-    JsonArray &networks = jsonBuffer2.createArray();
+//     StaticJsonBuffer<500> jsonBuffer2;
+//     JsonArray &networks = jsonBuffer2.createArray();
 
-    for (int i = 0; i < array1.size(); i++)
-    {
-      JsonObject &obj = array1[i].as<JsonObject>();
-      P(obj["pin"].as<char *>());
-      if (pin != obj["pin"].as<int>())
-      {
-        StaticJsonBuffer<100> jsonBuffer1;
-        JsonObject &object1 = jsonBuffer1.createObject();
-        object1["pin"] = obj["pin"].as<int>();
-        object1["name"] = obj["name"].as<String>();
-        networks.add(object1);
-      }
-    }
+//     for (int i = 0; i < array1.size(); i++)
+//     {
+//       JsonObject &obj = array1[i].as<JsonObject>();
+//       P(obj["pin"].as<char *>());
+//       StaticJsonBuffer<500> jsonBuffer1;
+//       if (pin != obj["pin"].as<int>())
+//       {
+        
+//         JsonObject &object1 = jsonBuffer1.createObject();
+//         object1["pin"] = obj["pin"].as<int>();
+//         object1["name"] = obj["name"].as<String>();
+//         networks.add(object1);
+//       }
+//     }
 
-    StaticJsonBuffer<100> jsonBuffer1;
-    JsonObject &object1 = jsonBuffer1.createObject();
-    object1["pin"] = pin;
-    object1["name"] = name;
-    networks.add(object1);
+//     StaticJsonBuffer<100> jsonBuffer1;
+//     JsonObject &object1 = jsonBuffer1.createObject();
+//     object1["pin"] = pin;
+//     object1["name"] = name;
+//     networks.add(object1);
 
-    root.set("switches", networks);
-  }
+//     root.set("switches", networks);
+//   }
 
-  root.printTo(Serial);
-  file = "";
-  root.printTo(file);
-  saveConfigFile(file.c_str());
-}
+//   root.printTo(Serial);
+//   file = "";
+//   root.printTo(file);
+//   saveConfigFile(file.c_str());
+// }
 
 void XConfig::P(String msg)
 {

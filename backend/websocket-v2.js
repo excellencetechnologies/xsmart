@@ -41,6 +41,7 @@ const ws = new WebSocket.Server({ server });
 
 var Card = require("./model/card");
 var Attendance = require("./model/attendance");
+var Device = require("./model/Device");
 
 
 let devices = {};
@@ -165,6 +166,46 @@ handleProtocol = async (obj, ws, w) => {
             })
         }
     }
+    if (obj.type === "device_set_pin_name") {
+        if (obj.stage === "init") {
+            let device = await Device.findOne({
+                chip: obj["chip"]
+            }).lean().exec();
+
+            if (!device.meta.pins) {
+                device.meta.pins = {};
+            }
+            device.meta.pins[obj['pin']] = obj['name'];
+            await Device.update({
+                chip: device.chip
+            }, {
+                    $set: {
+                        meta: device.meta
+                    }
+                });
+            sendNotifyToApp(obj, ws, w);
+
+        }
+        return;
+    }
+    if (obj.type === "device_set_name") {
+        if (obj.stage === "init") {
+            Device.findOneAndUpdate({
+                chip: obj["chip"]
+            }, {
+                    $set: {
+                        "meta.deviceName": obj["name"]
+                    }
+                },
+                { upsert: true, new: true },
+                () => {
+                    sendNotifyToApp(obj, ws, w);
+                }
+            )
+        }
+        //don't send to actual device. device name we will keep in db itself
+        return;
+    }
     if (methods.includes(obj.type)) {
         if (obj.stage === "init") {
             //this variable found is just so that code is more readable.
@@ -226,7 +267,7 @@ ws.on('connection', function (w) {
                 let time = new Date().getTime() + offset * 60 * 1000;
                 if (!devices[chip])
                     devices[chip] = {};
-
+                
                 devices[chip] = {
                     id: obj["WEBID"],
                     version: obj['version'],
