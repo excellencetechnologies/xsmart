@@ -202,7 +202,7 @@ handleProtocol = async (obj, ws, w) => {
             console.log(obj['time']);
             let attendance = new Attendance;
             attendance.chip = obj['chip'];
-            attendance.emp_id = emp_id;
+            attendance.emp_id = obj['emp_id'];
             attendance.time = new Date(obj['time']);
             attendance.save();
 
