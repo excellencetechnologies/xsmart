@@ -3,6 +3,7 @@ var router = express.Router();
 var middleware = require("../middleware/authentication");
 var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
+var Card = require("../model/card");
 
 
 router.get("/getAllCards", (req, res) => {
