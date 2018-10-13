@@ -364,7 +364,7 @@ ws.on('connection', function (w) {
 
                 Object.keys(devices).forEach((c) => {
                     if (c === chip) {
-
+                        console.log(devices[c]);
                         w.send(JSON.stringify({
                             type: "device_online_check_reply",
                             id: devices[c].id,
