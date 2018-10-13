@@ -201,7 +201,7 @@ handleProtocol = async (obj, ws, w) => {
                 },
                 { upsert: true },
                 () => {
-                    if (devices[obj["chip"]]){
+                    if (devices[obj["chip"]]) {
                         devices[obj["chip"]]["deviceName"] = obj["name"];
                     }
 
@@ -316,38 +316,36 @@ ws.on('connection', function (w) {
                     type: "OK",
                     ota: checkLatestVersionOTA(obj['version'], obj['WEBID'], obj["device_type"] ? obj["device_type"] : "switch")
                 }));
-                console.log(apps[chip], "xxxxxxxxxxxxx");
-                if (apps[chip]) {
-                    apps[chip].forEach((app) => {
+                // if (apps[chip]) {
+                //     apps[chip].forEach((app) => {
 
-                        ws.clients.forEach((client) => {
-                            if (client.app_id && client.app_id == app) {
-                                console.log(devices[chip], "==============================");
-                                client.send(JSON.stringify({
-                                    type: "device_online_check_reply",
-                                    id: devices[chip].id,
-                                    pins: devices[chip].pins,
-                                    name: devices[chip].deviceName,
-                                    pinNames: devices[chip].pinNames,
-                                    status: devices[chip].status,
-                                    chip: devices[chip].chip,
-                                    time: devices[chip].time,
-                                    version: devices[chip].version,
-                                    found: true,
-                                    deviceTime: devices[chip].deviceTime,
-                                    device_type: devices[chip].device_type,
-                                    ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id, devices[chip].device_type)
-                                }));
-                            }
-                        });
-                    });
-                }
+                //         ws.clients.forEach((client) => {
+                //             if (client.app_id && client.app_id == app) {
+                //                 console.log(devices[chip], "==============================");
+                //                 client.send(JSON.stringify({
+                //                     type: "device_online_check_reply",
+                //                     id: devices[chip].id,
+                //                     pins: devices[chip].pins,
+                //                     name: devices[chip].deviceName,
+                //                     pinNames: devices[chip].pinNames,
+                //                     chip: devices[chip].chip,
+                //                     time: devices[chip].time,
+                //                     version: devices[chip].version,
+                //                     found: true,
+                //                     deviceTime: devices[chip].deviceTime,
+                //                     device_type: devices[chip].device_type,
+                //                     ota: checkLatestVersionOTA(devices[chip].version, devices[chip].id, devices[chip].device_type)
+                //                 }));
+                //             }
+                //         });
+                //     });
+                // }
 
 
             } else if (obj.type === "device_online_check") {
                 // this is a pint from mobile apps or web app every 5sec
                 // to check if there devices are online.
-            
+
                 let chip = obj['chip'];
                 let app_id = obj['app_id'];
                 w.app_id = app_id;
@@ -357,35 +355,39 @@ ws.on('connection', function (w) {
                 if (!apps[chip].includes(app_id)) {
                     apps[chip].push(app_id);
                 }
-                // let found = false;
+                let found = false;
 
-                // Object.keys(devices).forEach((c) => {
-                //     if (c === chip) {
+                Object.keys(devices).forEach((c) => {
+                    if (c === chip) {
 
-                //         w.send(JSON.stringify({
-                //             type: "device_online_check_reply",
-                //             id: devices[c].id,
-                //             version: devices[c].version,
-                //             pins: devices[c].pins,
-                //             chip: devices[c].chip,
-                //             found: true,
-                //             time: devices[c].time,
-                //             deviceTime: devices[c].deviceTime,
-                //             ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
-                //         }));
-                //         found = true;
+                        w.send(JSON.stringify({
+                            type: "device_online_check_reply",
+                            id: devices[c].id,
+                            version: devices[c].version,
+                            pins: devices[c].pins,
+                            chip: devices[c].chip,
+                            found: true,
+                            version: devices[c].version,
+                            name: devices[c].deviceName,
+                            device_type: devices[c].device_type,
+                            pinNames: devices[c].pinNames,
+                            time: devices[c].time,
+                            deviceTime: devices[c].deviceTime,
+                            ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
+                        }));
+                        found = true;
 
-                //     }
-                // })
+                    }
+                })
 
 
-                // if (!found) {
-                //     w.send(JSON.stringify({
-                //         type: "device_online_check_reply",
-                //         found: false,
-                //         chip: chip
-                //     }));
-                // }
+                if (!found) {
+                    w.send(JSON.stringify({
+                        type: "device_online_check_reply",
+                        found: false,
+                        chip: chip
+                    }));
+                }
 
 
 
