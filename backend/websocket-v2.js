@@ -201,11 +201,11 @@ handleProtocol = async (obj, ws, w) => {
             //sending data to webhook. will come in advance usage.
 
             console.log(obj['time']);
-            console.log(moment(obj['time'], "H:m:s-MM-DD-YY"));
+            console.log(moment(obj['time'], "H:m:s-MM-DD-YY").toDate());
             let attendance = new Attendance;
             attendance.chip = obj['chip'];
             attendance.emp_id = obj['emp_id'];
-            attendance.time = new Date(2000 + date[2]*1, date[0]*1 - 1, date[1], time[0], time[1], time[2]);
+            attendance.time = moment(obj['time'], "H:m:s-MM-DD-YY").toDate();
             attendance.save();
 
         } else {
