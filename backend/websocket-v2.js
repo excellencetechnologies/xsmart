@@ -8,6 +8,7 @@ var deviceRouter = require("./routes/device");
 var cardRouter = require("./routes/card");
 var deviceSimulatorRouter = require('./routes/deviceSimulator');
 var bodyParser = require("body-parser");
+var moment = require('moment');
 require('dotenv').config();
 var cors = require('cors');
 var expressValidator = require("express-validator");
