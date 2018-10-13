@@ -192,18 +192,21 @@ handleProtocol = async (obj, ws, w) => {
     }
     if (obj.type === "device_set_name") {
         if (obj.stage === "init") {
-            Device.findOneAndUpdate({
+            await Device.findOneAndUpdate({
                 chip: obj["chip"]
             }, {
                     $set: {
                         "meta.deviceName": obj["name"]
                     }
                 },
-                { upsert: true, new: true },
+                { upsert: true },
                 () => {
-                    if (devices[obj["chip"]])
+                    if (devices[obj["chip"]]){
                         devices[obj["chip"]]["deviceName"] = obj["name"];
-                    sendToApp(obj, ws, w);
+                    }
+
+
+                    sendToApp(obj, true, w);
                 }
             )
         }
