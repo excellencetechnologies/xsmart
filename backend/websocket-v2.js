@@ -314,7 +314,7 @@ ws.on('connection', function (w) {
                     device_type: obj["device_type"] ? obj["device_type"] : "switch",
                     deviceTime: obj["deviceTime"],
                     deviceName: deviceName,
-                    pinNames: pinNames
+                    pinnames: pinnames
                 };
                 w.chip = chip;
                 w.send(JSON.stringify({
