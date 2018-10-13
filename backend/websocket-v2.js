@@ -204,11 +204,11 @@ handleProtocol = async (obj, ws, w) => {
             let date = obj['time'].split('-')[1].split("/");
             console.log(time);
             console.log(date);
-            new Date(date[2], date[1], date[0], time[0], time[1], time[2])
+            console.log(new Date(2000 + date[2]*1, date[1], date[0], time[0], time[1], time[2]));
             let attendance = new Attendance;
             attendance.chip = obj['chip'];
             attendance.emp_id = obj['emp_id'];
-            attendance.time = new Date(date[2], date[1], date[0], time[0], time[1], time[2]);
+            attendance.time = new Date(2000 + date[2]*1, date[1], date[0], time[0], time[1], time[2]);
             attendance.save();
 
         } else {
@@ -315,6 +315,7 @@ ws.on('connection', function (w) {
                         chip: chip
                     }));
                 }
+
 
 
             } else {

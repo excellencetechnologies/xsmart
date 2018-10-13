@@ -631,7 +631,8 @@ void checkCardEmployee(String uid)
     time_t now = time(nullptr);
     struct tm * p = localtime(&now);
     char s[1000];
-    strftime(s, 1000, "%X-/%x", p);
+    strftime(s, 1000, "%X-%x", p);
+    Serial.print(s);
     root["time"] = s;
 
     String json = "";
