@@ -628,7 +628,7 @@ void checkCardEmployee(String uid)
     root["uid"] = uid;
     root["emp_id"] = emp_id;
 
-
+    configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
     time_t now = time(nullptr);
     root["time"] = ctime(&now);
 
