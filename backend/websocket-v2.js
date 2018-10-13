@@ -378,7 +378,7 @@ ws.on('connection', function (w) {
                             pinnames: devices[c].pinnames,
                             time: devices[c].time,
                             deviceTime: devices[c].deviceTime,
-                            ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
+                            ota: checkLatestVersionOTA(devices[c].version, devices[c].id,devices[c].device_type)
                         }));
                         found = true;
 
