@@ -316,7 +316,7 @@ ws.on('connection', function (w) {
                     type: "OK",
                     ota: checkLatestVersionOTA(obj['version'], obj['WEBID'], obj["device_type"] ? obj["device_type"] : "switch")
                 }));
-
+                console.log(apps[chip], "xxxxxxxxxxxxx");
                 if (apps[chip]) {
                     apps[chip].forEach((app) => {
 
