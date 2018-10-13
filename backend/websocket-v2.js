@@ -390,8 +390,8 @@ ws.on('connection', function (w) {
                         type: "device_online_check_reply",
                         found: false,
                         chip: chip,
-                        name: devices[c].deviceName ? devices[c].deviceName : "",
-                        pinnames: devices[c].pinnames ? devices[c].pinnames : "",
+                        name: devices[chip].deviceName ? devices[chip].deviceName : "",
+                        pinnames: devices[chip].pinnames ? devices[chip].pinnames : "",
 
                     }));
                 }
