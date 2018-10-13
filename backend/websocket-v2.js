@@ -172,10 +172,10 @@ handleProtocol = async (obj, ws, w) => {
                 chip: obj["chip"]
             }).lean().exec();
 
-            if (!device.meta.pins) {
-                device.meta.pins = {};
+            if (!device.meta.pinnames) {
+                device.meta.pinnames = {};
             }
-            device.meta.pins[obj['pin']] = obj['name'];
+            device.meta.pinnames[obj['pin']] = obj['name'];
             await Device.update({
                 chip: device.chip
             }, {
@@ -183,6 +183,8 @@ handleProtocol = async (obj, ws, w) => {
                         meta: device.meta
                     }
                 });
+            if (devices[chip])
+                devices[chip]["pinnames"] = device.meta.pinnames;
             sendNotifyToApp(obj, ws, w);
 
         }
@@ -199,7 +201,9 @@ handleProtocol = async (obj, ws, w) => {
                 },
                 { upsert: true, new: true },
                 () => {
-                    sendNotifyToApp(obj, ws, w);
+                    if (devices[chip])
+                        devices[chip]["deviceName"] = obj["name"];
+                    sendToApp(obj, ws, w);
                 }
             )
         }
@@ -267,7 +271,23 @@ ws.on('connection', function (w) {
                 let time = new Date().getTime() + offset * 60 * 1000;
                 if (!devices[chip])
                     devices[chip] = {};
-                
+
+                let deviceDB = false;
+                let deviceName = "";
+                let pinNames = {};
+                if (!devices[chip]['deviceName']) {
+                    deviceDB = await Device.findOne({ 'chip': chip }).lean().exec();
+                    if (deviceDB.meta && deviceDB.meta.deviceName)
+                        deviceName = deviceDB.meta.deviceName;
+                }
+                if (!devices[chip]['pinNames']) {
+                    if (!deviceDB) {
+                        deviceDB = await Device.findOne({ 'chip': chip }).lean().exec();
+                    }
+                    if (deviceDB.meta && deviceDB.meta.pinNames)
+                        pinNames = deviceDB.meta.pinNames;
+                }
+
                 devices[chip] = {
                     id: obj["WEBID"],
                     version: obj['version'],
@@ -276,6 +296,8 @@ ws.on('connection', function (w) {
                     time: time,
                     device_type: obj["device_type"] ? obj["device_type"] : "switch",
                     deviceTime: obj["deviceTime"],
+                    deviceName: deviceName,
+                    pinNames: pinNames
                 };
                 w.chip = chip;
                 w.send(JSON.stringify({
@@ -293,6 +315,8 @@ ws.on('connection', function (w) {
                                     type: "device_online_check_reply",
                                     id: devices[chip].id,
                                     pins: devices[chip].pins,
+                                    name: devices[chip].deviceName,
+                                    pinNames: devices[chip].pinNames,
                                     status: devices[chip].status,
                                     chip: devices[chip].chip,
                                     time: devices[chip].time,
@@ -313,44 +337,44 @@ ws.on('connection', function (w) {
                 // to check if there devices are online.
                 // this has been removed now. not used anymore
                 // depriciated
-                let chip = obj['chip'];
-                let app_id = obj['app_id'];
-                w.app_id = app_id;
-                if (!apps[chip]) {
-                    apps[chip] = [];
-                }
-                if (!apps[chip].includes(app_id)) {
-                    apps[chip].push(app_id);
-                }
-                let found = false;
+                // let chip = obj['chip'];
+                // let app_id = obj['app_id'];
+                // w.app_id = app_id;
+                // if (!apps[chip]) {
+                //     apps[chip] = [];
+                // }
+                // if (!apps[chip].includes(app_id)) {
+                //     apps[chip].push(app_id);
+                // }
+                // let found = false;
 
-                Object.keys(devices).forEach((c) => {
-                    if (c === chip) {
+                // Object.keys(devices).forEach((c) => {
+                //     if (c === chip) {
 
-                        w.send(JSON.stringify({
-                            type: "device_online_check_reply",
-                            id: devices[c].id,
-                            version: devices[c].version,
-                            pins: devices[c].pins,
-                            chip: devices[c].chip,
-                            found: true,
-                            time: devices[c].time,
-                            deviceTime: devices[c].deviceTime,
-                            ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
-                        }));
-                        found = true;
+                //         w.send(JSON.stringify({
+                //             type: "device_online_check_reply",
+                //             id: devices[c].id,
+                //             version: devices[c].version,
+                //             pins: devices[c].pins,
+                //             chip: devices[c].chip,
+                //             found: true,
+                //             time: devices[c].time,
+                //             deviceTime: devices[c].deviceTime,
+                //             ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
+                //         }));
+                //         found = true;
 
-                    }
-                })
+                //     }
+                // })
 
 
-                if (!found) {
-                    w.send(JSON.stringify({
-                        type: "device_online_check_reply",
-                        found: false,
-                        chip: chip
-                    }));
-                }
+                // if (!found) {
+                //     w.send(JSON.stringify({
+                //         type: "device_online_check_reply",
+                //         found: false,
+                //         chip: chip
+                //     }));
+                // }
 
 
 
