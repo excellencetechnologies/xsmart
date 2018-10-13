@@ -11,4 +11,4 @@ var attendanceSchema = new Schema({
 });
 
 
-module.exports = mongoose.model("Card", cardSchema);
+module.exports = mongoose.model("Attendance", attendanceSchema);
