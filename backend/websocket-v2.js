@@ -259,7 +259,7 @@ handleProtocol = async (obj, ws, w) => {
 
 ws.on('connection', function (w) {
 
-    w.on('message', function (msg) {
+    w.on('message', async function (msg) {
         try {
             let obj = JSON.parse(msg);
             if (obj.type === "device_ping") {
