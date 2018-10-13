@@ -201,7 +201,10 @@ handleProtocol = async (obj, ws, w) => {
 
             console.log(obj['time']);
             let time = obj['time'].split('-')[0].split(":");
-            let date = obj['time'].split('-')[0].split("/");
+            let date = obj['time'].split('-')[1].split("/");
+            console.log(time);
+            console.log(date);
+            new Date(date[2], date[1], date[0], time[0], time[1], time[2])
             let attendance = new Attendance;
             attendance.chip = obj['chip'];
             attendance.emp_id = obj['emp_id'];
