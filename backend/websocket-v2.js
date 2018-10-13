@@ -269,15 +269,22 @@ ws.on('connection', function (w) {
                 let chip = obj['chip'];
                 let offset = new Date().getTimezoneOffset();
                 let time = new Date().getTime() + offset * 60 * 1000;
-                if (!devices[chip])
+                if (!devices[chip]){
                     devices[chip] = {};
+                    let device = new Device;
+                    device.chip = obj['chip'];
+                    device.user_id = -1;
+                    device.meta = {};
+                    await device.save();
+                }
 
                 let deviceDB = false;
                 let deviceName = "";
                 let pinNames = {};
                 if (!devices[chip]['deviceName']) {
                     deviceDB = await Device.findOne({ 'chip': chip }).lean().exec();
-                    if (deviceDB.meta && deviceDB.meta.deviceName)
+                    console.log(deviceDB);
+                    if (deviceDB && deviceDB.meta && deviceDB.meta.deviceName)
                         deviceName = deviceDB.meta.deviceName;
                 }
                 if (!devices[chip]['pinNames']) {
