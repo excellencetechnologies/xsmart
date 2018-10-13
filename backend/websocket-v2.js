@@ -183,9 +183,10 @@ handleProtocol = async (obj, ws, w) => {
                         meta: device.meta
                     }
                 });
-            if (devices[device.chip])
+            if (devices[device.chip]) {
                 devices[device.chip]["pinnames"] = device.meta.pinnames;
-                sendToApp(obj, true, w);
+            }
+            sendToApp(obj, true, w);
 
         }
         return;
@@ -291,7 +292,7 @@ ws.on('connection', function (w) {
                     console.log(deviceDB);
                     if (deviceDB && deviceDB.meta && deviceDB.meta.deviceName)
                         deviceName = deviceDB.meta.deviceName;
-                }else{
+                } else {
                     deviceName = devices[chip]['deviceName'];
                 }
                 if (!devices[chip]['pinnames']) {
@@ -299,9 +300,9 @@ ws.on('connection', function (w) {
                         deviceDB = await Device.findOne({ 'chip': chip }).lean().exec();
                     }
                     if (deviceDB.meta && deviceDB.meta.pinnames)
-                        pinNames = deviceDB.meta.pinnames;
-                }else{
-                    pinNames = devices[chip]['pinnames'];
+                        pinnames = deviceDB.meta.pinnames;
+                } else {
+                    pinnames = devices[chip]['pinnames'];
                 }
 
                 devices[chip] = {
