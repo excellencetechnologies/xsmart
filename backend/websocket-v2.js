@@ -291,6 +291,8 @@ ws.on('connection', function (w) {
                     console.log(deviceDB);
                     if (deviceDB && deviceDB.meta && deviceDB.meta.deviceName)
                         deviceName = deviceDB.meta.deviceName;
+                }else{
+                    deviceName = devices[chip]['deviceName'];
                 }
                 if (!devices[chip]['pinNames']) {
                     if (!deviceDB) {
@@ -298,6 +300,8 @@ ws.on('connection', function (w) {
                     }
                     if (deviceDB.meta && deviceDB.meta.pinNames)
                         pinNames = deviceDB.meta.pinNames;
+                }else{
+                    pinNames = devices[chip]['pinNames'];
                 }
 
                 devices[chip] = {
