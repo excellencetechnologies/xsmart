@@ -200,12 +200,10 @@ handleProtocol = async (obj, ws, w) => {
             // do something when card is read successfully like doing push notification or 
             //sending data to webhook. will come in advance usage.
 
-            console.log(obj['time']);
-            console.log(moment(obj['time'], "H:m:s-MM/DD/YY").toDate());
             let attendance = new Attendance;
             attendance.chip = obj['chip'];
             attendance.emp_id = obj['emp_id'];
-            attendance.time = moment(obj['time'], "H:m:s-MM-DD-YY").toDate();
+            attendance.time = obj["time"]
             attendance.save();
 
         } else {
