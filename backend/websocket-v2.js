@@ -39,6 +39,8 @@ const ws = new WebSocket.Server({ server });
 //var ws = new Server({ port: port });
 
 var Card = require("./model/card");
+var Attendance = require("./model/attendance");
+
 
 let devices = {};
 let apps = {};
@@ -181,7 +183,7 @@ handleProtocol = async (obj, ws, w) => {
                 {
                     chip: obj["chip"],
                     emp_id: obj['emp_id'],
-                    rfid: obj['rfid']
+                    rfid: obj['uid']
                 },
                 { upsert: true, new: true },
                 () => {
@@ -197,23 +199,12 @@ handleProtocol = async (obj, ws, w) => {
             // do something when card is read successfully like doing push notification or 
             //sending data to webhook. will come in advance usage.
 
-
-            Card.findOneAndUpdate({
-                chip: obj["chip"],
-                emp_id: obj['emp_id'],
-            },
-                {
-                    chip: obj["chip"],
-                    emp_id: obj['emp_id'],
-                    rfid: obj['rfid']
-                },
-                { upsert: true, new: true },
-                (err) => {
-                    console.log(err);
-                    console.log("card added");
-                    
-                }
-            )
+            console.log(obj['time']);
+            let attendance = new Attendance;
+            attendance.chip = obj['chip'];
+            attendance.emp_id = emp_id;
+            attendance.time = new Date(obj['time']);
+            attendance.save();
 
         } else {
             w.send("error...... wtfs.. yeah method nai hai :P :P :P");

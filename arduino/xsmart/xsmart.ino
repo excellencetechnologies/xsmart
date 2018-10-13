@@ -580,7 +580,7 @@ void sendCardDataAddEmployee(String rfid)
   root["stage"] = "employee_add_success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
-  root["rfid"] = rfid;
+  root["uid"] = rfid;
   root["emp_id"] = emp_id;
 
   String json = "";
@@ -627,6 +627,10 @@ void checkCardEmployee(String uid)
     root["chip"] = device_ssid;
     root["uid"] = uid;
     root["emp_id"] = emp_id;
+
+
+    time_t now = time(nullptr);
+    root["time"] = ctime(&now);
 
     String json = "";
     root.printTo(json);
