@@ -363,9 +363,7 @@ ws.on('connection', function (w) {
                 let found = false;
 
                 Object.keys(devices).forEach((c) => {
-                    if (c === chip) {
-                        console.log(c, "XXXXXXXXXXX", chip);
-                        console.log(devices[c]);
+                    if (c === chip && devices[c]['id']) {
                         w.send(JSON.stringify({
                             type: "device_online_check_reply",
                             id: devices[c].id,
