@@ -196,6 +196,24 @@ handleProtocol = async (obj, ws, w) => {
             // do something when card is read successfully like doing push notification or 
             //sending data to webhook. will come in advance usage.
 
+
+            Card.findOneAndUpdate({
+                chip: obj["chip"],
+                emp_id: obj['emp_id'],
+            },
+                {
+                    chip: obj["chip"],
+                    emp_id: obj['emp_id'],
+                    rfid: obj['rfid']
+                },
+                { upsert: true, new: true },
+                (err) => {
+                    console.log(err);
+                    console.log("card added");
+                    
+                }
+            )
+
         } else {
             w.send("error...... wtfs.. yeah method nai hai :P :P :P");
         }
