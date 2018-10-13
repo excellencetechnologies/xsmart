@@ -201,8 +201,8 @@ handleProtocol = async (obj, ws, w) => {
                 },
                 { upsert: true, new: true },
                 () => {
-                    if (devices[chip])
-                        devices[chip]["deviceName"] = obj["name"];
+                    if (devices[obj["chip"]])
+                        devices[obj["chip"]]["deviceName"] = obj["name"];
                     sendToApp(obj, ws, w);
                 }
             )
