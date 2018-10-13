@@ -185,7 +185,7 @@ handleProtocol = async (obj, ws, w) => {
                 });
             if (devices[device.chip])
                 devices[device.chip]["pinnames"] = device.meta.pinnames;
-            sendNotifyToApp(obj, true, w);
+                sendToApp(obj, true, w);
 
         }
         return;
