@@ -285,7 +285,7 @@ ws.on('connection', function (w) {
 
                 let deviceDB = false;
                 let deviceName = "";
-                let pinNames = {};
+                let pinnames = {};
                 if (!devices[chip]['deviceName']) {
                     deviceDB = await Device.findOne({ 'chip': chip }).lean().exec();
                     console.log(deviceDB);
@@ -294,14 +294,14 @@ ws.on('connection', function (w) {
                 }else{
                     deviceName = devices[chip]['deviceName'];
                 }
-                if (!devices[chip]['pinNames']) {
+                if (!devices[chip]['pinnames']) {
                     if (!deviceDB) {
                         deviceDB = await Device.findOne({ 'chip': chip }).lean().exec();
                     }
-                    if (deviceDB.meta && deviceDB.meta.pinNames)
-                        pinNames = deviceDB.meta.pinNames;
+                    if (deviceDB.meta && deviceDB.meta.pinnames)
+                        pinNames = deviceDB.meta.pinnames;
                 }else{
-                    pinNames = devices[chip]['pinNames'];
+                    pinNames = devices[chip]['pinnames'];
                 }
 
                 devices[chip] = {
@@ -374,7 +374,7 @@ ws.on('connection', function (w) {
                             version: devices[c].version,
                             name: devices[c].deviceName,
                             device_type: devices[c].device_type,
-                            pinNames: devices[c].pinNames,
+                            pinnames: devices[c].pinnames,
                             time: devices[c].time,
                             deviceTime: devices[c].deviceTime,
                             ota: checkLatestVersionOTA(devices[c].version, devices[c].id)
