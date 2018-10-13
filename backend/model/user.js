@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
-mongoose.connect('mongodb://localhost/chat');
+mongoose.connect('mongodb://localhost/xsmart');
 
 const userSchema = new Schema({
     name: String,
