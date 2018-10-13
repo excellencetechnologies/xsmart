@@ -628,9 +628,11 @@ void checkCardEmployee(String uid)
     root["uid"] = uid;
     root["emp_id"] = emp_id;
 
-    configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
     time_t now = time(nullptr);
-    root["time"] = ctime(&now);
+    struct tm * p = localtime(&now);
+    char s[1000];
+    strftime(s, 1000, "%X-/%x", p);
+    root["time"] = s;
 
     String json = "";
     root.printTo(json);

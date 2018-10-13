@@ -200,10 +200,12 @@ handleProtocol = async (obj, ws, w) => {
             //sending data to webhook. will come in advance usage.
 
             console.log(obj['time']);
+            let time = obj['time'].split('-')[0].split(":");
+            let date = obj['time'].split('-')[0].split("/");
             let attendance = new Attendance;
             attendance.chip = obj['chip'];
             attendance.emp_id = obj['emp_id'];
-            attendance.time = new Date(obj['time']);
+            attendance.time = new Date(date[2], date[1], date[0], time[0], time[1], time[2]);
             attendance.save();
 
         } else {
