@@ -119,9 +119,9 @@ unsigned long interruptMillsMax = 500;
 char *esp_ap_password = "123456789";
 int store_wifi_api_connect_result = -1;
 
-IPAddress ip(192, 168, 1, 99);       // where xx is the desired IP Address
-IPAddress gateway(192, 168, 1, 254); // set gateway to match your wifi network
-IPAddress subnet(255, 255, 255, 0);  // set subnet mask to match your wifi network
+// IPAddress ip(192, 168, 4, 1);       // where xx is the desired IP Address
+// IPAddress gateway(192, 168, 1, 254); // set gateway to match your wifi network
+// IPAddress subnet(255, 255, 255, 0);  // set subnet mask to match your wifi network
 
 int AP_STARTED = 0; //this is mainly used to set when AP mode is started because in loop, we cannot start ap again and again
 
@@ -139,7 +139,7 @@ void startWifiAP()
     WiFi.mode(WIFI_AP_STA);
     AP_STARTED = 1;
 
-    //    WiFi.config(ip, gateway, subnet);
+      //  WiFi.config(ip, gateway, subnet);
 
     Serial.println(device_ssid);
     Serial.println("Configuring  access point for wifi network ...");
@@ -150,9 +150,9 @@ void startWifiAP()
     IPAddress accessIP = WiFi.softAPIP();
     Serial.print("ESP AccessPoint IP address: ");
     Serial.println(accessIP);
-    if (MDNS.begin("xsmart"))
+    if (!MDNS.begin("xsmart"))
     {
-      Serial.println("MDNS responder started");
+      Serial.println("Error setting up MDNS responder!");
     }
 
     server.on("/", HTTP_GET, []() {
@@ -647,7 +647,8 @@ void sendPinNamePack()
   ping_packet_count = 0;
   StaticJsonBuffer<500> jsonBuffer;
   JsonObject &root = jsonBuffer.createObject();
-  root["type"] = "device_set_pin_name_reply";
+  root["type"] = "device_set_pin_name";
+  root["stage"] = "success";
   root["WEBID"] = webID;
   root["chip"] = device_ssid;
 
@@ -656,11 +657,14 @@ void sendPinNamePack()
   StaticJsonBuffer<200> jsonBuffer5;
   for (int i = 0; i < PIN_SIZE; i++)
   {
-    JsonObject &pin = jsonBuffer5.createObject();
-    pin["pin"] = PINS[i];
-    pin["status"] = PINS_STATUS[i];
-    pin["name"] = xconfig.getPinName(PINS[i]);
-    pins.add(pin);
+    String pin_name = xconfig.getPinName(PINS[i]);
+    if(pin_name.length() > 0 ){
+      JsonObject &pin = jsonBuffer5.createObject();
+      pin["pin"] = PINS[i];
+      pin["status"] = PINS_STATUS[i];
+      pin["name"] = pin_name;
+      pins.add(pin);
+    }
   }
 
   String json = "";
@@ -985,7 +989,7 @@ void loop()
     if (access_mode_timeout < access_mode_timeout_max)
     {
       access_mode_timeout++;
-      delay(1);
+      // delay(1);
     }
     else
     {
@@ -1053,7 +1057,6 @@ void loop()
           return;
         }
 #endif
-        // update.checkUpdate(); cannot check for update ever 1sec
 
         webSocketClient.getData(data);
 
@@ -1126,12 +1129,13 @@ void loop()
           }
           else if (type == "device_set_pin_name")
           {
-            JsonArray &pinnames = root["pinnames"].as<JsonArray>();
-            for (int i = 0; i < pinnames.size(); i++)
-            {
-              JsonObject &obj = pinnames[i].as<JsonObject>();
-              xconfig.setPinName(obj.get<int>("pin"), obj.get<String>("name"));
-            }
+            // JsonArray &pinnames = root["pinnames"].as<JsonArray>();
+            // for (int i = 0; i < pinnames.size(); i++)
+            // {
+            //   JsonObject &obj = pinnames[i].as<JsonObject>();
+            //   xconfig.setPinName(obj.get<int>("pin"), obj.get<String>("name"));
+            // }
+            xconfig.setPinName(root.get<int>("pin"), root.get<String>("name"));
             sendPinNamePack();
           }
 #endif
