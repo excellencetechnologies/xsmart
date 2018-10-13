@@ -41,7 +41,7 @@ const ws = new WebSocket.Server({ server });
 
 var Card = require("./model/card");
 var Attendance = require("./model/attendance");
-var Device = require("./model/Device");
+var Device = require("./model/device");
 
 
 let devices = {};
