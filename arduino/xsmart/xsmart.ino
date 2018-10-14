@@ -1032,12 +1032,12 @@ void loop()
 #ifdef ISACCESS
         //in access card mode, we want to keep checking for access instantly
         //but socket io should only work every 1sec
-        if (delay_socket < delay_socket_max)
+        if (delay_socket < delay_socket_max/10)
         {
           delay_socket++;
           // delay(1);
-          // Serial.print(delay_socket);
-          // Serial.print(" ");
+          Serial.print(delay_socket);
+          Serial.print(" ");
           return;
         }
         else
@@ -1045,6 +1045,31 @@ void loop()
           delay_socket = 0;
         }
 #endif
+
+#ifdef ISACCESS
+
+            String access_data = access.readTimeData();
+            Serial.println(access_data);
+
+            HTTPClient http; //Declare object of class HTTPClient
+
+            http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
+            http.addHeader("Content-Type", "text/json"); //Specify content-type header
+
+            int httpCode = http.POST("Message from ESP8266"); //Send the request
+            String payload = http.getString();                //Get the response payload
+
+            Serial.println(httpCode); //Print HTTP return code
+            Serial.println(payload);  //Print request response payload
+
+            http.end(); //Close connection
+
+            
+            // access_data = "";
+            // access.deleteTimeData();
+#endif
+
+
         webSocketClient.getData(data);
 
         if (data.length() > 0)
@@ -1077,27 +1102,7 @@ void loop()
             //   update.checkUpdate(root.get<String>("ota"));
             // }
             ok_ping_not_recieved_count = 0;
-#ifdef ISACCESS
 
-            HTTPClient http; //Declare object of class HTTPClient
-
-            http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
-            http.addHeader("Content-Type", "text/json"); //Specify content-type header
-
-            int httpCode = http.POST("Message from ESP8266"); //Send the request
-            String payload = http.getString();                //Get the response payload
-
-            Serial.println(httpCode); //Print HTTP return code
-            Serial.println(payload);  //Print request response payload
-
-            http.end(); //Close connection
-
-            // String access_data = access.readTimeData();
-            // Serial.println(access_data);
-            // webSocketClient.sendData("{type:\"access_card_data\", data: " + access_data + "}");
-            // access_data = "";
-            // access.deleteTimeData();
-#endif
           }
 
 #ifdef ISSWITCH
