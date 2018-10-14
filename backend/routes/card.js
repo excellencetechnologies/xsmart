@@ -7,7 +7,7 @@ var Card = require("../model/card");
 var Attendance = require("../model/attendance");
 
 router.post("/addTime" , (req, res) => {
-    console.log(req.body);
+    console.log(req);
     res.json({});
 })
 
