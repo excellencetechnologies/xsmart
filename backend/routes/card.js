@@ -6,8 +6,21 @@ var Device = require("../model/device");
 var Card = require("../model/card");
 var Attendance = require("../model/attendance");
 
-router.post("/addTime" , (req, res) => {
-    console.log(req.body);
+router.post("/addTime", (req, res) => {
+    let keys = Object.keys(req.body);
+    if (keys[0]) {
+        let lines = keys[0].split("\r");
+        lines.forEach(element => {
+            let data = element.split("=");
+            if (data.length == 4) {
+                let attendance = new Attendance;
+                attendance.chip = data[0];
+                attendance.emp_id = data[2];
+                attendance.time = data[3];
+                attendance.save();
+            }
+        });
+    }
 
     //xSmart-1602506=b05b3f25=10=12:30:10-10/14/18
     res.json({});
