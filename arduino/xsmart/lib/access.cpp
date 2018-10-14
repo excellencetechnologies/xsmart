@@ -15,6 +15,10 @@
 #define FILE_READ "r"
 #endif
 
+#ifndef FILE_APPEND
+#define FILE_APPEND "a"
+#endif
+
 #define JSON_SIZE 1024
 
 XAccess::XAccess(char *filename)
@@ -224,11 +228,51 @@ void XAccess::disableUID(String emp_id)
     root.printTo(file);
     saveConfigFile(file.c_str());
 }
-JsonObject &XAccess::listData(){
+JsonObject &XAccess::listData()
+{
     String file = loadConfigFile();
     StaticJsonBuffer<JSON_SIZE> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(file);
     return root;
+}
+
+void XAccess::writeTimeData(String data)
+{
+    File file = SPIFFS.open("time.txt", "a");
+    if (file)
+    {
+        Serial.println("file opened");
+        if (file.println(data))
+        {
+            Serial.println("- file written");
+        }
+    }
+    else
+    {
+        Serial.println("file not openined");
+    }
+}
+void XAccess::deleteTimeData()
+{
+    File file = SPIFFS.open("time.txt", "w");
+    if (file)
+    {
+        file.print("");
+    }
+}
+String XAccess::readTimeData()
+{
+    String data = "";
+    File file = SPIFFS.open("time.txt", "r");
+    if (file)
+    {
+        while (file.available())
+        {
+            char ch = (char)file.read();
+            data += String(ch);
+        }
+    }
+    return data;
 }
 
 void XAccess::P(String msg)

@@ -1,14 +1,16 @@
-// #define ESP8266
-#define ESP32
+#define ESP8266
+// #define ESP32
 
-// #define ISACCESS 1
-#define ISSWITCH 1
+#define ISACCESS 1
+// #define ISSWITCH 1
 
 #ifdef ESP8266
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <FS.h>
+
 #define ESP_getChipId() (ESP.getChipId())
 #endif
 
@@ -41,6 +43,8 @@ const bool canWorkWithoutWifi = true; //i.e should device work without wifi e.g 
 #endif
 //Compile the sketch (Ctrl+R) and then export the binary. (Ctrl+Alt+S)  Exporting the binary will generate an image file into the same folder
 String version = "0.0.3";
+
+//https://github.com/ArnieX/swifitch
 
 #ifdef ESP8266
 #define LEDPIN LED_BUILTIN
@@ -117,7 +121,6 @@ unsigned long interruptMills = 0;
 unsigned long interruptMillsMax = 500;
 
 char *esp_ap_password = "123456789";
-int store_wifi_api_connect_result = -1;
 
 // IPAddress ip(192, 168, 4, 1);       // where xx is the desired IP Address
 // IPAddress gateway(192, 168, 1, 254); // set gateway to match your wifi network
@@ -157,13 +160,11 @@ void startWifiAP()
 
     server.on("/", HTTP_GET, []() {
       Serial.println("ping");
-      // String name = xconfig.getNickName();
 
       StaticJsonBuffer<512> jsonBuffer;
       JsonObject &root = jsonBuffer.createObject();
       root["webid"] = webID;
       root["chip"] = device_ssid;
-      // root["name"] = name;
       root["version"] = version;
 #ifdef ISACCESS
       root["type"] = "access";
@@ -236,20 +237,8 @@ void startWifiAP()
       server.sendHeader("Access-Control-Allow-Methods", "*");
       server.send(200, "application/json", json);
     });
-    // server.on("/setnickname", HTTP_GET, []() {
-    //   if (server.args() == 0)
-    //     return server.send(500, "text/plain", "BAD ARGS");
-
-    //   String name = server.arg("name");
-    //   xconfig.setNickName(name);
-
-    //   server.sendHeader("Access-Control-Allow-Origin", "*");
-    //   server.sendHeader("Access-Control-Allow-Methods", "*");
-    //   server.send(200, "application/json", "{ \"name\": \" " + xconfig.getNickName() + " \" }");
-    // });
 
     server.on("/wifisave", HTTP_GET, []() {
-      store_wifi_api_connect_result = -1;
       if (server.args() == 0)
         return server.send(500, "text/plain", "BAD ARGS");
 
@@ -284,12 +273,10 @@ void startWifiAP()
       Serial.print(passsword_array);
       WiFi.begin(ssid_array, passsword_array);
       WiFi.waitForConnectResult();
-      store_wifi_api_connect_result = WiFi.status();
-      if (store_wifi_api_connect_result == WL_CONNECTED)
+      if (WiFi.status() == WL_CONNECTED)
       {
         Serial.println("connected");
         current_wifi_status = WIFI_CONNECT_MODE;
-        xconfig.deleteWifiSSID(ssid);
         xconfig.addWifiSSID(ssid, password);
         connectWifi();
       }
@@ -297,31 +284,6 @@ void startWifiAP()
       {
         Serial.println("non connected");
       }
-    });
-    server.on("/wifiresult", HTTP_GET, []() {
-      if (store_wifi_api_connect_result == WL_CONNECTED)
-      {
-        StaticJsonBuffer<200> jsonBuffer;
-        JsonObject &root = jsonBuffer.createObject();
-        root["status"] = "connected";
-        String response = "";
-        root.printTo(response);
-        server.sendHeader("Access-Control-Allow-Origin", "*");
-        server.sendHeader("Access-Control-Allow-Methods", "*");
-        server.send(200, "application/json", response);
-      }
-      else
-      {
-        StaticJsonBuffer<200> jsonBuffer;
-        JsonObject &root = jsonBuffer.createObject();
-        root["status"] = "";
-        String response = "not_connected";
-        root.printTo(response);
-        server.sendHeader("Access-Control-Allow-Origin", "*");
-        server.sendHeader("Access-Control-Allow-Methods", "*");
-        server.send(200, "application/json", response);
-      }
-      store_wifi_api_connect_result = -1;
     });
     server.onNotFound(handleNotFound);
 
@@ -421,9 +383,9 @@ void connectWifi()
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
     // if(config.getDeviceTimezone() != 0){
-      // configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
+    // configTime(xconfig.getDeviceTimezone(), 0, "pool.ntp.org", "time.nist.gov");
     // }else{
-      configTime(5.5 * 60 * 60, 0, "pool.ntp.org", "time.nist.gov");
+    configTime(5.5 * 60 * 60, 0, "pool.ntp.org", "time.nist.gov");
     // }
   }
   delay_connect_wifi = 5000;
@@ -642,6 +604,8 @@ void checkCardEmployee(String uid)
     Serial.print(s);
     root["time"] = s;
 
+    access.writeTimeData(device_ssid + "=" + uid + "=" + emp_id + "=" + s);
+
     String json = "";
     root.printTo(json);
     Serial.println(json);
@@ -741,7 +705,6 @@ void pingPacket()
 {
   if (ping_packet_count == 0)
   {
-    randomSeed(analogRead(0));
     StaticJsonBuffer<500> jsonBuffer;
     JsonObject &root = jsonBuffer.createObject();
     root["type"] = "device_ping";
@@ -974,6 +937,7 @@ void loop()
         String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
         checkCardEmployee(rfid);
         Serial.println("DDDDDDDDDDDDDD");
+        delay(1000); //wait after card is found. to remove repeated
       }
     }
   }
@@ -1030,10 +994,10 @@ void loop()
 
       if (canWorkWithoutWifi)
       {
-        if (delay_socket < max_delay_connect_wifi)
+        if (delay_socket < max_delay_connect_wifi * 10)
         {
           delay_socket++;
-          delay(1);
+          // delay(1);
           return;
         }
         else
@@ -1066,14 +1030,19 @@ void loop()
 #ifdef ISACCESS
         //in access card mode, we want to keep checking for access instantly
         //but socket io should only work every 1sec
-        if (delay_socket < delay_socket_max)
+        if (delay_socket < delay_socket_max * 3)
         {
           delay_socket++;
-          delay(1);
+          // delay(1);
+          // Serial.print(delay_socket);
+          // Serial.print(" ");
           return;
         }
+        else
+        {
+          delay_socket = 0;
+        }
 #endif
-
         webSocketClient.getData(data);
 
         if (data.length() > 0)
@@ -1084,12 +1053,6 @@ void loop()
           root.printTo(Serial);
           String type = root["type"];
 
-          // if (type == "device_set_name")
-          // {
-          //   xconfig.setNickName(root.get<String>("name"));
-          //   sendNamePack(root.get<String>("name"));
-          // }
-          // else 
           if (type == "device_set_time")
           {
             int diff = root.get<int>("diff");
@@ -1112,6 +1075,12 @@ void loop()
             //   update.checkUpdate(root.get<String>("ota"));
             // }
             ok_ping_not_recieved_count = 0;
+#ifdef ISACCESS
+            String access_data = access.readTimeData();
+            webSocketClient.sendData("{type:\"access_card_data\", data: " + access_data + "}");
+            access_data = "";
+            access.deleteTimeData();
+#endif
           }
 
 #ifdef ISSWITCH
@@ -1211,7 +1180,9 @@ void loop()
 
     startWifiAP();
   }
+#ifdef ISSWITCH
   delay(1000);
+#endif
 }
 
 // Helper routine to dump a byte array as hex values to Serial

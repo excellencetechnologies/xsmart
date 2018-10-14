@@ -266,8 +266,8 @@ ws.on('connection', function (w) {
     w.on('message', async function (msg) {
         try {
             let obj = JSON.parse(msg);
+            console.log(obj);
             if (obj.type === "device_ping") {
-                console.log("device ping", obj);
                 //this is basically the event which a device like esp32, 8266 
                 // send every 1sec. this is ping from the device.
                 let chip = obj['chip'];

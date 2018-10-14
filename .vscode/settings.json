@@ -9,6 +9,7 @@
         "vector": "cpp",
         "initializer_list": "cpp",
         "list": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "string_view": "cpp"
     }
 }

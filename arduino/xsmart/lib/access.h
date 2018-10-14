@@ -18,6 +18,10 @@ class XAccess
     bool isDisabled(String);
     void enableUID(String);
     JsonObject& listData();
+    void writeTimeData(String);
+    void deleteTimeData(void);
+    String readTimeData();
+
     
   private:
     char * configfile;
