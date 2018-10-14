@@ -392,9 +392,7 @@ ws.on('connection', function (w) {
                     w.send(JSON.stringify({
                         type: "device_online_check_reply",
                         found: false,
-                        chip: chip,
-                        name: devices[chip].deviceName ? devices[chip].deviceName : "",
-                        pinnames: devices[chip].pinnames ? devices[chip].pinnames : "",
+                        chip: chip
 
                     }));
                 }
