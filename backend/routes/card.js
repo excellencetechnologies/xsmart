@@ -11,18 +11,20 @@ router.get("/deleteTime", (req, res) => {
     });
 
 });
-router.post("/addTime", (req, res) => {
+router.post("/addTime", async (req, res) => {
     let keys = Object.keys(req.body);
     if (keys[0]) {
         let lines = keys[0].split("\r");
         lines.forEach(element => {
+            console.log(element);
             let data = element.split("=");
+            console.log(data);
             if (data.length == 4) {
                 let attendance = new Attendance;
                 attendance.chip = data[0];
                 attendance.emp_id = data[2];
                 attendance.time = data[3];
-                attendance.save();
+                await attendance.save();
             }
         });
     }
