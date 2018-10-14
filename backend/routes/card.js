@@ -12,8 +12,8 @@ router.get("/deleteTime", (req, res) => {
 
 });
 router.post("/addTime", async (req, res) => {
+    console.log(req.body, "asdfasfasdf");
     let keys = Object.keys(req.body);
-    console.log(keys, "asdfasfasdf");
     if (keys[0]) {
         console.log(keys[0]);
         let lines = keys[0].split("\r");
