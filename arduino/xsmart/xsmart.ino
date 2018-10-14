@@ -10,6 +10,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include <FS.h>
+#include <ESP8266HTTPClient.h>
 
 #define ESP_getChipId() (ESP.getChipId())
 #endif
@@ -19,6 +20,7 @@
 #include <WiFiMulti.h>
 #include <WebServer.h>
 #include <ESPmDNS.h>
+#include <HTTPClient.h>
 #define ESP_getChipId() ((uint32_t)ESP.getEfuseMac())
 #endif
 
@@ -1079,7 +1081,7 @@ void loop()
 
             HTTPClient http; //Declare object of class HTTPClient
 
-            http.begin("http://" + host + " :9030/card/addTime"); //Specify request destination
+            http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
             http.addHeader("Content-Type", "text/json"); //Specify content-type header
 
             int httpCode = http.POST("Message from ESP8266"); //Send the request
