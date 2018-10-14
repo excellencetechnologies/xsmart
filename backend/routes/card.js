@@ -8,6 +8,8 @@ var Attendance = require("../model/attendance");
 
 router.post("/addTime" , (req, res) => {
     console.log(req.body);
+
+    //xSmart-1602506=b05b3f25=10=12:30:10-10/14/18
     res.json({});
 })
 
