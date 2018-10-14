@@ -1030,7 +1030,7 @@ void loop()
 #ifdef ISACCESS
         //in access card mode, we want to keep checking for access instantly
         //but socket io should only work every 1sec
-        if (delay_socket < delay_socket_max * 3)
+        if (delay_socket < delay_socket_max)
         {
           delay_socket++;
           // delay(1);
@@ -1076,10 +1076,25 @@ void loop()
             // }
             ok_ping_not_recieved_count = 0;
 #ifdef ISACCESS
-            String access_data = access.readTimeData();
-            webSocketClient.sendData("{type:\"access_card_data\", data: " + access_data + "}");
-            access_data = "";
-            access.deleteTimeData();
+
+            HTTPClient http; //Declare object of class HTTPClient
+
+            http.begin("http://" + host + " :9030/card/addTime"); //Specify request destination
+            http.addHeader("Content-Type", "text/json"); //Specify content-type header
+
+            int httpCode = http.POST("Message from ESP8266"); //Send the request
+            String payload = http.getString();                //Get the response payload
+
+            Serial.println(httpCode); //Print HTTP return code
+            Serial.println(payload);  //Print request response payload
+
+            http.end(); //Close connection
+
+            // String access_data = access.readTimeData();
+            // Serial.println(access_data);
+            // webSocketClient.sendData("{type:\"access_card_data\", data: " + access_data + "}");
+            // access_data = "";
+            // access.deleteTimeData();
 #endif
           }
 

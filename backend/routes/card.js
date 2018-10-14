@@ -6,6 +6,10 @@ var Device = require("../model/device");
 var Card = require("../model/card");
 var Attendance = require("../model/attendance");
 
+router.post("/addTime" , (req, res) => {
+    console.log(req);
+    res.json({});
+})
 
 router.get("/getAllCards", (req, res) => {
     Card.find({}, (err, obj) => {
