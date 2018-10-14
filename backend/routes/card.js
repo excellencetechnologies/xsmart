@@ -5,7 +5,10 @@ var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
 var Card = require("../model/card");
 var Attendance = require("../model/attendance");
-
+router.get("/deleteTime" , (req, res) => {
+    Attendance.deleteMany({});
+    res.json({});
+});
 router.post("/addTime", (req, res) => {
     let keys = Object.keys(req.body);
     if (keys[0]) {

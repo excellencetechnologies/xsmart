@@ -938,7 +938,6 @@ void loop()
         Serial.print(F("read Card UID:"));
         String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
         checkCardEmployee(rfid);
-        Serial.println("DDDDDDDDDDDDDD");
         delay(1000); //wait after card is found. to remove repeated
       }
     }
@@ -1063,7 +1062,7 @@ void loop()
         Serial.println(payload);  //Print request response payload
         if (httpCode == 200)
         {
-          // access.deleteTimeData();
+          access.deleteTimeData();
         }
         access_data = "";
         http.end(); //Close connection
