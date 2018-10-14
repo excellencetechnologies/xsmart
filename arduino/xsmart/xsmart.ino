@@ -1054,7 +1054,7 @@ void loop()
             HTTPClient http; //Declare object of class HTTPClient
 
             http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
-            http.addHeader("Content-Type", "text/json"); //Specify content-type header
+            http.addHeader("Content-Type", "application/x-www-form-urlencoded"); 
 
             int httpCode = http.POST("Message from ESP8266"); //Send the request
             String payload = http.getString();                //Get the response payload
