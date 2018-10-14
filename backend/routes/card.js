@@ -15,7 +15,7 @@ router.post("/addTime", async (req, res) => {
     let keys = Object.keys(req.body);
     if (keys[0]) {
         let lines = keys[0].split("\r");
-        lines.forEach(element => {
+        lines.forEach(async element => {
             console.log(element);
             let data = element.split("=");
             console.log(data);
