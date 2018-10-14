@@ -14,11 +14,11 @@ router.get("/deleteTime", (req, res) => {
 router.post("/addTime", async (req, res) => {
     console.log(req.body, "asdfasfasdf");
     if (req.body.data) {
-        let lines = req.body.data.split("\r");
+        let lines = req.body.data.split("\r\n");
         console.log(lines);
         lines.forEach(async element => {
             console.log(element);
-            let data = element.split("=");
+            let data = element.split(";");
             console.log(data);
             if (data.length == 4) {
                 let attendance = new Attendance;
