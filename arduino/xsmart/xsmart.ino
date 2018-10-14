@@ -606,7 +606,7 @@ void checkCardEmployee(String uid)
     Serial.print(s);
     root["time"] = s;
 
-    access.writeTimeData(device_ssid + "=" + uid + "=" + emp_id + "=" + s);
+    access.writeTimeData(device_ssid + ";" + uid + ";" + emp_id + ";" + s);
 
     String json = "";
     root.printTo(json);
@@ -1057,7 +1057,7 @@ void loop()
           http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
           http.addHeader("Content-Type", "application/x-www-form-urlencoded");
 
-          int httpCode = http.POST(access_data); //Send the request
+          int httpCode = http.POST("data=" + access_data); //Send the request
           String payload = http.getString();     //Get the response payload
 
           Serial.println(httpCode); //Print HTTP return code

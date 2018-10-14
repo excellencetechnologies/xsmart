@@ -13,10 +13,8 @@ router.get("/deleteTime", (req, res) => {
 });
 router.post("/addTime", async (req, res) => {
     console.log(req.body, "asdfasfasdf");
-    let keys = Object.keys(req.body);
-    if (keys[0]) {
-        console.log(keys[0]);
-        let lines = keys[0].split("\r");
+    if (req.body.data) {
+        let lines = req.body.data.split("\r");
         console.log(lines);
         lines.forEach(async element => {
             console.log(element);
