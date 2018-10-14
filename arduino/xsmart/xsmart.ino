@@ -1048,24 +1048,27 @@ void loop()
 #ifdef ISACCESS
 
         String access_data = access.readTimeData();
-        Serial.println(access_data);
-
-        HTTPClient http; //Declare object of class HTTPClient
-
-        http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
-        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        int httpCode = http.POST(access_data); //Send the request
-        String payload = http.getString();     //Get the response payload
-
-        Serial.println(httpCode); //Print HTTP return code
-        Serial.println(payload);  //Print request response payload
-        if (httpCode == 200)
+        if (access_data.length() > 0)
         {
-          access.deleteTimeData();
+          Serial.println(access_data);
+
+          HTTPClient http; //Declare object of class HTTPClient
+
+          http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
+          http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+          int httpCode = http.POST(access_data); //Send the request
+          String payload = http.getString();     //Get the response payload
+
+          Serial.println(httpCode); //Print HTTP return code
+          Serial.println(payload);  //Print request response payload
+          if (httpCode == 200)
+          {
+            access.deleteTimeData();
+          }
+          access_data = "";
+          http.end(); //Close connection
         }
-        access_data = "";
-        http.end(); //Close connection
 
 #endif
 
