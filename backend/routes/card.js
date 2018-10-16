@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+var request = require("request");
 var middleware = require("../middleware/authentication");
 var dataValidation = require("../data_validation/validation");
 var Device = require("../model/device");
