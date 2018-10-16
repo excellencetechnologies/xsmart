@@ -50,7 +50,7 @@ router.post("/login", async (req, res) => {
 
 router.post("/meta/:id", async (req, res) => {
 
-    User.findByIdAndUpdate(req.body.id, req.body.meta, (err, obj) => {
+    User.findByIdAndUpdate(req.params.id, req.body.meta, (err, obj) => {
         if (err) {
             res.status(500).json(err);
         } else {
