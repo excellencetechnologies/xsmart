@@ -65,7 +65,7 @@ router.post("/getAttendance", (req, res) => {
     })
 })
 
-router.get("/validateKey/:key" , (req, res) => {
+router.get("/validateKey/:key", (req, res) => {
     console.log(req.params.key);
     request({
         url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
@@ -77,46 +77,66 @@ router.get("/validateKey/:key" , (req, res) => {
     }, (err, r, body) => {
         console.log(err);
         console.log(body);
-        if (!err && body.error == 0) {
+        if (!err && body) {
             res.json({});
-        }else{
+        } else {
             res.status(500).json({});
         }
     })
 })
 
-router.get("/userData", (req, res) => {
-    request({
-        url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
-        method: "POST",
-        json: {
-            "action": "get_enable_user",
-            "secret_key": "640ce5ae7618062d23c94d7723916c16"
-        }
-    }, (err, r, body) => {
-        let response = [];
-        if (!err && body.error == 0) {
-            body.data.forEach(emp => {
-                response.push({
-                    id: emp.id,
-                    type: emp.type,
-                    name: emp.name,
-                    jobtitle: emp.jobtitle,
-                    gender: emp.gender,
-                    image: emp.image,
-                    status: emp.status,
-                    emp_id: emp.user_Id
-                })
-            });
-        }
+router.get("/employeeData/:id", (req, res) => {
+
+
+    User.findById(req.params.id, (err, obj) => {
         if (err) {
             res.status(500).json(err);
-        } else if (body.error !== 0) {
-            res.status(500).json(body.error);
         } else {
-            res.json(response);
+
+            console.log(obj);
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "get_enable_user",
+                        "secret_key": obj.meta.key
+                    }
+                }, (err, r, body) => {
+                    let response = [];
+                    if (!err && body.error == 0) {
+                        body.data.forEach(emp => {
+                            response.push({
+                                id: emp.id,
+                                type: emp.type,
+                                name: emp.name,
+                                jobtitle: emp.jobtitle,
+                                gender: emp.gender,
+                                image: emp.image,
+                                status: emp.status,
+                                emp_id: emp.user_Id
+                            })
+                        });
+                    }
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
         }
     })
+
+
 })
 
 module.exports = router;

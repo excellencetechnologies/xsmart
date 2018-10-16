@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
     }
 });
 
-router.post("/meta", async (req, res) => {
+router.post("/meta/:id", async (req, res) => {
 
     User.findByIdAndUpdate(req.body.id, req.body.meta, (err, obj) => {
         if (err) {
@@ -60,7 +60,7 @@ router.post("/meta", async (req, res) => {
 
 });
 
-router.get("/meta", async (req, res) => {
+router.get("/meta/:id", async (req, res) => {
     User.findById(req.params.id, (err, obj) => {
         if (err) {
             res.status(500).json(err);
