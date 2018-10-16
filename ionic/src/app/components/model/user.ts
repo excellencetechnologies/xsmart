@@ -16,6 +16,13 @@ export interface deleteDevice {
     chip_id: string;
     user_id: string;
 }
-export interface employee{
-    emp_id:string;
+export interface getEmployee {
+    emp_id: string;
+}
+export interface employeeList {
+    WEBID: "string"
+    chip: "string"
+    data: "string"
+    stage: "string"
+    type: "string"
 }

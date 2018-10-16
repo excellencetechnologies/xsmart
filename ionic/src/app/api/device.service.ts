@@ -20,6 +20,7 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
+    tempPin: any;
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -86,6 +87,24 @@ export class DeviceService {
         this.setDevices(devices);
     }
 
+    async updateDevicePinSwitch(data) {
+        let devices = await this.getDevices();
+        devices = devices.map((device: Device) => {
+            if (device.chip === data.chip) {
+                if (data.pinnames) {
+                    data.pins.forEach(pin => {
+                        pin['name'] = data.pinnames[pin['pin']] || ''
+                    });
+                }
+                device.switches = data.pins;
+            }
+
+            return device;
+        })
+        await this.setDevices(devices);
+        this.updateDeviceName(data.chip, data.name);
+    }
+
     async updateDeviceNotFound(data) {
         let devices = await this.getDevices();
         devices = devices.map((device: Device) => {
@@ -127,6 +146,8 @@ export class DeviceService {
             if (device.chip === chip) {
                 device.name = name
             }
+
+
             return device;
         })
         this.setDevices(devices);
@@ -166,10 +187,11 @@ export class DeviceService {
             });
             // Listen for messages
             socket.addEventListener('message', async (event) => {
-                let res = JSON.parse(event.data);
+                let res = JSON.parse(event.data)
                 console.log(res);
                 if (res.type === "device_online_check_reply") {
                     this.updateDeviceStatus(res);
+                    this.updateDevicePinSwitch(res);
                     this._event.setDevices(res);
                 } else if (res.type === "device_pin_oper_reply") {
                     if (res.found) {
@@ -212,11 +234,14 @@ export class DeviceService {
                     }
                 } else if (res.type === "device_set_add_employee_notify") {
                     if (res.stage === "employee_add_failed") {
+                        this._event.addEmployeefailed(res)
                         this.notifyService.alertUser("employee add failed on device. reason: " + res.message);
                     } else if (res.stage === "employee_add_success") {
                         this.notifyService.alertUser("device added card successful with card id ." + res.rfid + " and employee id " + res.emp_id);
+                        this._event.addEmployee(res);
                     } else {
                         this.notifyService.alertUser("device waiting to add employee. touch card.");
+                        this._event.waitingAccessCard(res);
                     }
                 } else if (res.type === "device_set_delete_employee_reply") {
                     if (res.found) {
@@ -250,6 +275,7 @@ export class DeviceService {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
                 } else if (res.type === "device_set_list_employee_notify") {
+                    this._event.employeeList(res);
                     this.notifyService.alertUser("employee list recieved");
                 } else if (res.type === "device_set_time_reply") {
                     if (res.found) {
@@ -265,47 +291,8 @@ export class DeviceService {
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");
                     }
-                } else if (res.type == "device_set_name_reply") {
-                    if (res.found) {
-                        this.notifyService.alertUser("opertaion send to device")
-                    }
-                    else {
-                        this.notifyService.alertUser("unable to reach device.device is not online");
+                }
 
-                    }
-                }
-                else if (res.type === "device_set_name_notify") {
-                    this.updateDeviceName(res.chip, res.name)
-                }
-                else if (res.type == "device_set_pin_name_reply") {
-                    if (res.found) {
-                        this.notifyService.alertUser("opertaion send to device")
-                    }
-                    else {
-                        this.notifyService.alertUser("unable to reach device.device is not online");
-
-                    }
-                }
-                else if (res.type === "device_set_pin_name_notify") {
-                    await this.updateDevicePin(res.pin, res.status, res.chip, res.name);
-                }
-                else if (res.type === "device_get_time_notify") {
-                    let deviceTime = new Date(res.data).getTime();
-                    let currentTime = new Date().getTime();
-                    let diff = currentTime - deviceTime;
-                    if (Math.abs(diff) > 24 * 60 * 60 * 1000) {
-                    } else if (Math.abs(diff) < .5 * 60 * 60 * 1000) {
-                    } else {
-                        this.sendMessageToSocket({
-                            type: "device_set_time",
-                            chip: res.chip,
-                            app_id: await this.getAppID(),
-                            stage: "init",
-                            diff: Math.round(diff / 1000)
-                        });
-                    }
-                    this.notifyService.alertUser("device time recived");
-                }
             });
         }
     }

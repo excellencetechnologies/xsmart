@@ -27,7 +27,7 @@ export class ExistingDevicesComponent implements OnInit {
     private nativeStorage: NativeStorage,
     private platform: Platform,
     private deviceService: DeviceService,
-    private notifyService: NotifyService
+    private notifyService: NotifyService,
   ) { }
 
   ngOnInit() {
@@ -59,19 +59,5 @@ export class ExistingDevicesComponent implements OnInit {
     }
     this.router.navigate(["/tabs"]);
   } 
-  async deleteDevices(user_id, chip_id, device: Device) {
-    this.loading = true;
-    try {
-      await this.apiServices.deleteDevices({ user_id:user_id,chip_id:chip_id});
-      this.getDevice()
-      this.notifyService.alertUser("Successfully deleted ");
-      this.loading = false;
-    } catch (err) {
-      this.loading = false;
-      this.errorMessage = err["error"];
-      this.notifyService.alertUser("device not Delete ");
-    }
-  }
-
 }
 
