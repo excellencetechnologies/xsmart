@@ -65,7 +65,8 @@ router.post("/getAttendance", (req, res) => {
     })
 })
 
-router.get("/validateKey" , (req, res) => {
+router.get("/validateKey/:key" , (req, res) => {
+    console.log(req.params.key);
     request({
         url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
         method: "POST",
