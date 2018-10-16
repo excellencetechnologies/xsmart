@@ -1,19 +1,50 @@
 #include <ota.h>
+
+#ifdef ESP8266
+#include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
+#endif
+
+
+#ifdef ESP32
 #include <HTTPClient.h>
 #include <Update.h>
+#endif
 
 OTA::OTA()
 {
 }
 
-void OTA::checkUpdate(void)
+void OTA::checkUpdate(String url)
 {
+    #ifdef ESP8266
+        HTTPClient httpClient;
+        httpClient.begin( url );
+        int httpCode = httpClient.GET();
+        if( httpCode == 200 ) {
+            t_httpUpdate_return ret = ESPhttpUpdate.update( url );
+
+            switch(ret) {
+                case HTTP_UPDATE_FAILED:
+                Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+                break;
+                case HTTP_UPDATE_NO_UPDATES:
+                Serial.println("HTTP_UPDATE_NO_UPDATES");
+                case HTTP_UPDATE_OK:
+                Serial.println("[update] Update ok."); // may not called we reboot the ESP
+                break;
+            }
+        }
+        httpClient.end();
+
+    #endif
+    #ifdef ESP32
     HTTPClient http;
 
     Serial.print("[HTTP] begin...\n");
 
     // configure server and url
-    http.begin("http://excellencetechnologies.co.in/xsmart.ino.bin");
+    http.begin(url);
     //http.begin("192.168.1.12", 80, "/test.html");
 
     Serial.print("[HTTP] GET...\n");
@@ -67,9 +98,9 @@ void OTA::checkUpdate(void)
                     {
                           Update.printError(Serial);
                     }
-                    Serial.println(len);
-                    Serial.println(c);
-                    Serial.println(".");
+                    // Serial.println(len);
+                    // Serial.println(c);
+                    // Serial.println(".");
                     if (len > 0)
                     {
                         len -= c;
@@ -99,4 +130,5 @@ void OTA::checkUpdate(void)
     http.end();
 
     delay(1000 * 100); //temp
+    #endif
 }

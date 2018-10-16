@@ -1,3 +1,18 @@
 .title{
    text-align: center;
 }
+.login-Form{
+    border: thin solid #a2a4ab78;
+    border-bottom:unset;
+}
+.text-decorater a{
+    text-decoration: blink;
+}
+.register:hover{
+    border: 1px solid blue;
+    border-radius: 4px;
+}
+.error{
+    text-align: center;
+    color: red;
+}

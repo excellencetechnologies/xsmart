@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Scan Devices
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <div>
+    <div text-center>
+      <circle-progress [percent]="0">
+      </circle-progress>
+    </div>
+    <p> Turn on Access point on your device!</p>
+    <p>Press the button on your device for 3 Sec and it should trun on the access point mode.</p>
+    <p>You should see the status LED,to start to blink continuesly</p>
+    <p> This means the pairing model is turned on.</p>
+    <p>Keep your Mobile phone close to your device</p>
+  </div>
+  <ion-button class="button-radius" expand="block" (click)="next()" color="danger" fill="outline">Next</ion-button>
+</ion-content>

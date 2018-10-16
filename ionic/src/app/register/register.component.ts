@@ -20,15 +20,9 @@ export class RegisterComponent implements OnInit {
   ngOnInit() {
     this.userRegisterForm = this._fb.group({
       name: ['', Validators.required],
-      email: ['', Validators.compose([Validators.maxLength(50),])],
-      password: ['', Validators.compose([Validators.required, Validators.minLength(6)])],
-      conpassword: ['', Validators.compose([Validators.required, Validators.minLength(6)])]
-    }, { validator: this.pwdMatchValidator.bind(this) });
-  }
-
-  pwdMatchValidator(userRegisterForm: FormGroup) {
-    return userRegisterForm.get("password").value === userRegisterForm.get("conpassword").value
-      ? null : { mismatch: true };
+      email: ['', Validators.required],
+      password: ['', Validators.required],
+    });
   }
 
   async onSubmit(formData) {
@@ -40,7 +34,7 @@ export class RegisterComponent implements OnInit {
       this.userRegisterForm.reset();
     } catch (err) {
       this.loading = false;
-      this.errorMessage = err.message;
+      this.errorMessage = err['error']
     }
   }
 }

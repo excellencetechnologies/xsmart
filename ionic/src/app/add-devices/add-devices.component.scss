@@ -1,0 +1,42 @@
+.network {
+    margin-top: 30px;
+}
+
+.networklist {
+    border: thin solid var(--ion-color-light-tint);
+    margin: unset;
+}
+
+.wifiNetwork {
+    float: right;
+    color: var(--ion-color-light-tint);
+}
+
+.newDevice {
+    font-size: 15px;
+}
+
+.content {
+    --padding-top: 4px;
+}
+
+.listPassword {
+    padding: 5px;
+}
+
+.wifiSSid {
+    margin-bottom: 6.2px;
+}
+
+.checkMark {
+    margin: 0 7px
+}
+
+.loading {
+    transform: scale(0.6);
+    vertical-align: middle;
+}
+
+.loader {
+    color: var(--ion-color-medium-shade)
+}

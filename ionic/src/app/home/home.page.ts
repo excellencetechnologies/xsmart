@@ -1,16 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Component, OnInit, EventEmitter } from '@angular/core';
+import { Platform, MenuController, ToastController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
-
 import { ApiService } from "../api/api.service";
 import { DeviceService } from "../api/device.service"
 import { NotifyService } from "../api/notify.service";
 import { Ping, Wifi, Device, Switch } from "../api/api"
-
+import { EventHandlerService } from '../api/event-handler.service'
+import { Router, NavigationEnd } from '@angular/router';
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+import { newDevice } from "../components/model/user";
 
 let socket = null;
-
 let wifiCheckInterval = null;
 
 @Component({
@@ -19,15 +20,20 @@ let wifiCheckInterval = null;
   styleUrls: ['home.page.scss']
 })
 export class HomePage implements OnInit {
-
   message: String = "test";
   xSmartConnect: boolean = false;
-  wifinetworks: Wifi[] = [];
   devicePing: Ping;
   devices: Device[] = [];
-  isScanningDevice: boolean = false;
   mode: String = "device";
   isSocketConnected: boolean = false;
+  loader: boolean;
+  device: newDevice[];
+  errorMessage: string
+  live: boolean = false;
+  time: any;
+  routerSet: any;
+  wifiSet: boolean = false;
+  deviceSubscription: any;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -39,77 +45,96 @@ export class HomePage implements OnInit {
     private api: ApiService,
     public alertController: AlertController,
     private deviceService: DeviceService,
-    private notifyService: NotifyService) { }
+    private menuController: MenuController,
+    private notifyService: NotifyService,
+    private toastCtrl: ToastController,
+    private router: Router,
+    private nativeStorage: NativeStorage,
+    private _event: EventHandlerService,
+  ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.platform.ready().then(() => {
       this.message = "platform ready";
-      // this.keepCheckingWifiConnected();
       this.checkExistingDevice();
     });
-  }
-  sendMessageToSocket(msg) {
-    if (this.isSocketConnected) {
-      console.log("socket msg send to", msg);
-      socket.send(JSON.stringify(msg));
-
-    } else {
-      socket = new WebSocket('ws://5.9.144.226:9030');
-      // Connection opened
-      socket.addEventListener('open', (event) => {
-        console.log("socket connected");
-        this.isSocketConnected = true;
-        socket.send(JSON.stringify(msg));
-      });
-
-      socket.addEventListener('close', () => {
-        console.log("socket closed");
-        this.isSocketConnected = false;
-      });
-
-      // Listen for messages
-      socket.addEventListener('message', async (event) => {
-
-        let res = JSON.parse(event.data);
-        console.log('Message from server ');
-        console.log(res);
-        if (res.type === "device_online_check_reply") {
-          this.updateDeviceStatus(res);
-        } else if (res.type === "device_pin_oper_reply") {
-          this.notifyService.alertUser("operation sent to device");
-        } else if (res.type === "device_io_notify") {
-          await this.deviceService.updateDevicePin(res.pin, res.status, res.chip);
-          this.devices = await this.deviceService.getDevices();
-          this.notifyService.alertUser("device performed the action!");
+    this.router.events
+      .subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.checkExistingDevice();
         }
       });
+    if (localStorage.getItem('live') != undefined) {
+      this.live = JSON.parse(localStorage.getItem("live"))
+    }
+    else if (this.platform.is("mobile")) {
+      const liveStatus = await this.nativeStorage.getItem('live')
+      if (liveStatus != undefined)
+        this.live = liveStatus;
+    }
+    this.deviceSubscription = this._event.devices.subscribe(async (res) => {
+      this.time = res.deviceTime;
+      this.devices = await this.deviceService.getDevices();
+      this.devices.forEach(value => {
+        if (value.device_id == res.id) {
+          const currentDate = new Date(this.time);
+          const utcTime = new Date(currentDate.getTime() + (30 * 60 * 1000));
+          value['time'] = utcTime;
+        }
+      });
+    })
+  }
+
+  async onliveMode() {
+    this.live = !this.live;
+    if (this.platform.is("mobile")) {
+      this.nativeStorage.setItem('live', JSON.stringify(this.live))
+    }
+    else {
+      localStorage.setItem('live', JSON.stringify(this.live));
     }
   }
+
   async switchOff(s: Switch, d: Device) {
-    this.sendMessageToSocket({
+    this.deviceService.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
-      status: 0,
-      app_id: await this.deviceService.getAppID()
+      status: "LOW",
+      name: s.name,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
     })
   }
   async switchOn(s: Switch, d: Device) {
-    this.sendMessageToSocket({
+    this.deviceService.sendMessageToSocket({
       type: "device_pin_oper",
       chip: d.chip,
       pin: s.pin,
-      status: 1,
-      app_id: await this.deviceService.getAppID()
+      status: "HIGH",
+      name: s.name,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
     })
   }
-  async updateDeviceStatus(data) {
-    if (data.found) {
-      await this.deviceService.updateDevice(data);
-    } else {
-      await this.deviceService.updateDeviceNotFound(data);
-    }
-    this.devices = await this.deviceService.getDevices();
+  async set_switch_name(s: Switch, d: Device) {
+    this.deviceService.sendMessageToSocket({
+      type: "device_set_pin_name",
+      chip: d.chip,
+      pin: s.pin,
+      name: s.name,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init"
+    })
+  }
+  async deviceTime(d: Device) {
+    this.deviceService.sendMessageToSocket({
+      type: "device_set_time",
+      chip: d.chip,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init",
+    });
+
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
@@ -127,101 +152,35 @@ export class HomePage implements OnInit {
     this.deviceService.deleteDevice(device);
     this.checkExistingDevice();
   }
-  scanDevice() {
-    this.mode = "scan";
-    this.isScanningDevice = true;
-    this.wifinetworks = [];
-    this.devicePing = {
-      name: "",
-      chip: "",
-      webid: "",
-      isNew: false
-    }
-    this.keepCheckingWifiConnected();
-  }
-  keepCheckingWifiConnected() {
-    if (wifiCheckInterval)
-      clearInterval(wifiCheckInterval);
-    wifiCheckInterval = setInterval(async () => {
-      try {
-        this.devicePing = await this.api.checkPing();
-        if (this.devicePing.name.length > 0) {
-          this.devicePing.isNew = false;
-        } else {
-          this.devicePing.isNew = true;
-        }
-        console.log(this.devicePing);
-        this.isScanningDevice = false;
-        clearInterval(wifiCheckInterval);
-        this.mode = "discovery";
-      } catch (e) {
-        console.log(e)
-        this.isScanningDevice = true;
-        // this.xSmartConnect = false;
-      }
-    }, 1000);
-  }
-  async freshDevice() {
-    this.devicePing.name = "";
-    this.devicePing.isNew = true;
-  }
-  async askDeviceName(){
-    
-  }
-  async setDeviceName(name: String) {
-    try {
-      await this.api.setDeviceNickName(name);
-      if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        let newdevice: Device = {
-          name: name,
-          device_id: this.devicePing.webid,
-          chip: this.devicePing.chip,
-          ttl: 0,
-          online: false,
-          switches: []
-        };
-        this.deviceService.addDevice(newdevice);
-      }
-      this.mode = "scan";
-      this.xSmartConnect = true;
-      this.scanWifi();
-    } catch (e) {
-      console.log(e);
-      this.notifyService.alertUser("failed to set device name");
-    }
-  }
 
-  async scanWifi() {
-    try {
-      this.wifinetworks = await this.api.getScanWifi();
-      console.log(this.wifinetworks);
-    } catch (e) {
-      console.log(e)
-      this.isScanningDevice = true;
-    }
+  scanDevice() {
+    this.router.navigate(["/scan-device"]);
+
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
-      this.sendMessageToSocket({
+      this.deviceService.sendMessageToSocket({
         type: "device_online_check",
         chip: device.chip,
-        app_id: await this.deviceService.getAppID()
+        app_id: await this.deviceService.getAppID(),
+        stage: "init"
       });
     });
   }
+
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
-      console.log(this.isSocketConnected);
-      this.keepCheckingDeviceOnline();  
-    }, this.isSocketConnected ? 1000 * 60 : 1000); ////this so high because, when device does a ping, we automatically listen to it
+      this.keepCheckingDeviceOnline();
+    }, this.isSocketConnected ? 1000 * 60 : 1000);
   }
-  async askWifiPassword(wifi) {
+
+  async setSwitchName(s: Switch, d: Device) {
     const alert = await this.alertController.create({
-      header: 'Enter Wifi Password',
+      header: 'Enter Switch Name',
       inputs: [
         {
-          name: 'password',
+          name: 'name',
           type: 'text',
         }
       ],
@@ -233,13 +192,18 @@ export class HomePage implements OnInit {
         }, {
           text: 'Ok',
           handler: async (data) => {
-            console.log('Confirm Ok')
-            console.log(data.password);
-            console.log(wifi.SSID);
             try {
-              await this.api.setWifiPassword(wifi.SSID, data.password);
+              s['name'] = data.name;
+              this.deviceService.sendMessageToSocket({
+                type: "device_set_pin_name",
+                chip: d.chip,
+                pin: s.pin,
+                name: data.name,
+                app_id: await this.deviceService.getAppID(),
+                stage: "init"
+              })
             } catch (e) {
-              console.log(e);
+              this.errorMessage = e['error']
             }
             this.keepCheckingDeviceOnline();
             this.mode = "device";
@@ -249,5 +213,146 @@ export class HomePage implements OnInit {
     });
 
     await alert.present();
+  }
+  menu() {
+    this.menuController.toggle()
+  }
+
+  addEmployee(device: Device) {
+    this.router.navigate(["/add-employee", device.chip]);
+  }
+  async deleteEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.deviceService.sendMessageToSocket({
+              type: "device_set_delete_employee",
+              chip: device.chip,
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async deviceName(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Device Name',
+      inputs: [
+        {
+          name: 'name',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            device['name'] = data.name;
+            this.deviceService.sendMessageToSocket({
+              type: "device_set_name",
+              chip: device.chip,
+              name: data.name,
+              app_id: await this.deviceService.getAppID(),
+              stage: "init"
+            });
+          }
+        }
+      ]
+    });
+    this.keepCheckingDeviceOnline();
+    await alert.present();
+  }
+  async disableEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.deviceService.sendMessageToSocket({
+              type: "device_set_disable_employee",
+              chip: device.chip,
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+  async enableEmployee(device: Device) {
+    const alert = await this.alertController.create({
+      header: 'Enter Employee ID',
+      inputs: [
+        {
+          name: 'emp_id',
+          type: 'text',
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Ok',
+          handler: async (data) => {
+            this.deviceService.sendMessageToSocket({
+              type: "device_set_enable_employee",
+              chip: device.chip,
+              app_id: await this.deviceService.getAppID(),
+              emp_id: data.emp_id,
+              stage: "init"
+            })
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  wifi1() {
+    this.router.navigate(["/scan-device"]);
+  }
+
+  async listEmployee(device: Device) {
+    this.router.navigate(["/view-employee", device.chip]);
   }
 }

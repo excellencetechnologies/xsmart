@@ -1,0 +1,34 @@
+.grid {
+    border: thin solid #EEE;
+    border-bottom: none;
+}
+.menu {
+    font-family: 'Titillium Web', sans-serif;
+    transform: scale(1.0);
+    padding: 10px;
+    font-size: 1.4em;
+}
+
+.switchList{
+    border-bottom: thin solid #EEE;
+}
+.devices {
+    margin: 0 auto;
+}
+
+.devices>h3 {
+    font-weight: 800;
+    font-size: 26px;
+}
+
+.wifi {
+    color: var(--ion-color-medium);
+    transform: scale(0.6);
+}
+
+.exclemetry {
+    color: var(--ion-color-medium);
+}
+.blue {
+    color:var(--ion-color-primary-tint);
+}

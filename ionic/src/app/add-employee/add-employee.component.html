@@ -1,0 +1,40 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Add Employee
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <div>
+    <div padding-left>
+      <h3>Add Employee</h3>
+    </div>
+    <form class="form-horizontal" [formGroup]="employeeForm" *ngIf="!enrollCard.isenrollCard">
+      <ion-row>
+        <ion-col>
+          <ion-list class="employeeForm">
+            <ion-label class="employeeId">Employee Id
+            </ion-label>
+            <ion-item>
+              <ion-input type="text" formControlName="emp_id" name="emp_Id" required></ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-col class="signup-col">
+        <ion-button expand="block" color="tirtary" fill="outline" (click)="employeeData(employeeForm.value)"> Next
+        </ion-button>
+      </ion-col>
+    </form>
+    <div *ngIf="enrollCard.isenrollCard">
+      <div text-center class="spinner"></div>
+      <ion-label text-center>Please Enroll Access Card</ion-label>
+      <p class="error" *ngIf="errorMessage">Device waiting to add Employee</p>
+    </div>
+    <p class="error" *ngIf="errorMessage">Employee is not added Please try again</p>
+  </div>
+</ion-content>

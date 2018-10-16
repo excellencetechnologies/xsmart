@@ -3,13 +3,16 @@
         {
             "name": "Win32",
             "includePath": [
+                "C:\\Users\\alldocube\\Documents\\Arduino\\tools\\**",
+                "C:\\Users\\alldocube\\Documents\\Arduino\\hardware\\espressif\\esp32\\**",
                 "C:\\Users\\alldocube\\Documents\\Arduino\\libraries\\ArduinoJson\\src",
                 "C:\\Users\\alldocube\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\**",
                 "C:\\Users\\alldocube\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\1.0.0\\**",
                 "C:\\Users\\alldocube\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
                 "C:\\Users\\alldocube\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.4.2\\**"
             ],
-            "intelliSenseMode": "msvc-x64"
+            "intelliSenseMode": "msvc-x64",
+            "forcedInclude": []
         }
     ],
     "version": 4

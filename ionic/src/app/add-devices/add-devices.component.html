@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Device Found
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding class="content">
+  <div no-padding>
+    <div padding-left>
+    </div>
+    <div>
+      <div class="content">
+        <p size="12">
+          <b>
+            <span size="4">Device ID:</span>
+          </b>
+          <span class="item-padding">{{devicePing.webid}}</span>
+        </p>
+      </div>
+    </div>
+    <div text-center>
+      <circle-progress [percent]="progressBarInfo"></circle-progress>
+    </div>
+    <div class="loader">
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected
+      </p>
+      <p>
+        <ion-spinner class="loading" name="crescent"></ion-spinner>
+        Message sent to device
+      </p>
+    </div>
+    <form [formGroup]="setNameForm">
+      <div>
+        <ion-item>
+          <ion-input [(ngModel)]="devicePing.name" formControlName="name" type="text" placeholder="Device Name.."></ion-input>
+          <ion-button (click)="setDeviceName(devicePing.name,devicePing.chip,setNameForm)" color="primary">Set Name</ion-button>
+        </ion-item>
+        <div *ngIf="setNameForm.controls['name'].errors && !setNameForm.controls['name'].pristine">
+          <div *ngIf="setNameForm.controls['name'].errors.required">
+            Name is required.
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</ion-content>

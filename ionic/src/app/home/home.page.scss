@@ -1,18 +1,88 @@
-.Switches {
-    margin: 0 auto;
+.menu {
+    font-family: 'Titillium Web', sans-serif;
+    transform: scale(1.0);
+    padding: 10px;
+    font-size: 1.4em;
 }
-.title {
-    text-align: center;
+
+.grid-item-header {
+    border-bottom: thin solid var(--ion-color-light-tint);
 }
-.icon {
-    float: left;
+
+.yellow {
+    color: var( --ion-color-tertiary-tint);
 }
-.grid {
-    border: 1px solid #a2a4ab;
+
+.exclm {
+    font-family: 'Titillium Web', sans-serif;
+    color: var(--ion-color-medium);
 }
-.grid-item {
-    border-bottom: 1px solid #a2a4ab;
+
+.wifi {
+    transform: scale(0.6);
+    color: var(--ion-color-medium);
 }
-.grid-item:hover {
-    color: yellow;
+
+.blue {
+    color: var(--ion-color-primary-tint);
+}
+
+.group {
+    padding-bottom: 10px;
+}
+
+.button-radius {
+    --padding-bottom: 1.5em;
+    --padding-top: 1.5em;
+    text-transform: capitalize;
+    padding-left: 10px;
+    padding-right: 10px;
+    --border-radius: 5px;
+}
+
+.button {
+    text-transform: capitalize;
+}
+
+.yourDevice {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.border {
+    border: thin solid var(--ion-color-primary-shade);
+    border-radius: 2px;
+}
+
+.border ion-col:not(:last-child) {
+    border-right: thin solid var(--ion-color-primary-shade)
+}
+
+.item-padding {
+    padding: 6px;
+    color:var(--ion-color-medium-shade)
+}
+
+.content {
+    --padding-top: 4px;
+    color: var(--ion-color-light-contrast);
+}
+
+.devicename {
+    border-bottom: thin solid var(--ion-color-light-tint);
+    font-size: 19px;
+}
+
+.device>h3 {
+    padding-left: 10px;
+}
+
+.iconlevel {
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+.time {
+    float: right;
+    font-size: 10px;
 }

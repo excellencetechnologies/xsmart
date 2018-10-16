@@ -1,0 +1,52 @@
+<ion-header translucent>
+  <ion-toolbar>
+    <ion-title text-center>
+      Import Device
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <div *ngIf="!(devices && devices.length)">
+    No Devices Found!
+  </div>
+  <ion-list *ngIf="devices && devices.length">
+
+    <ion-card *ngFor="let devices of devices; trackBy: trackByimportDevice">
+      <ion-list class="border">
+        <ion-item class="border">
+          <ion-icon slot="start" *ngIf="devices && devices.type !='access'" name="swap" color="primary"></ion-icon>
+          <ion-icon slot="start" *ngIf="devices && devices.type =='access'" color="primary" name="infinite"></ion-icon>
+          <ion-label color="primary" class="devicename" *ngIf="devices['meta']">{{devices.meta.name}}</ion-label>
+          <ion-checkbox slot="end" [ngModel]="devices.status" color="primary" (ionChange)="devices.status = !devices.status"></ion-checkbox>
+        </ion-item>
+      </ion-list>
+
+      <ion-list>
+        <ion-item>
+          <div class="content">
+            <p size="12">
+              <span *ngIf="devices['meta']">
+                <b>Device Id </b> : {{devices.meta.device_id}}</span>
+            </p>
+            <div *ngIf="devices['meta']">
+              <p *ngIf="devices.meta.switches.length > 0">
+                <span> {{devices.meta.switches.length}}</span>
+              </p>
+            </div>
+          </div>
+        </ion-item>
+      </ion-list>
+      <ion-list>
+      </ion-list>
+    </ion-card>
+  </ion-list>
+  <ion-col>
+    <ion-button (click)="importDevices()" class="scanDevices" expand="block" color="primary">
+      {{loading ? '' : 'Import'}}
+      <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+    </ion-button>
+  </ion-col>
+  <p text-center class="text-decorater">
+    <a routerLink="/tabs">Skip</a>
+  </p>
+</ion-content>

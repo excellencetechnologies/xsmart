@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Pair Devices
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <div>
+    <div text-center>
+      <circle-progress [percent]="20"></circle-progress>
+    </div>
+    <div class="loader">
+      <p>
+        <ion-icon class="checkMark" color="success" *ngIf="progressBar.isNetworkConnect" name="checkmark"></ion-icon>
+        <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnect" name="crescent"></ion-spinner>Connecting device to network
+      </p>
+    </div>
+    <p> Once the pair mode start on device,connect to the device wifi network</p>
+    <p>A wifi network named</p>
+    <p>
+      <b>xSmart-xxxxxxxxxxx</b>
+    </p>
+    <p> should show up.Connect to this wifi network with password</p>
+    <p>
+      <b>123456789</b>
+    </p>
+  </div>
+  <div class="error">
+    <p *ngIf="errorMessage">Make sure device is close to your mobile and you are connect to the wifi network</p>
+  </div>
+  <ion-button class="button-radius" expand="block" color="primary" (click)="scanDevice()" fill="outline">Waiting..</ion-button>
+</ion-content>
