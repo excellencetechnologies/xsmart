@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http'
 import { ApiService } from '../api/api.service';
 import { timer } from 'rxjs';
 import { ModalController } from '@ionic/angular';
-import { AddDevicesComponent } from '../add-devices/add-devices.component';
+import { WifiNetworkComponent } from '../wifi-network/wifi-network.component';
 let wifiCheckInterval = null;
 @Component({
   selector: 'app-pair-device',
@@ -61,7 +61,7 @@ export class PairDeviceComponent implements OnInit {
         this.mode = "discovery";
         const data2 = { pingDevice: this.devicePing };
         const modal = await this.modalController.create({
-          component: AddDevicesComponent,
+          component: WifiNetworkComponent,
           componentProps: { pingDevice: data2 }
         });
         return await modal.present();

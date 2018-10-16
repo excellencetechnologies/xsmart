@@ -250,11 +250,13 @@ handleProtocol = async (obj, ws, w) => {
             // do something when card is read successfully like doing push notification or 
             //sending data to webhook. will come in advance usage.
 
-            let attendance = new Attendance;
-            attendance.chip = obj['chip'];
-            attendance.emp_id = obj['emp_id'];
-            attendance.time = obj["time"]
-            attendance.save();
+            // let attendance = new Attendance;
+            // attendance.chip = obj['chip'];
+            // attendance.emp_id = obj['emp_id'];
+            // attendance.time = obj["time"]
+            // attendance.save();
+
+            // we will save to db in seperate api call
 
         } else {
             w.send("error...... wtfs.. yeah method nai hai :P :P :P");
@@ -390,9 +392,7 @@ ws.on('connection', function (w) {
                     w.send(JSON.stringify({
                         type: "device_online_check_reply",
                         found: false,
-                        chip: chip,
-                        name: devices[chip].deviceName ? devices[chip].deviceName : "",
-                        pinnames: devices[chip].pinnames ? devices[chip].pinnames : "",
+                        chip: chip
 
                     }));
                 }

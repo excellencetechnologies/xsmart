@@ -14,15 +14,16 @@
   </div>
   <div class="loader">
     <p>
-      <ion-icon class="checkMark" color="success" *ngIf="progressBar.isDeviceConnected" name="checkmark"></ion-icon>
-      <ion-spinner class="loading" *ngIf="!progressBar.isDeviceConnected" name="crescent"></ion-spinner>Device Connected
+      <ion-icon class="checkMark" color="success" name="checkmark"></ion-icon>
+      Device Connected
     </p>
     <p>
-      <ion-icon class="checkMark" color="success" *ngIf="progressBar.isMessageSent" name="checkmark"></ion-icon>
-      <ion-spinner class="loading" *ngIf="!progressBar.isMessageSent" name="crescent"></ion-spinner>Message sent to device</p>
+      <ion-icon class="checkMark" color="success" name="checkmark"></ion-icon>
+      Message sent to device</p>
     <p>
       <ion-spinner class="loading" *ngIf="!progressBar.isNetworkConnected" name="crescent"></ion-spinner>Connecting device to network</p>
   </div>
+  <ion-button class="network button-radius" (click)="scanWifi()" color="primary" expand="block" fill="outline">Getting Wifi Networks</ion-button>
   <div>
     <ion-list class="networklist" *ngFor="let wifi of wifinetworks">
       <ion-item class="listPassword" (click)="askWifiPassword(wifi)">

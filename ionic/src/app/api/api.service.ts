@@ -110,19 +110,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async addDevices(addDevice: newDevice) {
-    let header = new HttpHeaders().set('token', localStorage.getItem("token"));
-    try {
-      return await this.http.post<newDevice[]>(`${environment["base_url"]}device/addDevice`, addDevice,
-        {
-          headers: header
-        }
-      ).toPromise();
-    }
-    catch (error) {
-      throw (error);
-    }
-  }
+
   async listDevices(importDevice?: newDevice) {
     let header = new HttpHeaders().set('token', localStorage.getItem("token"));
     try {
@@ -163,19 +151,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async deleteDevices(deleteDevice: deleteDevice) {
-    let header = new Headers();
-    header.append('token', localStorage.getItem("token"));
-    try {
-      return await this.httpOld.delete(`${environment["base_url"]}device/deleteDevice`, new RequestOptions({
-        headers: header,
-        body: deleteDevice,
-      })).toPromise();
-    }
-    catch (error) {
-      throw (error);
-    }
-  }
+  
 
   async isLive() {
     if (this.platform.is("mobile")) {

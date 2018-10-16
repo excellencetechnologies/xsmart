@@ -606,7 +606,7 @@ void checkCardEmployee(String uid)
     Serial.print(s);
     root["time"] = s;
 
-    access.writeTimeData(device_ssid + "=" + uid + "=" + emp_id + "=" + s);
+    access.writeTimeData(device_ssid + ";" + uid + ";" + emp_id + ";" + s);
 
     String json = "";
     root.printTo(json);
@@ -938,7 +938,6 @@ void loop()
         Serial.print(F("read Card UID:"));
         String rfid = dump_byte_array(mfrc522.uid.uidByte, mfrc522.uid.size);
         checkCardEmployee(rfid);
-        Serial.println("DDDDDDDDDDDDDD");
         delay(1000); //wait after card is found. to remove repeated
       }
     }
@@ -1049,24 +1048,27 @@ void loop()
 #ifdef ISACCESS
 
         String access_data = access.readTimeData();
-        Serial.println(access_data);
-
-        HTTPClient http; //Declare object of class HTTPClient
-
-        http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
-        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        int httpCode = http.POST(access_data); //Send the request
-        String payload = http.getString();     //Get the response payload
-
-        Serial.println(httpCode); //Print HTTP return code
-        Serial.println(payload);  //Print request response payload
-        if (httpCode == 200)
+        if (access_data.length() > 0)
         {
-          // access.deleteTimeData();
+          Serial.println(access_data);
+
+          HTTPClient http; //Declare object of class HTTPClient
+
+          http.begin("http://5.9.144.226:9030/card/addTime"); //Specify request destination
+          http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+          int httpCode = http.POST("data=" + access_data); //Send the request
+          String payload = http.getString();     //Get the response payload
+
+          Serial.println(httpCode); //Print HTTP return code
+          Serial.println(payload);  //Print request response payload
+          if (httpCode == 200)
+          {
+            access.deleteTimeData();
+          }
+          access_data = "";
+          http.end(); //Close connection
         }
-        access_data = "";
-        http.end(); //Close connection
 
 #endif
 
