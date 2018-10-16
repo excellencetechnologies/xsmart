@@ -49,12 +49,14 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/meta/:id", async (req, res) => {
-
-    User.findByIdAndUpdate(req.params.id, req.body.meta, (err, obj) => {
+    User.findById(req.params.id , (err, user) => {
         if (err) {
             res.status(500).json(err);
-        } else {
-            res.status(200).json(obj);
+        }else{
+            user.meta = req.body.meta;
+            console.log(user);
+            await user.save();
+            res.status(200).json(user);
         }
     })
 

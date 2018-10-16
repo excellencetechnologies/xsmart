@@ -69,7 +69,6 @@ router.post("/getAttendance", (req, res) => {
 })
 
 router.get("/validateKey/:key", (req, res) => {
-    console.log(req.params.key);
     request({
         url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
         method: "POST",
@@ -78,8 +77,6 @@ router.get("/validateKey/:key", (req, res) => {
             "secret_key": req.params.key
         }
     }, (err, r, body) => {
-        console.log(err);
-        console.log(body);
         if (!err && body) {
             res.json({});
         } else {
