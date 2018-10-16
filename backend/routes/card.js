@@ -73,6 +73,8 @@ router.get("/validateKey" , (req, res) => {
             "secret_key": req.params.key
         }
     }, (err, r, body) => {
+        console.log(err);
+        console.log(body.error);
         if (!err && body.error == 0) {
             res.json({});
         }else{
