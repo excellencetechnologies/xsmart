@@ -18,8 +18,10 @@
         "md5": "^2.2.1",
         "memory-cache": "^0.2.0",
         "moment": "^2.22.2",
+        "moment-timezone": "^0.5.21",
         "mongoose": "^5.2.9",
         "nodemon": "^1.18.3",
+        "request": "^2.88.0",
         "semver": "^5.5.1",
         "ws": "^6.0.0"
     }
