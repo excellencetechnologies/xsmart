@@ -77,7 +77,7 @@ router.get("/validateKey/:key" , (req, res) => {
     }, (err, r, body) => {
         console.log(err);
         console.log(body);
-        if (!err && body.error == 0) {
+        if (!err && body) {
             res.json({});
         }else{
             res.status(500).json({});
