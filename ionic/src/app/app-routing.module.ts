@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: "pair-device",canActivate:[AuthGuard],component:PairDeviceComponent},
   { path: "set-Wifi-Password", canActivate:[AuthGuard],component:SetWifiPasswordComponent},
   { path :"add-employee/:id",canActivate:[AuthGuard],component:AddEmployeeComponent},
-  { path :"view-employee",canActivate:[AuthGuard],component:ViewEmployeeComponent},
+  { path :"view-employee/:id",canActivate:[AuthGuard],component:ViewEmployeeComponent},
   { path:"setting",canActivate:[AuthGuard],component:SettingComponent},
   { path:"add-devices",canActivate:[AuthGuard],component:AddDevicesComponent},
   { path:"wifi-network",canActivate:[AuthGuard],component:WifiNetworkComponent},

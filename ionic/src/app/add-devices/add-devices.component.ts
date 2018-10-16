@@ -79,12 +79,11 @@ export class AddDevicesComponent implements OnInit {
         }
       };
       if (!await this.deviceService.checkDeviceExists(this.devicePing.chip)) {
-        await this.api.addDevices(newDevice);
         this.deviceService.addDevice(newDevice['meta']);
         this.notifyService.alertUser("Device added Successfully");
         if (newDevice) {
           this.progressBarInfo = 60;
-          this.progressBar.isMessageSent=true;
+          this.progressBar.isMessageSent = true;
         }
       } else {
         this.deviceService.updateDevice(newDevice['meta']);
@@ -99,22 +98,19 @@ export class AddDevicesComponent implements OnInit {
         this.notifyService.alertUser("Device Update Successfully");
         if (newDevice) {
           this.progressBarInfo = 60;
-          this.progressBar.isMessageSent=true;
+          this.progressBar.isMessageSent = true;
         }
       }
-      this.router.navigate(["/add-devices"]);
       this.mode = "scan";
+      const modal1 = await this.modalController.create({
+        component: WifiNetworkComponent,
+        componentProps: {}
+      });
+      return await modal1.present();
     } catch (e) {
       this.errorMessage = e["error"];
       this.notifyService.alertUser("Please Provide valid unique chip ID");
     }
-  }
-  async scanWifi() {
-      const modal1 = await this.modalController.create({
-        component:WifiNetworkComponent,
-        componentProps: {}
-      });
-      return await modal1.present();
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {

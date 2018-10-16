@@ -30,10 +30,9 @@ export class WifiNetworkComponent implements OnInit {
     this.scanWifi();
     this.progressBarInfo = 60;
     this.progressBar = {
-      isDeviceConnected: false,
-      isMessageSent: false,
       isNetworkConnect: false
     }
+    localStorage.removeItem('routerSet');
   }
   async scanWifi() {
     try {
@@ -48,8 +47,6 @@ export class WifiNetworkComponent implements OnInit {
         }
       });
       this.progressBarInfo = 60;
-      this.progressBar.isMessageSent = true;
-      this.progressBar.isDeviceConnected = true;
     } catch (e) {
       this.errorMessage = e['error']
       this.notifyService.alertUser("Can not get Wifi");

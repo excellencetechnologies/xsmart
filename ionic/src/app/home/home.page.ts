@@ -31,8 +31,9 @@ export class HomePage implements OnInit {
   errorMessage: string
   live: boolean = false;
   time: any;
+  routerSet: any;
+  wifiSet: boolean = false;
   deviceSubscription: any;
-  deviceONOFF = false;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -74,6 +75,13 @@ export class HomePage implements OnInit {
     this.deviceSubscription = this._event.devices.subscribe(async (res) => {
       this.time = res.deviceTime;
       this.devices = await this.deviceService.getDevices();
+      this.devices.forEach(value => {
+        if (value.device_id == res.id) {
+          const currentDate = new Date(this.time);
+          const utcTime = new Date(currentDate.getTime() + (30 * 60 * 1000));
+          value['time'] = utcTime;
+        }
+      });
     })
   }
 
@@ -114,11 +122,19 @@ export class HomePage implements OnInit {
       type: "device_set_pin_name",
       chip: d.chip,
       pin: s.pin,
-      status: "HIGH",
       name: s.name,
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+  }
+  async deviceTime(d: Device) {
+    this.deviceService.sendMessageToSocket({
+      type: "device_set_time",
+      chip: d.chip,
+      app_id: await this.deviceService.getAppID(),
+      stage: "init",
+    });
+
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
@@ -136,8 +152,10 @@ export class HomePage implements OnInit {
     this.deviceService.deleteDevice(device);
     this.checkExistingDevice();
   }
+
   scanDevice() {
     this.router.navigate(["/scan-device"]);
+
   }
   async pingDevices() {
     this.devices.forEach(async (device) => {
@@ -157,7 +175,7 @@ export class HomePage implements OnInit {
     }, this.isSocketConnected ? 1000 * 60 : 1000);
   }
 
-  async setSwitchName(s, d) {
+  async setSwitchName(s: Switch, d: Device) {
     const alert = await this.alertController.create({
       header: 'Enter Switch Name',
       inputs: [
@@ -176,23 +194,14 @@ export class HomePage implements OnInit {
           handler: async (data) => {
             try {
               s['name'] = data.name;
-              d.switches.forEach(value => {
-                if (value.pin === s.pin) {
-                  value = s;
-                }
+              this.deviceService.sendMessageToSocket({
+                type: "device_set_pin_name",
+                chip: d.chip,
+                pin: s.pin,
+                name: data.name,
+                app_id: await this.deviceService.getAppID(),
+                stage: "init"
               })
-              this.set_switch_name(s, d);
-              const allDevices = await this.deviceService.getDevices();
-              allDevices.forEach(value => {
-                if (value['chip'] === d['chip']) {
-                  value.switches.forEach((value1, key) => {
-                    if (value1.pin == s.pin) {
-                      value1.name = data.name
-                    }
-                  })
-                }
-              })
-              this.deviceService.setDevices(allDevices);
             } catch (e) {
               this.errorMessage = e['error']
             }
@@ -212,9 +221,7 @@ export class HomePage implements OnInit {
   addEmployee(device: Device) {
     this.router.navigate(["/add-employee", device.chip]);
   }
-
   async deleteEmployee(device: Device) {
-
     const alert = await this.alertController.create({
       header: 'Enter Employee ID',
       inputs: [
@@ -226,8 +233,7 @@ export class HomePage implements OnInit {
       buttons: [
         {
           text: 'Cancel',
-          role: 'cancel',
-          cssClass: 'secondary'
+          role: 'cancel'
         }, {
           text: 'Ok',
           handler: async (data) => {
@@ -238,14 +244,15 @@ export class HomePage implements OnInit {
               emp_id: data.emp_id,
               stage: "init"
             })
+
           }
         }
       ]
     });
 
     await alert.present();
-
   }
+
   async deviceName(device: Device) {
     const alert = await this.alertController.create({
       header: 'Enter Device Name',
@@ -340,8 +347,12 @@ export class HomePage implements OnInit {
     });
     await alert.present();
   }
-  
+
   wifi1() {
     this.router.navigate(["/scan-device"]);
+  }
+
+  async listEmployee(device: Device) {
+    this.router.navigate(["/view-employee", device.chip]);
   }
 }
