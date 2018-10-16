@@ -7,6 +7,7 @@ var Device = require("../model/device");
 var Card = require("../model/card");
 var User = require("../model/user");
 
+
 var Attendance = require("../model/attendance");
 router.get("/deleteTime", (req, res) => {
     Attendance.deleteMany({}, (err) => {
