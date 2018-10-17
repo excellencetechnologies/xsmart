@@ -19,32 +19,29 @@ router.post("/addTime", async (req, res) => {
             console.log(data);
             if (data.length == 4) {
 
-                request({
+                await request({
                     url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
                     method: "POST",
                     json: {
                         "action": "employee_punch_time",
-                        "secret_key": "640ce5ae7618062d23c94d7723916c16",
+                        "secret_key": "a5e03eaf60684b64793f4e38f958b3e1",
                         // "user_id": req.params.data[2],
                         "user_id": 299,
                         "punch_time": data[3]
                     }
                 }, (err, r, body) => {
 
+                    console.log(err);
+                    console.log(r);
                     console.log(body);
-                    if (err) {
-                        res.status(500).json(err);
-                    } else {
-                        res.json({});
-                    }
+
                 })
 
 
             }
         })
-
-
     }
+    res.json({});
 });
 
 router.get("/getAllCards", (req, res) => {
