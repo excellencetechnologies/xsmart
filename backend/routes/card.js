@@ -19,17 +19,7 @@ router.post("/addTime", async (req, res) => {
             console.log(data);
             if (data.length == 4) {
 
-                console.log({
-                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
-                    method: "POST",
-                    json: {
-                        "action": "employee_punch_time",
-                        "secret_key": "a5e03eaf60684b64793f4e38f958b3e1",
-                        // "user_id": req.params.data[2],
-                        "user_id": 299,
-                        "punch_time": data[3]
-                    }
-                })
+               
 
                 await request({
                     url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
@@ -38,7 +28,7 @@ router.post("/addTime", async (req, res) => {
                         "action": "employee_punch_time",
                         "secret_key": "a5e03eaf60684b64793f4e38f958b3e1",
                         // "user_id": req.params.data[2],
-                        "user_id": 299,
+                        "user_id": data[2],
                         "punch_time": data[3]
                     }
                 }, (err, r, body) => {
