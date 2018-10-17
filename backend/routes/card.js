@@ -26,7 +26,7 @@ router.post("/addTime", async (req, res) => {
                         "action": "update_user_meta_data",
                         "secret_key": "640ce5ae7618062d23c94d7723916c16",
                         // "user_id": req.params.data[2],
-                        "user_id" : 299,
+                        "user_id": 299,
                         "punch_time": data[3]
                     }
                 }, (err, r, body) => {
@@ -48,11 +48,6 @@ router.post("/addTime", async (req, res) => {
 
     }
 });
-    }
-
-//xSmart-1602506=b05b3f25=10=12:30:10-10/14/18
-res.json({});
-})
 
 router.get("/getAllCards", (req, res) => {
     Card.find({}, (err, obj) => {
