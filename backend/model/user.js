@@ -9,6 +9,7 @@ const userSchema = new Schema({
     verified: { type: Boolean, default: true },
     social_type: { type: String, default: "app" },
     social_id: { type: String, default: "null" },
+    meta: { type: Schema.Types.Mixed }
 }, {
     timestamps: true
 });
