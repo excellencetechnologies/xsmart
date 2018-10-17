@@ -49,7 +49,7 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/meta/:id", async (req, res) => {
-    User.findById(req.params.id , (err, user) => {
+    User.findById(req.params.id , async (err, user) => {
         if (err) {
             res.status(500).json(err);
         }else{
