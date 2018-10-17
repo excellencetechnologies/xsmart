@@ -55,7 +55,7 @@ router.post("/meta/:id", async (req, res) => {
         if (err) {
             res.status(500).json(err);
         }else{
-            user.meta = req.body.meta;
+            user.meta = req.body;
             console.log(user);
             await user.save();
             res.status(200).json(user);
