@@ -43,9 +43,9 @@ router.post("/addTime", async (req, res) => {
                     }
                 }, (err, r, body) => {
 
-                    console.log(err);
-                    console.log(r);
-                    console.log(body);
+                    // console.log(err);
+                    // console.log(r);
+                    // console.log(body);
 
                 })
 
