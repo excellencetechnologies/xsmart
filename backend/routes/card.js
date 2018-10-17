@@ -8,13 +8,6 @@ var Card = require("../model/card");
 var User = require("../model/user");
 
 
-var Attendance = require("../model/attendance");
-router.get("/deleteTime", (req, res) => {
-    Attendance.deleteMany({}, (err) => {
-        res.json(err);
-    });
-
-});
 router.post("/addTime", async (req, res) => {
     console.log(req.body, "asdfasfasdf");
     if (req.body.data) {
@@ -25,41 +18,44 @@ router.post("/addTime", async (req, res) => {
             let data = element.split(";");
             console.log(data);
             if (data.length == 4) {
-                let attendance = new Attendance;
-                attendance.chip = data[0];
-                attendance.emp_id = data[2];
-                attendance.time = data[3];
-                await attendance.save();
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "update_user_meta_data",
+                        "secret_key": "640ce5ae7618062d23c94d7723916c16",
+                        // "user_id": req.params.data[2],
+                        "user_id" : 299,
+                        "punch_time": data[3]
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+
             }
-        });
+        })
+
+
+    }
+});
     }
 
-    //xSmart-1602506=b05b3f25=10=12:30:10-10/14/18
-    res.json({});
+//xSmart-1602506=b05b3f25=10=12:30:10-10/14/18
+res.json({});
 })
 
 router.get("/getAllCards", (req, res) => {
     Card.find({}, (err, obj) => {
-        if (err) {
-            res.status(500).json(err);
-        } else {
-            res.status(200).json(obj);
-        }
-    })
-})
-
-router.get("/getAllAttendance", (req, res) => {
-    Attendance.find({}, (err, obj) => {
-        if (err) {
-            res.status(500).json(err);
-        } else {
-            res.status(200).json(obj);
-        }
-    })
-});
-
-router.post("/getAttendance", (req, res) => {
-    Attendance.find(req.body, (err, obj) => {
         if (err) {
             res.status(500).json(err);
         } else {
@@ -83,7 +79,159 @@ router.get("/validateKey/:key", (req, res) => {
             res.status(500).json({});
         }
     })
+});
+
+router.post("/employeeData/:id/:emp_id", (req, res) => {
+    User.findById(req.params.id, (err, obj) => {
+        if (err) {
+            res.status(500).json(err);
+        } else {
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "update_user_meta_data",
+                        "secret_key": obj.meta.key,
+                        "user_id": req.params.emp_id,
+                        "data": req.body
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
+        }
+    })
+
 })
+
+router.delete("/employeeData/:id/:emp_id", (req, res) => {
+    User.findById(req.params.id, (err, obj) => {
+        if (err) {
+            res.status(500).json(err);
+        } else {
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "delete_user_meta_data",
+                        "secret_key": obj.meta.key,
+                        "user_id": req.params.emp_id,
+                        "data": req.body
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
+        }
+    })
+
+})
+
+router.get("/employeeData/:id/:emp_id", (req, res) => {
+    User.findById(req.params.id, (err, obj) => {
+        if (err) {
+            res.status(500).json(err);
+        } else {
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "get_user_meta_data",
+                        "secret_key": obj.meta.key,
+                        "user_id": req.params.emp_id,
+                        "workemail": req.body.workemail
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
+        }
+    })
+
+})
+
+router.post("/addEmployeeData/:id", (req, res) => {
+    User.findById(req.params.id, (err, obj) => {
+        if (err) {
+            res.status(500).json(err);
+        } else {
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "add_new_employee",
+                        "secret_key": obj.meta.key,
+                        "name": req.body.name,
+                        "gender": req.body.gender,
+                        "jobtitle": req.body.jobtitle
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
+        }
+    })
+});
 
 router.get("/employeeData/:id", (req, res) => {
 
@@ -92,8 +240,6 @@ router.get("/employeeData/:id", (req, res) => {
         if (err) {
             res.status(500).json(err);
         } else {
-
-            console.log(obj);
 
             if (obj.meta && obj.meta.key) {
 
