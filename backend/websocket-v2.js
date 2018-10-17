@@ -8,7 +8,6 @@ var deviceRouter = require("./routes/device");
 var cardRouter = require("./routes/card");
 var deviceSimulatorRouter = require('./routes/deviceSimulator');
 var bodyParser = require("body-parser");
-var moment = require('moment');
 require('dotenv').config();
 var cors = require('cors');
 var expressValidator = require("express-validator");
@@ -41,7 +40,6 @@ const ws = new WebSocket.Server({ server });
 //var ws = new Server({ port: port });
 
 var Card = require("./model/card");
-var Attendance = require("./model/attendance");
 var Device = require("./model/device");
 
 
@@ -250,11 +248,6 @@ handleProtocol = async (obj, ws, w) => {
             // do something when card is read successfully like doing push notification or 
             //sending data to webhook. will come in advance usage.
 
-            // let attendance = new Attendance;
-            // attendance.chip = obj['chip'];
-            // attendance.emp_id = obj['emp_id'];
-            // attendance.time = obj["time"]
-            // attendance.save();
 
             // we will save to db in seperate api call
 
