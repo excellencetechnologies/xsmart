@@ -34,8 +34,6 @@ router.post("/addTime", async (req, res) => {
                     console.log(body);
                     if (err) {
                         res.status(500).json(err);
-                    } else if (body.error !== 0) {
-                        res.status(500).json(body.error);
                     } else {
                         res.json(response);
                     }

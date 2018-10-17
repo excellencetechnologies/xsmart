@@ -51,17 +51,6 @@ router.post("/login", async (req, res) => {
 router.post("/meta/:id", async (req, res) => {
     console.log(req.params.id);
     console.log(req.body);
-    // User.findByIdAndUpdate(req.params.id, {
-    //     $set: {
-    //         meta: req.body
-    //     }
-    // }, (err, obj) => {
-    //     if (err) {
-    //         res.status(500).json(err);
-    //     } else {
-    //         res.json(obj);
-    //     }
-    // })
     User.findById(req.params.id , async (err, user) => {
         if (err) {
             res.status(500).json(err);
