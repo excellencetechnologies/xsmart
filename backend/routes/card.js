@@ -23,7 +23,7 @@ router.post("/addTime", async (req, res) => {
                     url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
                     method: "POST",
                     json: {
-                        "action": "update_user_meta_data",
+                        "action": "employee_punch_time",
                         "secret_key": "640ce5ae7618062d23c94d7723916c16",
                         // "user_id": req.params.data[2],
                         "user_id": 299,
