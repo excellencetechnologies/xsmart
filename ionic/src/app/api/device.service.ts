@@ -20,7 +20,7 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
-    deviceIDSubscription: string;
+    deviceuuidSubscription: string;
     deviceUuid: string;
     constructor(
         private nativeStorage: NativeStorage,
@@ -32,7 +32,7 @@ export class DeviceService {
         private _event: EventHandlerService
 
     ) {
-        this.deviceIDSubscription = this._event.deviceId.subscribe(async (res) => {
+        this.deviceuuidSubscription = this._event.deviceId.subscribe(async (res) => {
             this.deviceUuid = res;
         })
     }
