@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, } from '@angular/common/http';
 import { Ping, Wifi, Device } from "./api"
 import { environment } from "../../environments/environment";
 import { RequestOptions, Http, Headers } from "@angular/http";
-import { User, newDevice, deleteDevice, HrSystem,connectHrSystem ,employeeDetail} from "../components/model/user"
+import { User, newDevice, deleteDevice, ValidateHRSystemKey, employeeDetail } from "../components/model/user"
 import { isUndefined } from 'util';
 import { Platform } from '@ionic/angular';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
@@ -16,7 +16,6 @@ export interface Message {
   providedIn: 'root',
 })
 export class ApiService {
-  userId: string;
   httpOptions = {
     headers: new HttpHeaders({
       "Content-Type": "application/json",
@@ -170,9 +169,9 @@ export class ApiService {
       }
     }
   }
-  async connectSettingToHRSystem(HrSystem: HrSystem) {
+  async connectSettingToHRSystem(HrSystem: ValidateHRSystemKey) {
     try {
-      const data = await this.http.get<HrSystem>(`${environment["base_url"]}card/validateKey/${HrSystem.secret_key}`).toPromise();
+      const data = await this.http.get<ValidateHRSystemKey>(`${environment["base_url"]}card/validateKey/${HrSystem.secret_key}`).toPromise();
       return data;
     }
     catch (error) {
@@ -180,29 +179,29 @@ export class ApiService {
     }
   }
   async addUserMetaData(secret_key) {
-    this.userId = localStorage.getItem("userId")
+    const userId = localStorage.getItem("userId")
     try {
-      const data = await this.http.post(`${environment["base_url"]}user/meta/${this.userId}`,secret_key).toPromise();
+      const data = await this.http.post(`${environment["base_url"]}user/meta/${userId}`, secret_key).toPromise();
       return data;
     }
     catch (error) {
       throw (error);
     }
   }
-  async getUserMetaData(connectHrSystem?:connectHrSystem) {
-    this.userId = localStorage.getItem("userId")
+  async getUserMetaData() {
+    const userId = localStorage.getItem("userId")
     try {
-      const data = await this.http.get(`${environment["base_url"]}user/meta/${this.userId}`,).toPromise();
+      const data = await this.http.get(`${environment["base_url"]}user/meta/${userId}`, ).toPromise();
       return data;
     }
     catch (error) {
       throw (error);
     }
   }
-  async getEmployeeDetail(employeeDetail?:employeeDetail) {
-    this.userId = localStorage.getItem("userId")
+  async getEmployeeDetail(employeeDetail?: employeeDetail) {
+    const userId = localStorage.getItem("userId")
     try {
-      const data = await this.http.get<employeeDetail[]>(`${environment["base_url"]}card/employeeData/${this.userId}`,{}).toPromise();
+      const data = await this.http.get<employeeDetail[]>(`${environment["base_url"]}card/employeeData/${userId}`, {}).toPromise();
       return data;
     }
     catch (error) {

@@ -16,7 +16,7 @@ export interface deleteDevice {
     chip_id: string;
     user_id: string;
 }
-export interface employee {
+export interface addEmployee {
     emp_id: string;
 }
 export interface employeeList {
@@ -26,12 +26,8 @@ export interface employeeList {
     stage: "string"
     type: "string"
 }
-export interface HrSystem {
-    action: "string",
+export interface ValidateHRSystemKey {
     secret_key: "string"
-}
-export interface connectHrSystem {
-    meta: "string"
 }
 export interface employeeDetail {
     emp_id: "number"

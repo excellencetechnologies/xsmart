@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { employeeList } from "../components/model/user";
 import { EventHandlerService } from '../api/event-handler.service';
 import { AlertController } from '@ionic/angular';
+import { ApiService } from '../api/api.service';
 @Component({
   selector: 'app-view-employee',
   templateUrl: './view-employee.component.html',
@@ -16,12 +17,14 @@ export class ViewEmployeeComponent implements OnInit {
   listEmployeeSubscription: any;
   employees: employeeList;
   employeeList = [];
+  getEmployee: any;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
     private router: Router,
     private _event: EventHandlerService,
     public alertController: AlertController,
+    public apiService: ApiService
   ) { }
 
   ngOnInit() {
@@ -38,6 +41,7 @@ export class ViewEmployeeComponent implements OnInit {
       });
     })
     this.employeeData();
+    this.employeesList();
   }
 
   async employeeData() {
@@ -47,5 +51,12 @@ export class ViewEmployeeComponent implements OnInit {
       app_id: await this.deviceService.getAppID(),
       stage: "init"
     })
+  }
+  async employeesList() {
+    try {
+      this.getEmployee = await this.apiService.getEmployeeDetail();;
+    }
+    catch (e) {
+    }
   }
 }

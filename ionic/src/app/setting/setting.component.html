@@ -21,13 +21,13 @@
             <ion-label> Access Key
             </ion-label>
             <ion-item>
-              <ion-input type="text" [(ngModel)]="connectHrSystem" formControlName="secret_key" name="secret_key" required></ion-input>
+              <ion-input type="text" [(ngModel)]="accessKey" formControlName="secret_key" name="secret_key" required></ion-input>
             </ion-item>
           </ion-list>
         </ion-col>
       </ion-row>
       <p class="error" text-center *ngIf="errorMessage">Please provide valid accessKey</p>
-      <ion-button *ngIf="!isHRSystem" class="button-radius" expand="block" color="tertiary" (click)="connectHr(settingAccessKeyForm.value)">Connect</ion-button>
+      <ion-button *ngIf="!isHRSystem" class="button-radius" expand="block" color="tertiary" (click)="connectHrThroughAccessKey(settingAccessKeyForm.value)">Connect</ion-button>
     </form>
   </ion-list>
 </ion-content>

@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { employee, employeeDetail } from "../components/model/user";
+import { addEmployee, employeeDetail } from "../components/model/user";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
@@ -21,6 +21,7 @@ export class AddEmployeeComponent implements OnInit {
   errorMessage: boolean;
   employeeDetail: employeeDetail[];
   employeeData: employeeDetail;
+  employeeNotFound: boolean;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
@@ -32,6 +33,7 @@ export class AddEmployeeComponent implements OnInit {
   ngOnInit() {
     this.enrollCard = {
       isenrollCard: false,
+      isgetEmployee: false
     }
     this.route.params.subscribe(params => (this.deviceId = params.id));
     this.addEmployeeSubscription = this._event.employeeAdd.subscribe(async (res) => {
@@ -51,27 +53,31 @@ export class AddEmployeeComponent implements OnInit {
           Validators.required
         ])
       });
-      this.employeeDetail = await this.apiServices.getEmployeeDetail();
     }
     catch (e) {
-
     }
   }
-  async addEmployee(formData: employee) {
+  async addEmployee(formData: addEmployee) {
+    try {
+      this.employeeData = await this.deviceService.getEmployee(formData);
+      if (this.employeeData) {
+        this.enrollCard.isgetEmployee = true;
+      } else {
+        this.employeeNotFound = true;
+      }
+    }
+    catch (e) {
+      this.errorMessage = true;
+    }
+  }
+  async employeeFoundSuccessFully() {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
       chip: this.deviceId,
       app_id: await this.deviceService.getAppID(),
-      emp_id: formData.emp_id,
+      emp_id: this.employeeData.emp_id,
       stage: "init"
     })
-    this.employeeDetail.filter((employeeDetail: employeeDetail) => {
-      if (employeeDetail.emp_id == formData.emp_id) {
-        this.employeeData = employeeDetail
-        return;
-      }
-    })
-    this.errorMessage = false;
     this.enrollCard.isenrollCard = true;
     timer(5000).subscribe(() => {
       if (this.enrollCard.isenrollCard) {
@@ -80,5 +86,6 @@ export class AddEmployeeComponent implements OnInit {
       }
     });
   }
+
 
 }

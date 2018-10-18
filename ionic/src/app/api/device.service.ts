@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
+import { employeeDetail,addEmployee } from "../components/model/user"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
 import { ApiService } from './api.service';
@@ -22,6 +23,7 @@ export class DeviceService {
     mode: String = "device";
     deviceUuidSubscription: string;
     deviceUuid: string;
+    employeeDetail: employeeDetail[];
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -31,21 +33,16 @@ export class DeviceService {
         private api: ApiService,
         private _event: EventHandlerService
 
-    ) {
-        this.deviceUuidSubscription = this._event.UUId.subscribe(async (res) => {
-            this.deviceUuid = res;
-        })
-    }
+    ) { }
     //random id to identify the current app
 
     async getAppID() {
         if (this.platform.is("cordova")) {
-            return await this.deviceUuid;
+            return await this.nativeStorage.getItem('unquieId');
         } else {
             return await localStorage.getItem("unquieId");
         }
     }
-
     async getDevices(): Promise<Device[]> {
         if (this.platform.is("mobile"))
             return await (this.nativeStorage.getItem('devices')) as Device[];
@@ -58,17 +55,12 @@ export class DeviceService {
         }
 
     }
-    async getuserIdFromLocal() {
+    async getUserIdFromLocal() {
         if (this.platform.is("mobile"))
-            return await (this.nativeStorage.getItem('userId'));
+            await this.nativeStorage.getItem('userId');
         else {
-            if (localStorage.getItem('userId')) {
-                return localStorage.getItem('userId');
-            } else {
-                return [];
-            }
+            return localStorage.getItem('userId');
         }
-
     }
 
     async checkDeviceExists(chipid: String) {
@@ -188,6 +180,18 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
+    async getEmployee(formData:addEmployee) {
+        this.employeeDetail = await this.api.getEmployeeDetail();
+        let emp;
+        this.employeeDetail.filter((employeeDetail) => {
+            if (employeeDetail.emp_id == formData.emp_id) {
+                emp = employeeDetail;
+            }
+        })
+        return emp;
+
+    }
+   
     sendMessageToSocket(msg) {
         if (this.isSocketConnected) {
             socket.send(JSON.stringify(msg));
