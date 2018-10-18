@@ -180,11 +180,10 @@ export class ApiService {
       throw (error);
     }
   }
-  async successconnectHR(body) {
+  async successconnectHR(secret_key) {
     this.userId = localStorage.getItem("userId")
-    console.log(this.userId);
     try {
-      const data = await this.http.post(`${environment["base_url"]}user/meta/${this.userId}`, body).toPromise();
+      const data = await this.http.post(`${environment["base_url"]}user/meta/${this.userId}`,secret_key).toPromise();
       return data;
     }
     catch (error) {

@@ -165,7 +165,7 @@ export class HomePage implements OnInit {
         app_id: await this.deviceService.getAppID(),
         stage: "init",
         userId: await this.deviceService.getuserId(),
-        name: device.name
+        // name: device.name
       });
     });
   }

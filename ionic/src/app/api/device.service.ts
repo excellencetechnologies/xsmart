@@ -22,7 +22,6 @@ export class DeviceService {
     mode: String = "device";
     deviceIDSubscription: string;
     deviceUuid: string;
-    generate: any;
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -207,8 +206,8 @@ export class DeviceService {
                 let res = JSON.parse(event.data)
                 console.log(res);
                 if (res.type === "device_online_check_reply") {
-                    this.updateDeviceStatus(res);
-                    this.updateDevicePinSwitch(res);
+                    await this.updateDeviceStatus(res);
+                    await this.updateDevicePinSwitch(res);
                     this._event.setDevices(res);
                 }
 

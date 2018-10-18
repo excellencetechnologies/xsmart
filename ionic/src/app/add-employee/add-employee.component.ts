@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { getEmployee, employeeDetail } from "../components/model/user";
+import { employee, employeeDetail } from "../components/model/user";
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
@@ -20,7 +20,7 @@ export class AddEmployeeComponent implements OnInit {
   addEmployeefailedSubscription: any;
   errorMessage: boolean;
   employeeDetail: employeeDetail[];
-  employeeDataa: any;
+  employeelist: employeeDetail;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
@@ -44,9 +44,9 @@ export class AddEmployeeComponent implements OnInit {
       this.enrollCard.isenrollCard = false;
       this.errorMessage = true;
     })
-    this.getUSerMeta()
+    this.userData()
   }
-  async getUSerMeta() {
+  async userData() {
     try {
       this.employeeDetail = await this.apiServices.employeeData();
     }
@@ -63,7 +63,7 @@ export class AddEmployeeComponent implements OnInit {
     });
   }
 
-  async employeeData(formData: getEmployee) {
+  async employeeData(formData: employee) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
       chip: this.deviceId,
@@ -73,7 +73,7 @@ export class AddEmployeeComponent implements OnInit {
     })
     this.employeeDetail.filter((employeeDetail: employeeDetail) => {
       if (employeeDetail.emp_id == formData.emp_id) {
-        this.employeeDataa = employeeDetail
+        this.employeelist = employeeDetail
         return;
       }
     })

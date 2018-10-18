@@ -33,7 +33,7 @@ export class EventHandlerService {
   employeeList(listEmployee) {
     this.listEmployee.emit(listEmployee);
   }
-  getDeviceId(deviceId) {
+  deviceUUid(deviceId) {
     this.deviceId.emit(deviceId)
   }
 }

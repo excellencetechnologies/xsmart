@@ -16,7 +16,7 @@ export interface deleteDevice {
     chip_id: string;
     user_id: string;
 }
-export interface getEmployee {
+export interface employee {
     emp_id: string;
 }
 export interface employeeList {
@@ -37,7 +37,7 @@ export interface employeeDetail {
     emp_id: "number"
     gender: "string"
     id: "number"
-    image: ""
+    image: "string"
     jobtitle: "string"
     name: "string"
     status: "string"

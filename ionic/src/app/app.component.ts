@@ -25,7 +25,7 @@ export class AppComponent implements OnDestroy {
   lastTimeBackPress = 0;
   timePeriodToExit = 2000;
   pressBackButton = false;
-  generate:any;
+  generate: any;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -66,31 +66,25 @@ export class AppComponent implements OnDestroy {
       this.backButtonEvent();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
-      if (this.platform.is('cordova')) {
-        this.device.uuid
-      }
-      else{
-        this.genrateUniqueID();
-      }
     });
   }
   async deviceId() {
     if (this.platform.is('cordova')) {
       this.nativeStorage.setItem('unquieID', this.device.uuid)
-      this._event.getDeviceId(this.device.uuid);
+      this._event.deviceUUid(this.device.uuid);
+    }
+    else {
+      this.genrateUniqueID()
     }
 
   }
   genrateUniqueID() {
-    function getRandomInt(min, max) {
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    this.generate = function () {
-        this.number = getRandomInt(1, 100);
-        localStorage.setItem("unquieID", this.number);
+    this.generate = function (min = 1, max = 1000) {
+      this.number = Math.floor(Math.random() * (max - min + 1)) + min;
+      localStorage.setItem("unquieID", this.number);
     }
     this.generate();
-}
+  }
 
   logout() {
     this.router.navigate(["/login"])
