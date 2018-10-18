@@ -26,3 +26,20 @@ export interface employeeList {
     stage: "string"
     type: "string"
 }
+export interface HrSystem {
+    action: "string",
+    secret_key: "string"
+}
+export interface connectHrSystem {
+    meta: "string"
+}
+export interface employeeDetail {
+    emp_id: "number"
+    gender: "string"
+    id: "number"
+    image: ""
+    jobtitle: "string"
+    name: "string"
+    status: "string"
+    type: "string"
+}

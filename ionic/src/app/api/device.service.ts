@@ -20,7 +20,9 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
-    tempPin: any;
+    deviceIDSubscription: string;
+    deviceUuid: string;
+    generate: any;
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -31,21 +33,38 @@ export class DeviceService {
         private _event: EventHandlerService
 
     ) {
+        this.deviceIDSubscription = this._event.deviceId.subscribe(async (res) => {
+            this.deviceUuid = res;
+        })
     }
     //random id to identify the current app
+
     async getAppID() {
         if (this.platform.is("cordova")) {
-            return await this.uniqueDeviceID.get()
+            return await this.deviceUuid;
         } else {
-            return await Promise.resolve("!23");;
+            return await localStorage.getItem("unquieID");
         }
     }
+
     async getDevices(): Promise<Device[]> {
         if (this.platform.is("mobile"))
             return await (this.nativeStorage.getItem('devices')) as Device[];
         else {
             if (localStorage.getItem('devices')) {
                 return JSON.parse(localStorage.getItem('devices')) as Device[];
+            } else {
+                return [];
+            }
+        }
+
+    }
+    async getuserId() {
+        if (this.platform.is("mobile"))
+            return await (this.nativeStorage.getItem('userId'));
+        else {
+            if (localStorage.getItem('userId')) {
+                return localStorage.getItem('userId');
             } else {
                 return [];
             }
@@ -146,8 +165,6 @@ export class DeviceService {
             if (device.chip === chip) {
                 device.name = name
             }
-
-
             return device;
         })
         this.setDevices(devices);
@@ -193,8 +210,11 @@ export class DeviceService {
                     this.updateDeviceStatus(res);
                     this.updateDevicePinSwitch(res);
                     this._event.setDevices(res);
-                } else if (res.type === "device_pin_oper_reply") {
+                }
+
+                else if (res.type === "device_pin_oper_reply") {
                     if (res.found) {
+
                         this.notifyService.alertUser("operation sent to device");
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");
@@ -241,7 +261,6 @@ export class DeviceService {
                         this._event.addEmployee(res);
                     } else {
                         this.notifyService.alertUser("device waiting to add employee. touch card.");
-                        this._event.waitingAccessCard(res);
                     }
                 } else if (res.type === "device_set_delete_employee_reply") {
                     if (res.found) {
@@ -303,6 +322,7 @@ export class DeviceService {
             }
             else {
                 await this.updateDeviceNotFound(data);
+
             }
             this.getDevices();
         }

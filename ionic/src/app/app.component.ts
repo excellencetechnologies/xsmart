@@ -8,7 +8,7 @@ import { MenuController } from '@ionic/angular'
 import { Router } from "@angular/router";
 import { EventHandlerService } from './api/event-handler.service';
 import { ViewChildren, QueryList } from '@angular/core';
-
+import { Device } from '@ionic-native/device/ngx';
 
 @Component({
   selector: 'app-root',
@@ -25,6 +25,7 @@ export class AppComponent implements OnDestroy {
   lastTimeBackPress = 0;
   timePeriodToExit = 2000;
   pressBackButton = false;
+  generate:any;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
@@ -36,6 +37,7 @@ export class AppComponent implements OnDestroy {
     private router: Router,
     public modalCtrl: ModalController,
     private _event: EventHandlerService,
+    private device: Device
   ) {
     this.initializeApp();
     this.deviceId();
@@ -56,6 +58,7 @@ export class AppComponent implements OnDestroy {
     this.userSubscription = this._event.userImage.subscribe((res) => {
       this.image = localStorage.getItem('profile');
     })
+
   }
 
   initializeApp() {
@@ -63,19 +66,31 @@ export class AppComponent implements OnDestroy {
       this.backButtonEvent();
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+      if (this.platform.is('cordova')) {
+        this.device.uuid
+      }
+      else{
+        this.genrateUniqueID();
+      }
     });
   }
   async deviceId() {
-    if (this.pltform.is('cordova')) {
-      try {
-        const deviceId = await this.deviceServices.getAppID();
-        this.nativeStorage.setItem('id', deviceId)
-        localStorage.getItem("userID")
-      } catch (err) {
-        this.errorMessage = err.message;
-      }
+    if (this.platform.is('cordova')) {
+      this.nativeStorage.setItem('unquieID', this.device.uuid)
+      this._event.getDeviceId(this.device.uuid);
     }
+
   }
+  genrateUniqueID() {
+    function getRandomInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    this.generate = function () {
+        this.number = getRandomInt(1, 100);
+        localStorage.setItem("unquieID", this.number);
+    }
+    this.generate();
+}
 
   logout() {
     this.router.navigate(["/login"])

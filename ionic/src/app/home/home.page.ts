@@ -163,7 +163,9 @@ export class HomePage implements OnInit {
         type: "device_online_check",
         chip: device.chip,
         app_id: await this.deviceService.getAppID(),
-        stage: "init"
+        stage: "init",
+        userId: await this.deviceService.getuserId(),
+        name: device.name
       });
     });
   }

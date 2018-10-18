@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   deviceUrl: "http://5.9.144.226:9030/deviceSimulator/",
   base_url: "http://5.9.144.226:9030/",
-  live_url: "http://192.168.4.1/"
+  live_url: "http://192.168.4.1/",
+  hrUrl:"http://dev.hr.excellencetechnologies.in/hr/attendance/"
 };
 /*
  * In development mode, to ignoreyyyyyyyyyy zone related error stack frames such as

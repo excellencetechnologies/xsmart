@@ -12,6 +12,7 @@ export class EventHandlerService {
   @Output() employeeAddfailed = new EventEmitter();
   @Output() listEmployee = new EventEmitter();
   @Output() accessCard = new EventEmitter();
+  @Output() deviceId = new EventEmitter()
   constructor() { }
 
   setLoginEvent(loginData) {
@@ -32,7 +33,7 @@ export class EventHandlerService {
   employeeList(listEmployee) {
     this.listEmployee.emit(listEmployee);
   }
-  waitingAccessCard(accessCard) {
-    this.accessCard.emit(accessCard)
+  getDeviceId(deviceId) {
+    this.deviceId.emit(deviceId)
   }
 }
