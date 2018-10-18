@@ -22,13 +22,11 @@ export class SettingComponent implements OnInit {
 
   ngOnInit() {
     this.accessKeyGenrate();
-    this.getUSerMeta();
-    this.apiServices.employeeData();
-
+    this.userData();
   }
   accessKeyGenrate() {
     this.accessKeyForm = new FormGroup({
-      secret_key: new FormControl("", [
+      secretuserData_key: new FormControl("", [
         Validators.required
       ]),
     });
@@ -38,7 +36,7 @@ export class SettingComponent implements OnInit {
     this.isHRStystem = true;
   }
 
-  async getUSerMeta() {
+  async userData() {
     try {
       const data = await this.apiServices.getUserMeta();
       this.connectHrSystem = data['meta'].key
@@ -52,7 +50,6 @@ export class SettingComponent implements OnInit {
     try {
       await this.apiServices.connectHR(formData);
       await this.apiServices.successconnectHR({ key: formData.secret_key });
-      await this.apiServices.employeeData();
       this.accessKeyForm.reset
     }
     catch (e) {
