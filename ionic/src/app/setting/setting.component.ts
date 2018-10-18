@@ -26,7 +26,7 @@ export class SettingComponent implements OnInit {
   }
   accessKeyGenrate() {
     this.accessKeyForm = new FormGroup({
-      secretuserData_key: new FormControl("", [
+      secret_key: new FormControl("", [
         Validators.required
       ]),
     });
