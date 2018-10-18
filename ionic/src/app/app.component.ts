@@ -70,7 +70,8 @@ export class AppComponent implements OnDestroy {
   }
   async deviceId() {
     if (this.platform.is('cordova')) {
-      this.nativeStorage.setItem('unquieID', this.device.uuid)
+      const unquieID=this.device.uuid
+      this.nativeStorage.setItem('unquieID',unquieID)
       this._event.deviceUUid(this.device.uuid);
     }
     else {

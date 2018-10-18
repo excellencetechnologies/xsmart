@@ -20,7 +20,7 @@ export class AddEmployeeComponent implements OnInit {
   addEmployeefailedSubscription: any;
   errorMessage: boolean;
   employeeDetail: employeeDetail[];
-  employeelist: employeeDetail;
+  employeeData: employeeDetail;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
@@ -30,11 +30,11 @@ export class AddEmployeeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.apiServices.employeeData();
+    this.apiServices.employeeDetail();
     this.enrollCard = {
       isenrollCard: false,
     }
-    this.employeeId()
+    this.employeeform()
     this.route.params.subscribe(params => (this.deviceId = params.id));
     this.addEmployeeSubscription = this._event.employeeAdd.subscribe(async (res) => {
       this.enrollCard.isenrollCard = false;
@@ -44,18 +44,18 @@ export class AddEmployeeComponent implements OnInit {
       this.enrollCard.isenrollCard = false;
       this.errorMessage = true;
     })
-    this.userData()
+    this.employees()
   }
-  async userData() {
+  async employees() {
     try {
-      this.employeeDetail = await this.apiServices.employeeData();
+      this.employeeDetail = await this.apiServices.employeeDetail();
     }
     catch (e) {
 
     }
   }
 
-  employeeId() {
+  employeeform() {
     this.employeeForm = new FormGroup({
       emp_id: new FormControl("", [
         Validators.required
@@ -63,7 +63,7 @@ export class AddEmployeeComponent implements OnInit {
     });
   }
 
-  async employeeData(formData: employee) {
+  async addemployee(formData: employee) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
       chip: this.deviceId,
@@ -73,7 +73,7 @@ export class AddEmployeeComponent implements OnInit {
     })
     this.employeeDetail.filter((employeeDetail: employeeDetail) => {
       if (employeeDetail.emp_id == formData.emp_id) {
-        this.employeelist = employeeDetail
+        this.employeeData = employeeDetail
         return;
       }
     })

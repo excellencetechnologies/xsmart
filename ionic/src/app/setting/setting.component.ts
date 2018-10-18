@@ -10,7 +10,7 @@ import { Platform } from '@ionic/angular';
   styleUrls: ['./setting.component.scss']
 })
 export class SettingComponent implements OnInit {
-  accessKeyForm: FormGroup;
+  settingAccessKeyForm: FormGroup;
   isHRStystem: boolean;
   errorMessage: string;
   connectHrSystem: connectHrSystem;
@@ -21,12 +21,12 @@ export class SettingComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.accessKeyGenrate();
-    this.userData();
+    this.addAccessKey();
+    this.getUserMetaData();
   }
-  accessKeyGenrate() {
-    this.accessKeyForm = new FormGroup({
-      secretuserData_key: new FormControl("", [
+  addAccessKey() {
+    this.settingAccessKeyForm = new FormGroup({
+      secret_key: new FormControl("", [
         Validators.required
       ]),
     });
@@ -36,9 +36,9 @@ export class SettingComponent implements OnInit {
     this.isHRStystem = true;
   }
 
-  async userData() {
+  async getUserMetaData() {
     try {
-      const data = await this.apiServices.getUserMeta();
+      const data = await this.apiServices.getUserMetaData();
       this.connectHrSystem = data['meta'].key
       this.isHRSystem();
     }
@@ -46,11 +46,11 @@ export class SettingComponent implements OnInit {
       this.errorMessage = e
     }
   }
-  async connectHr(formData: HrSystem) {
+  async connectHrThroughAccessKey(formData: HrSystem) {
     try {
-      await this.apiServices.connectHR(formData);
-      await this.apiServices.successconnectHR({ key: formData.secret_key });
-      this.accessKeyForm.reset
+      await this.apiServices.connectSetting(formData);
+      await this.apiServices.addUserMetaData({ key: formData.secret_key });
+      this.settingAccessKeyForm.reset
     }
     catch (e) {
       this.errorMessage = e

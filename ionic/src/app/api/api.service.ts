@@ -169,9 +169,8 @@ export class ApiService {
         return false;
       }
     }
-
   }
-  async connectHR(HrSystem: HrSystem) {
+  async connectSetting(HrSystem: HrSystem) {
     try {
       const data = await this.http.get<HrSystem>(`${environment["base_url"]}card/validateKey/${HrSystem.secret_key}`).toPromise();
       return data;
@@ -180,7 +179,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async successconnectHR(secret_key) {
+  async addUserMetaData(secret_key) {
     this.userId = localStorage.getItem("userId")
     try {
       const data = await this.http.post(`${environment["base_url"]}user/meta/${this.userId}`,secret_key).toPromise();
@@ -190,7 +189,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async getUserMeta(connectHrSystem?:connectHrSystem) {
+  async getUserMetaData(connectHrSystem?:connectHrSystem) {
     this.userId = localStorage.getItem("userId")
     try {
       const data = await this.http.get(`${environment["base_url"]}user/meta/${this.userId}`,).toPromise();
@@ -200,7 +199,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async employeeData(employeeDetail?:employeeDetail) {
+  async employeeDetail(employeeDetail?:employeeDetail) {
     this.userId = localStorage.getItem("userId")
     try {
       const data = await this.http.get<employeeDetail[]>(`${environment["base_url"]}card/employeeData/${this.userId}`,{}).toPromise();

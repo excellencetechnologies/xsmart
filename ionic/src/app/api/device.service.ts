@@ -58,7 +58,7 @@ export class DeviceService {
         }
 
     }
-    async getuserId() {
+    async getuserIdFromLocal() {
         if (this.platform.is("mobile"))
             return await (this.nativeStorage.getItem('userId'));
         else {
