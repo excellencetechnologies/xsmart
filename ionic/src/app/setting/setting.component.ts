@@ -48,7 +48,7 @@ export class SettingComponent implements OnInit {
   }
   async connectHrThroughAccessKey(formData: HrSystem) {
     try {
-      await this.apiServices.connectSetting(formData);
+      await this.apiServices.connectSettingToHRSystem(formData);
       await this.apiServices.addUserMetaData({ key: formData.secret_key });
       this.settingAccessKeyForm.reset
     }

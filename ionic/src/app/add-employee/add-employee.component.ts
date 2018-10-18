@@ -30,11 +30,9 @@ export class AddEmployeeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.apiServices.employeeDetail();
     this.enrollCard = {
       isenrollCard: false,
     }
-    this.employeeform()
     this.route.params.subscribe(params => (this.deviceId = params.id));
     this.addEmployeeSubscription = this._event.employeeAdd.subscribe(async (res) => {
       this.enrollCard.isenrollCard = false;
@@ -48,22 +46,18 @@ export class AddEmployeeComponent implements OnInit {
   }
   async employees() {
     try {
-      this.employeeDetail = await this.apiServices.employeeDetail();
+      this.employeeForm = new FormGroup({
+        emp_id: new FormControl("", [
+          Validators.required
+        ])
+      });
+      this.employeeDetail = await this.apiServices.getEmployeeDetail();
     }
     catch (e) {
 
     }
   }
-
-  employeeform() {
-    this.employeeForm = new FormGroup({
-      emp_id: new FormControl("", [
-        Validators.required
-      ])
-    });
-  }
-
-  async addemployee(formData: employee) {
+  async addEmployee(formData: employee) {
     this.deviceService.sendMessageToSocket({
       type: "device_set_add_employee",
       chip: this.deviceId,

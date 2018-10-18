@@ -20,7 +20,7 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
-    deviceuuidSubscription: string;
+    deviceUuidSubscription: string;
     deviceUuid: string;
     constructor(
         private nativeStorage: NativeStorage,
@@ -32,7 +32,7 @@ export class DeviceService {
         private _event: EventHandlerService
 
     ) {
-        this.deviceuuidSubscription = this._event.deviceId.subscribe(async (res) => {
+        this.deviceUuidSubscription = this._event.UUId.subscribe(async (res) => {
             this.deviceUuid = res;
         })
     }
@@ -42,7 +42,7 @@ export class DeviceService {
         if (this.platform.is("cordova")) {
             return await this.deviceUuid;
         } else {
-            return await localStorage.getItem("unquieID");
+            return await localStorage.getItem("unquieId");
         }
     }
 

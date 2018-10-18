@@ -12,7 +12,7 @@
   <ion-list>
     <ion-item class="grid-item-header">
       <ion-label>HR System</ion-label>
-      <ion-toggle (ngModelChange)="isHRSystem()" [(ngModel)]="isHRStystem"></ion-toggle>
+      <ion-toggle (ngModelChange)="isHRSystem()" [(ngModel)]="isHRSystem"></ion-toggle>
     </ion-item>
     <form class="form-horizontal" [formGroup]="settingAccessKeyForm">
       <ion-row>
@@ -27,7 +27,7 @@
         </ion-col>
       </ion-row>
       <p class="error" text-center *ngIf="errorMessage">Please provide valid accessKey</p>
-      <ion-button *ngIf="!isHRStystem" class="button-radius" expand="block" color="tertiary" (click)="connectHr(settingAccessKeyForm.value)">Connect</ion-button>
+      <ion-button *ngIf="!isHRSystem" class="button-radius" expand="block" color="tertiary" (click)="connectHr(settingAccessKeyForm.value)">Connect</ion-button>
     </form>
   </ion-list>
 </ion-content>
