@@ -182,13 +182,13 @@ export class DeviceService {
     }
     async getEmployee(formData:addEmployee) {
         this.employeeDetail = await this.api.getEmployeeDetail();
-        let emp;
+        let employee;
         this.employeeDetail.filter((employeeDetail) => {
             if (employeeDetail.emp_id == formData.emp_id) {
-                emp = employeeDetail;
+                employee = employeeDetail;
             }
         })
-        return emp;
+        return employee;
 
     }
    
@@ -217,7 +217,6 @@ export class DeviceService {
 
                 else if (res.type === "device_pin_oper_reply") {
                     if (res.found) {
-
                         this.notifyService.alertUser("operation sent to device");
                     } else {
                         this.notifyService.alertUser("unable to reach device. device not online");

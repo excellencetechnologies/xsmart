@@ -1,13 +1,16 @@
-<ion-header translucent>
-  <ion-toolbar>
-    <ion-title text-center>
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
       View Employee
     </ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
 
-  <form class="form-horizontal" >
+  <form class="form-horizontal">
     <ion-row>
       <ion-col>
         <ion-list class="employeeForm">
@@ -18,8 +21,8 @@
       </ion-col>
     </ion-row>
   </form>
-  <ion-card  *ngFor="let employee of getEmployee">
-    <ion-card-content no-padding >
+  <ion-card *ngFor="let employee of getEmployee">
+    <ion-card-content no-padding>
       <ion-list class="grid-item-header" no-padding>
         <ion-item class="grid-item-header">
           <ion-avatar slot="start">
