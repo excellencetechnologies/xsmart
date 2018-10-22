@@ -8,6 +8,81 @@ var Card = require("../model/card");
 var User = require("../model/user");
 
 
+
+router.get("/employeePunch/:id/:emp_id", (req, res) => {
+    User.findById(req.params.id, (err, obj) => {
+        if (err) {
+            res.status(500).json(err);
+        } else {
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "get_employee_punches_by_date",
+                        "secret_key": obj.meta.key,
+                        "user_id": req.params.emp_id,
+                        "date": req.body.date
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
+        }
+    })
+});
+
+router.get("/employeeMonthlyAttendance/:id/", (req, res) => {
+    User.findById(req.params.id, (err, obj) => {
+        if (err) {
+            res.status(500).json(err);
+        } else {
+
+            if (obj.meta && obj.meta.key) {
+
+                request({
+                    url: "http://dev.hr.excellencetechnologies.in/hr/attendance/API_HR/api.php",
+                    method: "POST",
+                    json: {
+                        "action": "get_employees_monthly_attendance",
+                        "secret_key": obj.meta.key,
+                        "month": req.body.month,
+                        "year": req.body.year
+                    }
+                }, (err, r, body) => {
+
+                    console.log(body);
+                    if (err) {
+                        res.status(500).json(err);
+                    } else if (body.error !== 0) {
+                        res.status(500).json(body.error);
+                    } else {
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                res.status(500).json("hr system key not found");
+            }
+
+        }
+    })
+});
+
 router.post("/addTime", async (req, res) => {
     console.log(req.body, "asdfasfasdf");
     if (req.body.data) {
