@@ -9,7 +9,7 @@ var User = require("../model/user");
 
 
 
-router.get("/employeePunch/:id/:emp_id", (req, res) => {
+router.get("/employeePunch/:id/:emp_id/:date", (req, res) => {
     User.findById(req.params.id, (err, obj) => {
         if (err) {
             res.status(500).json(err);
@@ -24,7 +24,7 @@ router.get("/employeePunch/:id/:emp_id", (req, res) => {
                         "action": "get_employee_punches_by_date",
                         "secret_key": obj.meta.key,
                         "user_id": req.params.emp_id,
-                        "date": req.body.date
+                        "date": req.params.date
                     }
                 }, (err, r, body) => {
 
@@ -46,7 +46,7 @@ router.get("/employeePunch/:id/:emp_id", (req, res) => {
     })
 });
 
-router.get("/employeeMonthlyAttendance/:id/", (req, res) => {
+router.get("/employeeMonthlyAttendance/:id/:month/:year", (req, res) => {
     User.findById(req.params.id, (err, obj) => {
         if (err) {
             res.status(500).json(err);
@@ -60,8 +60,8 @@ router.get("/employeeMonthlyAttendance/:id/", (req, res) => {
                     json: {
                         "action": "get_employees_monthly_attendance",
                         "secret_key": obj.meta.key,
-                        "month": req.body.month,
-                        "year": req.body.year
+                        "month": req.params.month,
+                        "year": req.params.year
                     }
                 }, (err, r, body) => {
 
