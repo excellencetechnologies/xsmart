@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
-import { employeeDetail,addEmployee } from "../components/model/user"
+import { employeeDetail, addEmployee } from "../components/model/user"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
 import { ApiService } from './api.service';
@@ -180,18 +180,18 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
-    async getEmployee(formData:addEmployee) {
+    async getEmployee(employee) {
         this.employeeDetail = await this.api.getEmployeeDetail();
-        let employee;
+        let emp;
         this.employeeDetail.filter((employeeDetail) => {
-            if (employeeDetail.emp_id == formData.emp_id) {
-                employee = employeeDetail;
+            if (employeeDetail.emp_id == employee.emp_id) {
+                emp = employeeDetail;
             }
         })
         return employee;
 
     }
-   
+
     sendMessageToSocket(msg) {
         if (this.isSocketConnected) {
             socket.send(JSON.stringify(msg));
@@ -214,7 +214,6 @@ export class DeviceService {
                     await this.updateDevicePinSwitch(res);
                     this._event.setDevices(res);
                 }
-
                 else if (res.type === "device_pin_oper_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("operation sent to device");

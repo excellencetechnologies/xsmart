@@ -54,7 +54,7 @@ export class ViewEmployeeComponent implements OnInit {
   }
   async employeesList() {
     try {
-      this.getEmployee = await this.apiService.getEmployeeDetail();;
+      this.getEmployee = await this.apiService.getEmployeeDetail();
     }
     catch (e) {
     }

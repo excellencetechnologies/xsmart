@@ -191,7 +191,7 @@ export class ApiService {
   async getUserMetaData() {
     const userId = localStorage.getItem("userId")
     try {
-      const data = await this.http.get(`${environment["base_url"]}user/meta/${userId}`, ).toPromise();
+      const data = await this.http.get(`${environment["base_url"]}user/meta/${userId}`).toPromise();
       return data;
     }
     catch (error) {
@@ -201,7 +201,7 @@ export class ApiService {
   async getEmployeeDetail(employeeDetail?: employeeDetail) {
     const userId = localStorage.getItem("userId")
     try {
-      const data = await this.http.get<employeeDetail[]>(`${environment["base_url"]}card/employeeData/${userId}`, {}).toPromise();
+      const data = await this.http.get<employeeDetail[]>(`${environment["base_url"]}card/employeeData/${userId}`).toPromise();
       return data;
     }
     catch (error) {

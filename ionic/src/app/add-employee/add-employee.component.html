@@ -9,57 +9,71 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
-  <div>
-    <div padding-left>
-      <h3>Add Employee</h3>
-    </div>
-    <form class="form-horizontal" [formGroup]="employeeForm" *ngIf="!enrollCard.isgetEmployee">
-      <ion-row>
-        <ion-col>
-          <ion-list class="employeeForm">
-            <ion-label class="employeeId">Employee Id
+  <div *ngIf="!enrollCard.isgetEmployee">
+    <ion-card *ngFor="let employee of getEmployee">
+      <ion-card-content no-padding>
+        <ion-list class="grid-item-header" no-padding>
+          <ion-item class="grid-item-header">
+            <ion-avatar slot="start">
+              <img src="">
+            </ion-avatar>
+            <ion-icon slot="end" name="person-add" (click)="addEmployee(employee)"></ion-icon>
+            <ion-label>{{employee.name}}
+              <br>{{employee.jobtitle}}
             </ion-label>
-            <ion-item>
-              <ion-input type="text" formControlName="emp_id" name="emp_Id" required></ion-input>
-            </ion-item>
-          </ion-list>
-        </ion-col>
-      </ion-row>
-      <p class="error" *ngIf="employeeNotFound">Employee Not Found</p>
-      <ion-col class="signup-col">
-        <ion-button expand="block" color="tirtary" fill="outline" (click)="addEmployee(employeeForm.value)"> Next
-        </ion-button>
-      </ion-col>
-    </form>
-    <div>
-      <div *ngIf="enrollCard.isgetEmployee">
-        <ion-card>
-          <ion-card-content no-padding>
-            <ion-list class="grid-item-header" no-padding>
-              <ion-item class="grid-item-header">
-                <ion-avatar slot="start">
-                  <img src="">
-                </ion-avatar>
-                <ion-label>Name
-                  <br>{{employeeData.name}}
-                </ion-label>
-              </ion-item>
-              <ion-item class="grid-item-header">
-                <ion-icon name="hand" slot="start"></ion-icon>
-                <ion-label>
-                  {{employeeData.emp_id}}
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </ion-card-content>
-        </ion-card>
-        <ion-button expand="block" color="tirtary" fill="outline" (click)="employeeFoundSuccessFully()">Confirm Employee</ion-button>
-      </div>
-      <div *ngIf="enrollCard.isenrollCard">
-        <div text-center class="spinner"></div>
-        <ion-label text-center>Please Enroll Access Card</ion-label>
-      </div>
-    </div>
-    <p class="error" *ngIf="errorMessage">Employee is not added Please try again</p>
+          </ion-item>
+          <ion-item class="grid-item-header">
+            <ion-icon name="hand" slot="start"></ion-icon>
+            <ion-label>
+              {{employee.emp_id}}
+            </ion-label>
+          </ion-item>
+        </ion-list>
+        <ion-list>
+          <ion-grid no-padding>
+            <ion-row class="buttonGroup" color="primary">
+              <ion-col padding>
+                <ion-button class="button-radius" expand="block" color="primary" fill="outline"> Report</ion-button>
+              </ion-col>
+              <ion-col padding>
+                <ion-button class="button-radius" expand="block" color="primary" fill="outline"> Disable</ion-button>
+              </ion-col>
+              <ion-col padding>
+                <ion-button class="button-radius" expand="block" color="primary" fill="outline"> Delete</ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
   </div>
+  <div *ngIf="enrollCard.isgetEmployee">
+    <ion-card>
+      <ion-card-content no-padding>
+        <ion-list class="grid-item-header" no-padding>
+          <ion-item class="grid-item-header">
+            <ion-avatar slot="start">
+              <img src="">
+            </ion-avatar>
+            <ion-label>Name
+              <br>{{employeeData.name}}
+            </ion-label>
+          </ion-item>
+          <ion-item class="grid-item-header">
+            <ion-icon name="hand" slot="start"></ion-icon>
+            <ion-label>
+              {{employeeData.emp_id}}
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+    <ion-button expand="block" color="tirtary" fill="outline" (click)="employeeFoundSuccessFully()">Confirm Employee</ion-button>
+  </div>
+  <div *ngIf="enrollCard.isenrollCard">
+    <div text-center class="spinner"></div>
+    <ion-label text-center>Please Enroll Access Card</ion-label>
+  </div>
+  <p class="error" *ngIf="errorMessage">Employee is not added Please try again</p>
+
 </ion-content>

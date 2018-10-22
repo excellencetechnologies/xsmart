@@ -44,22 +44,12 @@ export class AddEmployeeComponent implements OnInit {
       this.enrollCard.isenrollCard = false;
       this.errorMessage = true;
     })
-    this.employees()
+    this.employeesList()
   }
-  async employees() {
+
+  async addEmployee(employee) {
     try {
-      this.employeeForm = new FormGroup({
-        emp_id: new FormControl("", [
-          Validators.required
-        ])
-      });
-    }
-    catch (e) {
-    }
-  }
-  async addEmployee(formData: addEmployee) {
-    try {
-      this.employeeData = await this.deviceService.getEmployee(formData);
+      this.employeeData = await this.deviceService.getEmployee(employee);
       if (this.employeeData) {
         this.enrollCard.isgetEmployee = true;
       } else {
@@ -71,21 +61,32 @@ export class AddEmployeeComponent implements OnInit {
     }
   }
   async employeeFoundSuccessFully() {
-    this.deviceService.sendMessageToSocket({
-      type: "device_set_add_employee",
-      chip: this.deviceId,
-      app_id: await this.deviceService.getAppID(),
-      emp_id: this.employeeData.emp_id,
-      stage: "init"
-    })
-    this.enrollCard.isenrollCard = true;
-    timer(5000).subscribe(() => {
-      if (this.enrollCard.isenrollCard) {
-        this.errorMessage = true;
-        this.enrollCard.isenrollCard = false;
-      }
-    });
+    try {
+      this.deviceService.sendMessageToSocket({
+        type: "device_set_add_employee",
+        chip: this.deviceId,
+        app_id: await this.deviceService.getAppID(),
+        emp_id: this.employeeData.emp_id,
+        stage: "init"
+      })
+      this.enrollCard.isenrollCard = true;
+      timer(5000).subscribe(() => {
+        if (this.enrollCard.isenrollCard) {
+          this.errorMessage = true;
+          this.enrollCard.isenrollCard = false;
+        }
+      });
+    }
+    catch (e) {
+      this.errorMessage = true;
+    }
   }
-
+  async employeesList() {
+    try {
+      this.employeeDetail = await this.apiServices.getEmployeeDetail();
+    }
+    catch (e) {
+    }
+  }
 
 }
