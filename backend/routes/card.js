@@ -34,7 +34,7 @@ router.get("/employeePunch/:id/:emp_id/:date", (req, res) => {
                     } else if (body.error !== 0) {
                         res.status(500).json(body.error);
                     } else {
-                        res.json(body);
+                        res.json(body.data);
                     }
                 })
 
@@ -71,7 +71,7 @@ router.get("/employeeMonthlyAttendance/:id/:month/:year", (req, res) => {
                     } else if (body.error !== 0) {
                         res.status(500).json(body.error);
                     } else {
-                        res.json(body);
+                        res.json(body.data);
                     }
                 })
 
