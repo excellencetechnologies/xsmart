@@ -930,7 +930,7 @@ void loop()
   // Look for new cards
   if (access_mode == ACCESS_MODE_READ)
   {
-        Serial.println("access card read");
+        // Serial.println("access card read");
 
     if (mfrc522.PICC_IsNewCardPresent())
     {

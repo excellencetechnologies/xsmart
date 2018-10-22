@@ -34,7 +34,7 @@ router.get("/employeePunch/:id/:emp_id/:date", (req, res) => {
                     } else if (body.error !== 0) {
                         res.status(500).json(body.error);
                     } else {
-                        res.json(response);
+                        res.json(body);
                     }
                 })
 
@@ -71,7 +71,7 @@ router.get("/employeeMonthlyAttendance/:id/:month/:year", (req, res) => {
                     } else if (body.error !== 0) {
                         res.status(500).json(body.error);
                     } else {
-                        res.json(response);
+                        res.json(body);
                     }
                 })
 
@@ -173,7 +173,7 @@ router.post("/employeeData/:id/:emp_id", (req, res) => {
                     } else if (body.error !== 0) {
                         res.status(500).json(body.error);
                     } else {
-                        res.json(response);
+                        res.json(body);
                     }
                 })
 
@@ -211,7 +211,7 @@ router.delete("/employeeData/:id/:emp_id", (req, res) => {
                     } else if (body.error !== 0) {
                         res.status(500).json(body.error);
                     } else {
-                        res.json(response);
+                        res.json(body);
                     }
                 })
 
