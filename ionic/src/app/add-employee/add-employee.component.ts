@@ -1,6 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
 import { addEmployee, employeeDetail } from "../components/model/user";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
 import { EventHandlerService } from '../api/event-handler.service';
@@ -12,7 +11,6 @@ import { ApiService } from '../api/api.service';
   styleUrls: ['./add-employee.component.scss']
 })
 export class AddEmployeeComponent implements OnInit {
-  employeeForm: FormGroup;
   deviceId: string;
   loading: boolean = false;
   enrollCard: any;
