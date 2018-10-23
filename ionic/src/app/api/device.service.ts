@@ -24,6 +24,7 @@ export class DeviceService {
     deviceUuidSubscription: string;
     deviceUuid: string;
     employeeDetail: employeeDetail[];
+    currentdate = new Date();
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -191,6 +192,18 @@ export class DeviceService {
         return employee;
 
     }
+    currentDate() {
+        const year = this.currentdate.getFullYear();
+        const month =
+          this.currentdate.getMonth() < 10
+            ? + (this.currentdate.getMonth() + 1)
+            : this.currentdate.getMonth() + 1;
+        const day =
+          this.currentdate.getDate() < 10
+            ? "0" + this.currentdate.getDate()
+            : this.currentdate.getDate();
+        return day + "-" + month + "-" + year;
+      }
 
     sendMessageToSocket(msg) {
         if (this.isSocketConnected) {
@@ -208,7 +221,7 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data)
-                console.log(res);
+                // console.log(res);
                 if (res.type === "device_online_check_reply") {
                     await this.updateDeviceStatus(res);
                     await this.updateDevicePinSwitch(res);

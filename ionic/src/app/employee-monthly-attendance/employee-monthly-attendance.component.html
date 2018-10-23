@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      Employee Detail
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  <ion-card *ngFor="let employee of employeeMonthlyPunches">
+    <ion-card-content no-padding>
+      <ion-list class="grid-item-header" no-padding>
+        <ion-item class="grid-item-header">
+          <ion-label text-center><b> {{employee.name}}</b>
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>User_id: {{employee.userid}}
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>Absent-Days: {{employee.absent_days}}
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>Half-Days: {{employee.half_days}}
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>Job-Tittle: {{employee.jobtitle}}
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>Leave: {{employee.leave_days}}
+          </ion-label>
+        </ion-item>
+
+        <ion-item class="grid-item-header">
+          <ion-label>Non-working-Daya: {{employee.non_working_days}}
+          </ion-label>
+        </ion-item>
+        <ion-item class="grid-item-header">
+          <ion-label>Present-Days: {{employee.present_days}}
+          </ion-label>
+        </ion-item>
+
+        <ion-item class="grid-item-header">
+          <ion-label>Working-Days: {{employee.working_days}}
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <ion-label text-center class="text-decorater" (click)=" modelClose()">Back
+  </ion-label>
+</ion-content>

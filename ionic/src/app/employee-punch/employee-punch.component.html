@@ -1,0 +1,10 @@
+<ion-content padding class="content">
+  <ion-list *ngFor="let employee of employeePunchTime" class="grid-item-header">
+    <ion-item>
+      <ion-label> {{employee.timing['1']}}</ion-label>
+      <ion-select placeholder="Date">
+        <ion-select-option>{{employee.timing['0']}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+</ion-content>

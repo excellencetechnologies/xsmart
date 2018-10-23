@@ -20,22 +20,39 @@ export interface addEmployee {
     emp_id: string;
 }
 export interface employeeList {
-    WEBID: "string"
-    chip: "string"
-    data: "string"
-    stage: "string"
-    type: "string"
+    WEBID: string
+    chip: string
+    data: string
+    stage: string
+    type: string
 }
 export interface ValidateHRSystemKey {
-    secret_key: "string"
+    secret_key: string
 }
 export interface employeeDetail {
-    emp_id: "number"
-    gender: "string"
-    id: "number"
-    image: "string"
-    jobtitle: "string"
-    name: "string"
-    status: "string"
-    type: "string"
+    emp_id: number
+    gender: string
+    id: number
+    image: string
+    jobtitle: string
+    name: string
+    status: string
+    type: string
+}
+export interface punches {
+    id: number
+    timestamp: number
+    timing: [string]
+    user_id: number
+}
+export interface employeeMonthlyPunches {
+    absent_days: number
+    half_days: number
+    jobtitle: string
+    leave_days: number
+    name: string
+    non_working_days: number
+    present_days: number
+    userid:number
+    working_days: number
 }

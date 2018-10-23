@@ -208,5 +208,25 @@ export class ApiService {
       throw (error);
     }
   }
+  async employeePunch(id,date) {
+    const userId = localStorage.getItem("userId")
+    try {
+      const data = await this.http.get(`${environment["base_url"]}card/employeePunch/${userId}/${id}/${date}`).toPromise();
+      return data;
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
+  async employeeMonthlyAttendance(date) {
+    const userId = localStorage.getItem("userId")
+    try {
+      const data = await this.http.get(`${environment["base_url"]}card/employeeMonthlyAttendance/${userId}/${date}`).toPromise();
+      return data;
+    }
+    catch (error) {
+      throw (error);
+    }
+  }
 }
 

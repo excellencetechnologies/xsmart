@@ -32,6 +32,8 @@ import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
+import { EmployeePunchComponent } from './employee-punch/employee-punch.component';
+import { EmployeeMonthlyAttendanceComponent } from './employee-monthly-attendance/employee-monthly-attendance.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,6 +50,8 @@ import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
     SettingComponent,
     AddDevicesComponent,
     WifiNetworkComponent,
+    EmployeePunchComponent,
+    EmployeeMonthlyAttendanceComponent,
   ],
   entryComponents: [],
   imports: [BrowserModule,

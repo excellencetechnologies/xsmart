@@ -81,7 +81,7 @@
             <ion-icon slot="start" mode="ios" name="list-box"></ion-icon>
             <ion-label class="item-padding">List Employee</ion-label>
           </ion-item>
-          
+
           <ion-item class="grid-item-header">
             <ion-icon md="md-options" slot="start" ios="ios-options"></ion-icon>
             <ion-label class="item-padding"> Set special mode</ion-label>
@@ -90,6 +90,9 @@
             <ion-icon name="cloud-download" slot="start" mode="ios"></ion-icon>
             <ion-label class="item-padding">Download Data</ion-label>
           </ion-item>
+          <ion-button class="button-radius" (click)="report()" expand="block" color="primary" fill="clear">{{loading ? '' : 'Report'}}
+            <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+          </ion-button>
         </ion-list>
         <ion-list>
           <ion-grid no-padding class="group">

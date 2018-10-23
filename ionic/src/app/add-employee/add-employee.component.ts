@@ -1,10 +1,12 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { addEmployee, employeeDetail } from "../components/model/user";
+import { addEmployee, employeeDetail, punches } from "../components/model/user";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
 import { EventHandlerService } from '../api/event-handler.service';
 import { timer } from 'rxjs';
 import { ApiService } from '../api/api.service';
+import { ModalController, AlertController, PopoverController } from '@ionic/angular';
+import { EmployeePunchComponent } from '../employee-punch/employee-punch.component';
 @Component({
   selector: 'app-add-employee',
   templateUrl: './add-employee.component.html',
@@ -20,18 +22,24 @@ export class AddEmployeeComponent implements OnInit {
   employeeDetail: employeeDetail[];
   employeeData: employeeDetail;
   employeeNotFound: boolean;
+  currentdate = new Date();
+  employeePunches: any;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
     private _event: EventHandlerService,
     private router: Router,
-    public apiServices: ApiService
+    public apiServices: ApiService,
+    public modalController: ModalController,
+    public PopoverController: PopoverController,
+    public alertController:AlertController
   ) { }
 
   ngOnInit() {
     this.enrollCard = {
       isenrollCard: false,
-      isgetEmployee: false
+      isgetEmployee: false,
+      isEmployeePunches: false
     }
     this.route.params.subscribe(params => (this.deviceId = params.id));
     this.addEmployeeSubscription = this._event.employeeAdd.subscribe(async (res) => {
@@ -68,7 +76,7 @@ export class AddEmployeeComponent implements OnInit {
         stage: "init"
       })
       this.enrollCard.isenrollCard = true;
-      timer(5000).subscribe(() => {
+      timer(10000).subscribe(() => {
         if (this.enrollCard.isenrollCard) {
           this.errorMessage = true;
           this.enrollCard.isenrollCard = false;
@@ -79,6 +87,37 @@ export class AddEmployeeComponent implements OnInit {
       this.errorMessage = true;
     }
   }
+  async report(employee, ev) {
+    try {
+      const data = await this.apiServices.employeePunch(employee.emp_id, this.deviceService.currentDate());
+      this.employeePunches = data['punches']
+      if (this.employeePunches) {
+        this.employeePunches.forEach((element) => {
+          element.timing = element.timing.split(' ');
+        });
+        const data2 = { employeePunches: this.employeePunches };
+        const modal = await this.PopoverController.create({
+          component: EmployeePunchComponent,
+          componentProps: { employeePunches: data2 },
+          ev: ev
+
+        });
+        return await modal.present();
+      }
+    }
+    catch (e) {
+      this.presentAlert()
+    }
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Message',
+      message: 'Employee has not punched today.',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
   async employeesList() {
     try {
       this.employeeDetail = await this.apiServices.getEmployeeDetail();
@@ -86,5 +125,5 @@ export class AddEmployeeComponent implements OnInit {
     catch (e) {
     }
   }
-
 }
+

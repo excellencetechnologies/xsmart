@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { Platform, MenuController, ToastController } from '@ionic/angular';
+import { Platform, MenuController, ToastController, ModalController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ApiService } from "../api/api.service";
@@ -9,7 +9,8 @@ import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
 import { Router, NavigationEnd } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
-import { newDevice } from "../components/model/user";
+import { newDevice, employeeMonthlyPunches } from "../components/model/user";
+import { EmployeeMonthlyAttendanceComponent } from '../employee-monthly-attendance/employee-monthly-attendance.component';
 
 let socket = null;
 let wifiCheckInterval = null;
@@ -34,6 +35,9 @@ export class HomePage implements OnInit {
   routerSet: any;
   wifiSet: boolean = false;
   deviceSubscription: any;
+  currentdate = new Date();
+  loading: boolean;
+  employeeMonthlyPunches: employeeMonthlyPunches;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -51,6 +55,7 @@ export class HomePage implements OnInit {
     private router: Router,
     private nativeStorage: NativeStorage,
     private _event: EventHandlerService,
+    public modalController: ModalController
   ) { }
 
   async ngOnInit() {
@@ -168,7 +173,31 @@ export class HomePage implements OnInit {
       });
     });
   }
+  currentDate() {
+    const year = this.currentdate.getFullYear();
+    const month =
+      this.currentdate.getMonth() < 10
+        ? + (this.currentdate.getMonth() + 1)
+        : this.currentdate.getMonth() + 1;
+    return month + "/" + year;
+  }
+  async report() {
+    try {
+      this.loading=true
+      const data = await this.api.employeeMonthlyAttendance(this.currentDate());
+      this.employeeMonthlyPunches = data['attendance_summary'].attendance_info;
+      const data2 = { employeeMonthlyPunches: this.employeeMonthlyPunches };
+      const modal = await this.modalController.create({
+        component: EmployeeMonthlyAttendanceComponent,
+        componentProps: { employeeMonthlyPunches: data2 }
+      });
+      return await modal.present();
+    }
+    catch (e) {
+      this.loader=false;
+    }
 
+  }
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();
