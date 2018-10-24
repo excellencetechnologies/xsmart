@@ -14,12 +14,17 @@
     transform: scale(1.6);
     color: var(--ion-color-medium);
 }
-.report{
+
+.report {
     border: 1px solid var(--ion-color-primary);
-    color:var(--ion-color-primary);
+    color: var(--ion-color-primary);
     border-radius: 2px;
-    padding: 8px 0px 5px 9px;
-    margin-top: 2px;
+    padding: 8px 0px 5.5px 15px;
+    margin-top: 3px;
+}
+
+.button-radius {
+    text-transform: capitalize; 
 }
 
 .spinner {

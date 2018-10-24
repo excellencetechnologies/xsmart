@@ -182,9 +182,10 @@ export class HomePage implements OnInit {
     return month + "/" + year;
   }
   async report() {
+    this.loading=true;
     try {
-      this.loading=true
       const data = await this.api.employeeMonthlyAttendance(this.currentDate());
+      this.loader=false;
       this.employeeMonthlyPunches = data['attendance_summary'].attendance_info;
       const data2 = { employeeMonthlyPunches: this.employeeMonthlyPunches };
       const modal = await this.modalController.create({

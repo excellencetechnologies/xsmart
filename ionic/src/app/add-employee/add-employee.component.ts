@@ -152,10 +152,13 @@ export class AddEmployeeComponent implements OnInit {
     await alert.present();
   }
   async employeesList() {
+    this.loading=true
     try {
+      this.loading=false;
       this.employeeDetail = await this.apiServices.getEmployeeDetail();
     }
     catch (e) {
+      this.loading=false;
     }
   }
 }
