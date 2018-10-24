@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
-import { employeeList } from "../components/model/user";
+import { employeeList, employeeDetail } from "../components/model/user";
 import { EventHandlerService } from '../api/event-handler.service';
 import { AlertController } from '@ionic/angular';
+import { ApiService } from '../api/api.service';
 @Component({
   selector: 'app-view-employee',
   templateUrl: './view-employee.component.html',
@@ -16,12 +17,14 @@ export class ViewEmployeeComponent implements OnInit {
   listEmployeeSubscription: any;
   employees: employeeList;
   employeeList = [];
+  getEmployee: employeeDetail[];
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
     private router: Router,
     private _event: EventHandlerService,
     public alertController: AlertController,
+    public apiService: ApiService
   ) { }
 
   ngOnInit() {
@@ -37,15 +40,14 @@ export class ViewEmployeeComponent implements OnInit {
         }
       });
     })
-    this.employeeData();
+    this.employeesList();
+  }
+  async employeesList() {
+    try {
+      this.getEmployee = await this.apiService.getEmployeeDetail();
+    }
+    catch (e) {
+    }
   }
 
-  async employeeData() {
-    this.deviceService.sendMessageToSocket({
-      type: "device_set_list_employee",
-      chip: this.deviceId,
-      app_id: await this.deviceService.getAppID(),
-      stage: "init"
-    })
-  }
 }

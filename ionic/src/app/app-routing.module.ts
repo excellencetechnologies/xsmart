@@ -14,6 +14,8 @@ import { ViewEmployeeComponent } from './view-employee/view-employee.component';
 import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
 import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
+import { EmployeePunchComponent } from './employee-punch/employee-punch.component';
+import { EmployeeMonthlyAttendanceComponent } from './employee-monthly-attendance/employee-monthly-attendance.component';
 const routes: Routes = [
   { path: "", redirectTo: "login", pathMatch: "full" },
   { path: "login", canActivate: [AuthGuard],component: LoginComponent },
@@ -29,6 +31,8 @@ const routes: Routes = [
   { path:"setting",canActivate:[AuthGuard],component:SettingComponent},
   { path:"add-devices",canActivate:[AuthGuard],component:AddDevicesComponent},
   { path:"wifi-network",canActivate:[AuthGuard],component:WifiNetworkComponent},
+  { path:"employee-punch",canActivate:[AuthGuard],component:EmployeePunchComponent},
+  { path:"employee-monthly-attendance",canActivate:[AuthGuard],component:EmployeeMonthlyAttendanceComponent},
   { path: '',canActivate: [AuthGuard], loadChildren: './tabs/tabs.module#TabsPageModule' },
 ];
 @NgModule({

@@ -1,35 +1,53 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { employee } from "../components/model/user";
-import { FormControl, FormGroup, Validators } from "@angular/forms";
+import { addEmployee, employeeDetail, punches } from "../components/model/user";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
 import { EventHandlerService } from '../api/event-handler.service';
 import { timer } from 'rxjs';
+import { ApiService } from '../api/api.service';
+import { ModalController, AlertController, PopoverController } from '@ionic/angular';
+import { EmployeePunchComponent } from '../employee-punch/employee-punch.component';
 @Component({
   selector: 'app-add-employee',
   templateUrl: './add-employee.component.html',
   styleUrls: ['./add-employee.component.scss']
 })
 export class AddEmployeeComponent implements OnInit {
-  employeeForm: FormGroup;
   deviceId: string;
   loading: boolean = false;
   enrollCard: any;
   addEmployeeSubscription: any;
   addEmployeefailedSubscription: any;
   errorMessage: boolean;
+  employeeDetail: employeeDetail[];
+  employeeData: employeeDetail;
+  employeeNotFound: boolean;
+  currentdate = new Date();
+  employeePunches: any;
+  timing: any = [];
+  maxDate: any = new Date().getFullYear();
+  customPickerOptions;
+  employee;
+  event;
+
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
     private _event: EventHandlerService,
     private router: Router,
+    public apiServices: ApiService,
+    public modalController: ModalController,
+    public PopoverController: PopoverController,
+    public alertController: AlertController
   ) { }
 
   ngOnInit() {
     this.enrollCard = {
       isenrollCard: false,
+      isgetEmployee: false,
+      isEmployeePunches: false
     }
-    this.employeeId()
+    this.maxDate += 2;
     this.route.params.subscribe(params => (this.deviceId = params.id));
     this.addEmployeeSubscription = this._event.employeeAdd.subscribe(async (res) => {
       this.enrollCard.isenrollCard = false;
@@ -39,31 +57,109 @@ export class AddEmployeeComponent implements OnInit {
       this.enrollCard.isenrollCard = false;
       this.errorMessage = true;
     })
+    this.employeesList();
+    this.presentDatePicker();
   }
 
-  employeeId() {
-    this.employeeForm = new FormGroup({
-      emp_id: new FormControl("", [
-        Validators.required
-      ])
-    });
+  presentDatePicker() {
+    this.customPickerOptions = {
+      buttons: [{
+        text: 'save',
+        handler: (date) => {
+          this.report(date);
+        }
+      }, {
+        text: 'cancel',
+        handler: () => {
+        }
+      }]
+    }
   }
 
-  async employeeData(formData: employee) {
-    this.deviceService.sendMessageToSocket({
-      type: "device_set_add_employee",
-      chip: this.deviceId,
-      app_id: await this.deviceService.getAppID(),
-      emp_id: formData.emp_id,
-      stage: "init"
-    })
-    this.errorMessage = false;
-    this.enrollCard.isenrollCard = true;
-    timer(5000).subscribe(() => {
-      if (this.enrollCard.isenrollCard) {
-        this.errorMessage = true;
-        this.enrollCard.isenrollCard = false;
+  async addEmployee(employee) {
+    try {
+      this.employeeData = await this.deviceService.getEmployee(employee);
+      if (this.employeeData) {
+        this.enrollCard.isgetEmployee = true;
+      } else {
+        this.employeeNotFound = true;
       }
+    }
+    catch (e) {
+      this.errorMessage = true;
+    }
+  }
+  async employeeFoundSuccessFully() {
+    try {
+      this.deviceService.sendMessageToSocket({
+        type: "device_set_add_employee",
+        chip: this.deviceId,
+        app_id: await this.deviceService.getAppID(),
+        emp_id: this.employeeData.emp_id,
+        stage: "init"
+      })
+      this.enrollCard.isenrollCard = true;
+      timer(10000).subscribe(() => {
+        if (this.enrollCard.isenrollCard) {
+          this.errorMessage = true;
+          this.enrollCard.isenrollCard = false;
+        }
+      });
+    }
+    catch (e) {
+      this.errorMessage = true;
+    }
+  }
+
+  setEmployee(employee, event) {
+    this.employee = employee;
+    this.event = event;
+  }
+
+  async report(date) {
+    date = date.day.text + '-' + date.month.text + '-' + date.year.text;
+    try {
+      const data = await this.apiServices.employeePunch(this.employee.emp_id, date);
+      this.employeePunches = data['punches']
+      if (this.employeePunches) {
+        this.employeePunches.forEach((element) => {
+          element.timing = element.timing.split(' ');
+          this.timing.push({
+            "time": element.timing[1]
+          })
+        });
+        const data2 = { employeePunches: this.timing };
+        const modal = await this.PopoverController.create({
+          component: EmployeePunchComponent,
+          componentProps: { employeePunches: data2 },
+          ev: this.event
+
+        });
+        return await modal.present();
+      }
+    }
+    catch (e) {
+      this.presentAlert()
+    }
+  }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Message',
+      message: 'Employee has not punched .',
+      buttons: ['OK']
     });
+    await alert.present();
+  }
+  async employeesList() {
+    this.loading=true
+    try {
+      this.loading=false;
+      this.employeeDetail = await this.apiServices.getEmployeeDetail();
+    }
+    catch (e) {
+      this.loading=false;
+    }
   }
 }
+

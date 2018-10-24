@@ -12,11 +12,22 @@
   <ion-list>
     <ion-item class="grid-item-header">
       <ion-label>HR System</ion-label>
-      <ion-toggle [(ngModel)]="pepperoni"></ion-toggle>
+      <ion-toggle (ngModelChange)="isHRSystem()" [(ngModel)]="isHRSystem"></ion-toggle>
     </ion-item>
-    <ion-item class="grid-item-header" padding-bottom>
-      Access Key
-    </ion-item>
+    <form class="form-horizontal" [formGroup]="settingAccessKeyForm">
+      <ion-row>
+        <ion-col>
+          <ion-list>
+            <ion-label> Access Key
+            </ion-label>
+            <ion-item>
+              <ion-input type="text" [(ngModel)]="accessKey" formControlName="secret_key" name="secret_key" required></ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <p class="error" text-center *ngIf="errorMessage">Please provide valid accessKey</p>
+      <ion-button *ngIf="!isHRSystem" class="button-radius" expand="block" color="tertiary" (click)="connectHrThroughAccessKey(settingAccessKeyForm.value)">Connect</ion-button>
+    </form>
   </ion-list>
-  <ion-button class="button-radius" expand="block" color="tertiary">Connect</ion-button>
 </ion-content>

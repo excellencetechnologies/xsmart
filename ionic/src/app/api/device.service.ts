@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Platform, Img, ToastController } from '@ionic/angular';
 import { UniqueDeviceID } from '@ionic-native/unique-device-id/ngx';
 import { Ping, Wifi, Device, Switch } from "../api/api"
+import { employeeDetail, addEmployee } from "../components/model/user"
 import { stat } from 'fs';
 import { NotifyService } from './notify.service';
 import { ApiService } from './api.service';
@@ -20,7 +21,10 @@ export class DeviceService {
     isScanningDevice: boolean = false;
     isSocketConnected: boolean = false;
     mode: String = "device";
-    tempPin: any;
+    deviceUuidSubscription: string;
+    deviceUuid: string;
+    employeeDetail: employeeDetail[];
+    currentdate = new Date();
     constructor(
         private nativeStorage: NativeStorage,
         private platform: Platform,
@@ -30,14 +34,14 @@ export class DeviceService {
         private api: ApiService,
         private _event: EventHandlerService
 
-    ) {
-    }
+    ) { }
     //random id to identify the current app
+
     async getAppID() {
         if (this.platform.is("cordova")) {
-            return await this.uniqueDeviceID.get()
+            return await this.nativeStorage.getItem('unquieId');
         } else {
-            return await Promise.resolve("!23");;
+            return await localStorage.getItem("unquieId");
         }
     }
     async getDevices(): Promise<Device[]> {
@@ -51,6 +55,13 @@ export class DeviceService {
             }
         }
 
+    }
+    async getUserIdFromLocal() {
+        if (this.platform.is("mobile"))
+            await this.nativeStorage.getItem('userId');
+        else {
+            return localStorage.getItem('userId');
+        }
     }
 
     async checkDeviceExists(chipid: String) {
@@ -146,8 +157,6 @@ export class DeviceService {
             if (device.chip === chip) {
                 device.name = name
             }
-
-
             return device;
         })
         this.setDevices(devices);
@@ -172,6 +181,30 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
+    async getEmployee(employee) {
+        this.employeeDetail = await this.api.getEmployeeDetail();
+        let emp;
+        this.employeeDetail.filter((employeeDetail) => {
+            if (employeeDetail.emp_id == employee.emp_id) {
+                emp = employeeDetail;
+            }
+        })
+        return employee;
+
+    }
+    currentDate() {
+        const year = this.currentdate.getFullYear();
+        const month =
+          this.currentdate.getMonth() < 10
+            ? + (this.currentdate.getMonth() + 1)
+            : this.currentdate.getMonth() + 1;
+        const day =
+          this.currentdate.getDate() < 10
+            ? "0" + this.currentdate.getDate()
+            : this.currentdate.getDate();
+        return day + "-" + month + "-" + year;
+      }
+
     sendMessageToSocket(msg) {
         if (this.isSocketConnected) {
             socket.send(JSON.stringify(msg));
@@ -188,12 +221,13 @@ export class DeviceService {
             // Listen for messages
             socket.addEventListener('message', async (event) => {
                 let res = JSON.parse(event.data)
-                console.log(res);
+                // console.log(res);
                 if (res.type === "device_online_check_reply") {
-                    this.updateDeviceStatus(res);
-                    this.updateDevicePinSwitch(res);
+                    await this.updateDeviceStatus(res);
+                    await this.updateDevicePinSwitch(res);
                     this._event.setDevices(res);
-                } else if (res.type === "device_pin_oper_reply") {
+                }
+                else if (res.type === "device_pin_oper_reply") {
                     if (res.found) {
                         this.notifyService.alertUser("operation sent to device");
                     } else {
@@ -241,7 +275,6 @@ export class DeviceService {
                         this._event.addEmployee(res);
                     } else {
                         this.notifyService.alertUser("device waiting to add employee. touch card.");
-                        this._event.waitingAccessCard(res);
                     }
                 } else if (res.type === "device_set_delete_employee_reply") {
                     if (res.found) {
@@ -303,6 +336,7 @@ export class DeviceService {
             }
             else {
                 await this.updateDeviceNotFound(data);
+
             }
             this.getDevices();
         }

@@ -32,7 +32,4 @@ export class EventHandlerService {
   employeeList(listEmployee) {
     this.listEmployee.emit(listEmployee);
   }
-  waitingAccessCard(accessCard) {
-    this.accessCard.emit(accessCard)
-  }
 }
