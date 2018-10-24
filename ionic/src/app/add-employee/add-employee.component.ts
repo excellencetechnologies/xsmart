@@ -24,6 +24,12 @@ export class AddEmployeeComponent implements OnInit {
   employeeNotFound: boolean;
   currentdate = new Date();
   employeePunches: any;
+  timing: any = [];
+  maxDate: any = new Date().getFullYear();
+  customPickerOptions;
+  employee;
+  event;
+
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
@@ -32,7 +38,7 @@ export class AddEmployeeComponent implements OnInit {
     public apiServices: ApiService,
     public modalController: ModalController,
     public PopoverController: PopoverController,
-    public alertController:AlertController
+    public alertController: AlertController
   ) { }
 
   ngOnInit() {
@@ -41,6 +47,7 @@ export class AddEmployeeComponent implements OnInit {
       isgetEmployee: false,
       isEmployeePunches: false
     }
+    this.maxDate += 2;
     this.route.params.subscribe(params => (this.deviceId = params.id));
     this.addEmployeeSubscription = this._event.employeeAdd.subscribe(async (res) => {
       this.enrollCard.isenrollCard = false;
@@ -50,7 +57,23 @@ export class AddEmployeeComponent implements OnInit {
       this.enrollCard.isenrollCard = false;
       this.errorMessage = true;
     })
-    this.employeesList()
+    this.employeesList();
+    this.presentDatePicker();
+  }
+
+  presentDatePicker() {
+    this.customPickerOptions = {
+      buttons: [{
+        text: 'save',
+        handler: (date) => {
+          this.report(date);
+        }
+      }, {
+        text: 'cancel',
+        handler: () => {
+        }
+      }]
+    }
   }
 
   async addEmployee(employee) {
@@ -87,19 +110,29 @@ export class AddEmployeeComponent implements OnInit {
       this.errorMessage = true;
     }
   }
-  async report(employee, ev) {
+
+  setEmployee(employee, event) {
+    this.employee = employee;
+    this.event = event;
+  }
+
+  async report(date) {
+    date = date.day.text + '-' + date.month.text + '-' + date.year.text;
     try {
-      const data = await this.apiServices.employeePunch(employee.emp_id, this.deviceService.currentDate());
+      const data = await this.apiServices.employeePunch(this.employee.emp_id, date);
       this.employeePunches = data['punches']
       if (this.employeePunches) {
         this.employeePunches.forEach((element) => {
           element.timing = element.timing.split(' ');
+          this.timing.push({
+            "time": element.timing[1]
+          })
         });
-        const data2 = { employeePunches: this.employeePunches };
+        const data2 = { employeePunches: this.timing };
         const modal = await this.PopoverController.create({
           component: EmployeePunchComponent,
           componentProps: { employeePunches: data2 },
-          ev: ev
+          ev: this.event
 
         });
         return await modal.present();
@@ -113,7 +146,7 @@ export class AddEmployeeComponent implements OnInit {
   async presentAlert() {
     const alert = await this.alertController.create({
       header: 'Message',
-      message: 'Employee has not punched today.',
+      message: 'Employee has not punched .',
       buttons: ['OK']
     });
     await alert.present();

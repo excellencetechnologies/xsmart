@@ -33,13 +33,14 @@
           <ion-grid no-padding>
             <ion-row class="buttonGroup" color="primary">
               <ion-col padding>
-                <ion-button class="button-radius" expand="block" color="primary" fill="outline" (click)="report(employee,$event)">Report</ion-button>
+                <ion-datetime no-padding class="report" displayFormat="MM/DD/YYYY" [pickerOptions]="customPickerOptions" fill="outline" min="1989-06-04"
+                  max="{{maxDate}}" (click)="setEmployee(employee,ev)">Report</ion-datetime>
               </ion-col>
               <ion-col padding>
-                <ion-button class="button-radius" expand="block" color="primary" fill="outline"> Disable</ion-button>
+                <ion-button  expand="block" color="primary" fill="outline"> Disable</ion-button>
               </ion-col>
               <ion-col padding>
-                <ion-button class="button-radius" expand="block" color="primary" fill="outline"> Delete</ion-button>
+                <ion-button  expand="block" color="primary" fill="outline"> Delete</ion-button>
               </ion-col>
             </ion-row>
           </ion-grid>

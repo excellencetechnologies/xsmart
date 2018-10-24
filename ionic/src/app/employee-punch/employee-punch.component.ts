@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavParams, ModalController } from '@ionic/angular';
-import {punches } from "../components/model/user";
+import { punches } from "../components/model/user";
+import { DeviceService } from '../api/device.service';
 @Component({
   selector: 'app-employee-punch',
   templateUrl: './employee-punch.component.html',
@@ -8,9 +9,12 @@ import {punches } from "../components/model/user";
 })
 export class EmployeePunchComponent implements OnInit {
   employeePunchTime: punches;
+  todayDate: any;
+  maxDate: any = new Date().getFullYear();
   constructor(
     private navParams: NavParams,
-    public modalController: ModalController
+    public modalController: ModalController,
+    public deviceService: DeviceService
   ) { }
 
   ngOnInit() {
