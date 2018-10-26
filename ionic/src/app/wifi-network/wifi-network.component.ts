@@ -55,10 +55,10 @@ export class WifiNetworkComponent implements OnInit {
     }
   }
   async askWifiPassword(wifi) {
-    const data = { wifi: wifi.SSID };
+    const data = wifi.SSID;
     const modal1 = await this.modalController.create({
       component: SetWifiPasswordComponent,
-      componentProps: { ssid: data }
+      componentProps:data
     });
     return await modal1.present();
 

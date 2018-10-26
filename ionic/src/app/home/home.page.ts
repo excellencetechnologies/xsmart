@@ -37,7 +37,7 @@ export class HomePage implements OnInit {
   deviceSubscription: any;
   currentdate = new Date();
   loading: boolean;
-  employeeMonthlyPunches: employeeMonthlyPunches;
+  employeeMonthlyPunches: any;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -82,8 +82,8 @@ export class HomePage implements OnInit {
       this.devices = await this.deviceService.getDevices();
       this.devices.forEach(value => {
         if (value.device_id == res.id) {
-          const currentDate = new Date(this.time);
-          const utcTime = new Date(currentDate.getTime() + (30 * 60 * 1000));
+          const currentDate = new Date(this.currentdate);
+          const utcTime = new Date(currentDate.getTime());
           value['time'] = utcTime;
         }
       });
@@ -143,6 +143,7 @@ export class HomePage implements OnInit {
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
+
     if (this.devices.length > 0) {
       this.keepCheckingDeviceOnline();
     }
@@ -185,17 +186,17 @@ export class HomePage implements OnInit {
     this.loading=true;
     try {
       const data = await this.api.employeeMonthlyAttendance(this.currentDate());
-      this.loader=false;
+      this.loading=false;
       this.employeeMonthlyPunches = data['attendance_summary'].attendance_info;
-      const data2 = { employeeMonthlyPunches: this.employeeMonthlyPunches };
+      const data2 =  this.employeeMonthlyPunches;
       const modal = await this.modalController.create({
         component: EmployeeMonthlyAttendanceComponent,
-        componentProps: { employeeMonthlyPunches: data2 }
+        componentProps: data2
       });
       return await modal.present();
     }
     catch (e) {
-      this.loader=false;
+      this.loading=false;
     }
 
   }

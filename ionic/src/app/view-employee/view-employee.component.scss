@@ -1,3 +1,35 @@
 .grid-item-header {
     border-bottom: thin solid #EEE;
 }
+.report {
+    border: 1px solid var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    border-radius: 2px;
+    padding: 8px 0px 5.5px 15px;
+    margin-top: 3px;
+}
+
+.button-radius {
+    text-transform: capitalize; 
+}
+
+.report {
+    border: 1px solid var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    border-radius: 2px;
+    padding-left: 9px;
+    height: 37px;
+    margin-top: 5px;
+}
+
+.date {
+    min-width: 5px;
+    height: 0px;
+}
+
+.report--text {
+    cursor: pointer;
+    margin-bottom: 30px;
+    padding-left: 5px;
+    font-size: 13.33px;
+}

@@ -102,11 +102,11 @@ export class AddDevicesComponent implements OnInit {
         }
       }
       this.mode = "scan";
-      const modal1 = await this.modalController.create({
-        component: WifiNetworkComponent,
-        componentProps: {}
-      });
-      return await modal1.present();
+      // const modal1 = await this.modalController.create({
+      //   component: WifiNetworkComponent,
+      //   componentProps: {}
+      // });
+      // return await modal1.present();
     } catch (e) {
       this.errorMessage = e["error"];
       this.notifyService.alertUser("Please Provide valid unique chip ID");

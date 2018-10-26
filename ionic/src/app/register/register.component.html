@@ -8,7 +8,7 @@
 </ion-header>
 <ion-content padding class="register">
 
-  <form [formGroup]="userRegisterForm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <form [formGroup]="userRegisterForm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" (ngSubmit)="onSubmit(userRegisterForm) ">
     <ion-row>
       <ion-col>
         <ion-list class="rgister-Form">
@@ -35,7 +35,7 @@
         <p *ngIf="errorMessage">{{errorMessage}}</p>
       </div>
       <ion-col class="center" class="registerr">
-        <ion-button expand="block" color="light" (click)="onSubmit(userRegisterForm)">{{loading ? '' : 'Register'}}
+        <ion-button expand="block" color="light" type="button">{{loading ? '' : 'Register'}}
           <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
         </ion-button>
       </ion-col>

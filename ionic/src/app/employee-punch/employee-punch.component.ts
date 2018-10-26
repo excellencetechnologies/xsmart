@@ -8,7 +8,7 @@ import { DeviceService } from '../api/device.service';
   styleUrls: ['./employee-punch.component.scss']
 })
 export class EmployeePunchComponent implements OnInit {
-  employeePunchTime: punches;
+  employeePunchTime: any;
   todayDate: any;
   maxDate: any = new Date().getFullYear();
   constructor(
@@ -18,11 +18,8 @@ export class EmployeePunchComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.employeeDetail()
+    const data = this.navParams;
+    delete data['data']['modal']
+    this.employeePunchTime = Object.values(data['data']);
   }
-  employeeDetail() {
-    const data = this.navParams.get('employeePunches')
-    this.employeePunchTime = data['employeePunches'];
-  }
-
 }

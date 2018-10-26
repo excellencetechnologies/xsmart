@@ -45,7 +45,7 @@ export class DeviceService {
         }
     }
     async getDevices(): Promise<Device[]> {
-        if (this.platform.is("mobile"))
+        if (this.platform.is("cordova"))
             return await (this.nativeStorage.getItem('devices')) as Device[];
         else {
             if (localStorage.getItem('devices')) {
@@ -54,10 +54,9 @@ export class DeviceService {
                 return [];
             }
         }
-
     }
     async getUserIdFromLocal() {
-        if (this.platform.is("mobile"))
+        if (this.platform.is("cordova"))
             await this.nativeStorage.getItem('userId');
         else {
             return localStorage.getItem('userId');
@@ -75,7 +74,7 @@ export class DeviceService {
         return device;
     }
     async setDevices(devices: Device[]) {
-        if (this.platform.is("mobile")) {
+        if (this.platform.is("cordova")) {
             await this.nativeStorage.setItem('devices', devices);
         } else {
             localStorage.setItem('devices', JSON.stringify(devices));
@@ -190,7 +189,6 @@ export class DeviceService {
             }
         })
         return employee;
-
     }
     currentDate() {
         const year = this.currentdate.getFullYear();

@@ -8,7 +8,7 @@
     </ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content padding>
+<ion-content padding *ngIf="employeeMonthlyPunches && employeeMonthlyPunches.length">
   <ion-card *ngFor="let employee of employeeMonthlyPunches">
     <ion-card-content no-padding>
       <ion-list class="grid-item-header" no-padding>

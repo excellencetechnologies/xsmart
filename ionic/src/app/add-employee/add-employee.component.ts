@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { EventHandlerService } from '../api/event-handler.service';
 import { timer } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import { ModalController, AlertController, PopoverController } from '@ionic/angular';
+import { ModalController, AlertController, PopoverController, } from '@ionic/angular';
 import { EmployeePunchComponent } from '../employee-punch/employee-punch.component';
 @Component({
   selector: 'app-add-employee',
@@ -128,18 +128,16 @@ export class AddEmployeeComponent implements OnInit {
             "time": element.timing[1]
           })
         });
-        const data2 = { employeePunches: this.timing };
+        const data2 = this.timing;
         const modal = await this.PopoverController.create({
           component: EmployeePunchComponent,
-          componentProps: { employeePunches: data2 },
-          ev: this.event
-
+          componentProps: data2
         });
         return await modal.present();
       }
     }
     catch (e) {
-      this.presentAlert()
+      this.presentAlert() 
     }
   }
 
