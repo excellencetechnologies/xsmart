@@ -45,7 +45,7 @@ export class DeviceService {
         }
     }
     async getDevices(): Promise<Device[]> {
-        if (this.platform.is("cordova"))
+        if (this.platform.is("mobile"))
             return await (this.nativeStorage.getItem('devices')) as Device[];
         else {
             if (localStorage.getItem('devices')) {
@@ -56,7 +56,7 @@ export class DeviceService {
         }
     }
     async getUserIdFromLocal() {
-        if (this.platform.is("cordova"))
+        if (this.platform.is("mobile"))
             await this.nativeStorage.getItem('userId');
         else {
             return localStorage.getItem('userId');
