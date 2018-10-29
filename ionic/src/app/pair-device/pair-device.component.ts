@@ -64,13 +64,17 @@ export class PairDeviceComponent implements OnInit {
           component: WifiNetworkComponent,
           componentProps: data2
         });
-        return await modal.present();
-        
+         await modal.present();
+         const modalCLoseReponse = await modal.onDidDismiss();
+         this.modelClose();
       } catch (e) {
         this.isScanningDevice = true;
         this.errorMessage = e;
       }
     }, 5000);
+  }
+  modelClose(){
+    this.modalController.dismiss({closeAll: true});
   }
   scanDevice() {
     this.mode = "scan";

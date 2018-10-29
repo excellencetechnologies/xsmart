@@ -44,7 +44,7 @@ export class AddEmployeeComponent implements OnInit {
   ngOnInit() {
     this.enrollCard = {
       isenrollCard: false,
-      isgetEmployee: false,
+      isEmployeeExist: false,
       isEmployeePunches: false
     }
     this.maxDate += 2;
@@ -80,7 +80,7 @@ export class AddEmployeeComponent implements OnInit {
     try {
       this.employeeData = await this.deviceService.getEmployee(employee);
       if (this.employeeData) {
-        this.enrollCard.isgetEmployee = true;
+        this.enrollCard.isEmployeeExist = true;
       } else {
         this.employeeNotFound = true;
       }
@@ -141,6 +141,7 @@ export class AddEmployeeComponent implements OnInit {
     }
   }
  
+
   async presentAlert() {
     const alert = await this.alertController.create({
       header: 'Message',
