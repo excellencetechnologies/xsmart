@@ -61,9 +61,6 @@ export class WifiNetworkComponent implements OnInit {
     });
     await modal.present();
     const modalCLoseReponse = await modal.onDidDismiss();
-    this.modelClose()
-  }
-  modelClose(){
-    this.modalController.dismiss({closeAll: true});
+    this.modalController.dismiss({closePrvModel: true});
   }
 }

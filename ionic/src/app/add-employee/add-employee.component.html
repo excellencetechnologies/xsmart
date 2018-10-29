@@ -11,7 +11,7 @@
 <ion-content padding>
   <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
   <div *ngIf="!enrollCard.isEmployeeExist">
-    <ion-card *ngFor="let employee of employeeDetail">
+    <ion-card *ngFor="let employee of employeeList">
       <ion-card-content no-padding>
         <ion-list no-padding>
           <ion-list>
@@ -42,7 +42,7 @@
                   <ion-item class="report" no-lines no-padding>
                     <span class="report--text">Report</span>
                     <ion-datetime no-padding text-center no-padding class="date" displayFormat="MM/DD/YYYY" [pickerOptions]="customPickerOptions"
-                      fill="outline" min="1989-06-04" max="{{maxDate}}" (click)="setEmployee(employee,ev)">
+                      fill="outline" max="{{maxDate}}" (click)="setEmployee(employee,ev)">
                     </ion-datetime>
                   </ion-item>
                 </ion-list>

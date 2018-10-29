@@ -19,7 +19,7 @@ export class AddEmployeeComponent implements OnInit {
   addEmployeeSubscription: any;
   addEmployeefailedSubscription: any;
   errorMessage: boolean;
-  employeeDetail: employeeDetail[];
+  employeeList: employeeDetail[];
   employeeData: employeeDetail;
   employeeNotFound: boolean;
   currentdate = new Date();
@@ -78,7 +78,7 @@ export class AddEmployeeComponent implements OnInit {
 
   async addEmployee(employee) {
     try {
-      this.employeeData = await this.deviceService.getEmployee(employee);
+      this.employeeData = await this.deviceService.getEmployee(employee,this.employeeList);
       if (this.employeeData) {
         this.enrollCard.isEmployeeExist = true;
       } else {
@@ -154,7 +154,7 @@ export class AddEmployeeComponent implements OnInit {
     this.loading=true
     try {
       this.loading=false;
-      this.employeeDetail = await this.apiServices.getEmployeeDetail();
+      this.employeeList = await this.apiServices.getEmployeesList();
     }
     catch (e) {
       this.loading=false;

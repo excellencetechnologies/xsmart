@@ -63,7 +63,7 @@ export class SetWifiPasswordComponent implements OnInit {
       this.progressBarInfo = 100;
       this.progressBar.isNetworkConnect = true;
       timer(10000).subscribe(() => {
-        this.modalController.dismiss({ closeAll: true });
+        this.modalController.dismiss({closePrvModel: true});
 
       });
       this.router.navigate(["/tabs"]);

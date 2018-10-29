@@ -198,7 +198,7 @@ export class ApiService {
       throw (error);
     }
   }
-  async getEmployeeDetail(employeeDetail?: employeeDetail) {
+  async getEmployeesList(employeeDetail?: employeeDetail) {
     const userId = localStorage.getItem("userId")
     try {
       const data = await this.http.get<employeeDetail[]>(`${environment["base_url"]}card/employeeData/${userId}`).toPromise();

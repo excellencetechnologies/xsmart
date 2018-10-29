@@ -181,15 +181,14 @@ export class DeviceService {
         })
         this.setDevices(devices);
     }
-    async getEmployee(employee) {
-        this.employeeDetail = await this.api.getEmployeeDetail();
+    async getEmployee(employee,employeeList) {
         let emp;
-        this.employeeDetail.filter((employeeDetail) => {
-            if (employeeDetail.emp_id == employee.emp_id) {
-                emp = employeeDetail;
+        employeeList.filter((element) => {
+            if (element.emp_id == employee.emp_id) {
+                emp = element;
             }
         })
-        return employee;
+        return emp;
     }
     currentDate() {
         const year = this.currentdate.getFullYear();
