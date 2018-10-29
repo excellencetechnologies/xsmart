@@ -24,7 +24,7 @@ export class AddEmployeeComponent implements OnInit {
   employeeNotFound: boolean;
   currentdate = new Date();
   employeePunches: any;
-  timing: any = [];
+  employeetiming: any = [];
   maxDate: any = new Date().getFullYear();
   customPickerOptions;
   employee;
@@ -124,14 +124,14 @@ export class AddEmployeeComponent implements OnInit {
       if (this.employeePunches) {
         this.employeePunches.forEach((element) => {
           element.timing = element.timing.split(' ');
-          this.timing.push({
+          this.employeetiming.push({
             "time": element.timing[1]
           })
         });
-        const data2 = this.timing;
+        const getDataEmployeePunches = this.employeetiming;
         const modal = await this.PopoverController.create({
           component: EmployeePunchComponent,
-          componentProps: data2
+          componentProps: getDataEmployeePunches
         });
         return await modal.present();
       }
@@ -140,7 +140,7 @@ export class AddEmployeeComponent implements OnInit {
       this.presentAlert() 
     }
   }
-
+ 
   async presentAlert() {
     const alert = await this.alertController.create({
       header: 'Message',

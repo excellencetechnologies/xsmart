@@ -72,7 +72,7 @@ export class HomePage implements OnInit {
     if (localStorage.getItem('live') != undefined) {
       this.live = JSON.parse(localStorage.getItem("live"))
     }
-    else if (this.platform.is("mobile")) {
+    else if (this.platform.is("cordova")) {
       const liveStatus = await this.nativeStorage.getItem('live')
       if (liveStatus != undefined)
         this.live = liveStatus;
@@ -92,7 +92,7 @@ export class HomePage implements OnInit {
 
   async onliveMode() {
     this.live = !this.live;
-    if (this.platform.is("mobile")) {
+    if (this.platform.is("cordova")) {
       this.nativeStorage.setItem('live', JSON.stringify(this.live))
     }
     else {

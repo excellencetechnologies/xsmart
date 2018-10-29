@@ -154,7 +154,7 @@ export class ApiService {
 
 
   async isLive() {
-    if (this.platform.is("mobile")) {
+    if (this.platform.is("cordova")) {
       const isLive = await this.nativeStorage.getItem('live');
       if (isLive != undefined) {
         return true;

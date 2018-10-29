@@ -9,8 +9,6 @@ import { DeviceService } from '../api/device.service';
 })
 export class EmployeePunchComponent implements OnInit {
   employeePunchTime: any;
-  todayDate: any;
-  maxDate: any = new Date().getFullYear();
   constructor(
     private navParams: NavParams,
     public modalController: ModalController,
@@ -18,8 +16,8 @@ export class EmployeePunchComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const data = this.navParams;
-    delete data['data']['modal']
-    this.employeePunchTime = Object.values(data['data']);
+    const getDataEmployeePunchTime = this.navParams;
+    delete getDataEmployeePunchTime['data']['popover']
+    this.employeePunchTime = Object.values(getDataEmployeePunchTime['data']);
   }
 }

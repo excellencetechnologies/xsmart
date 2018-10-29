@@ -1,7 +1,7 @@
-<ion-content padding class="content">
-  <div *ngFor="let employee of employeePunchTime" class="grid-item-header">
-    <ion-item>
-      <ion-label> {{employee.time}}</ion-label>
+<ion-content padding >
+  <ion-list>
+    <ion-item *ngFor="let employee of employeePunchTime">
+      {{employee.time}}
     </ion-item>
-  </div>
+  </ion-list>
 </ion-content>

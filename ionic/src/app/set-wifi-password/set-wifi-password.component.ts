@@ -42,9 +42,9 @@ export class SetWifiPasswordComponent implements OnInit {
     this.getSsid();
   }
   getSsid() {
-    const data = this.navParams
-    delete data['data']['modal']
-    this.ssid = Object.values(data['data']);
+    const devicePing = this.navParams
+    delete devicePing['data']['modal']
+    this.ssid = Object.values(devicePing['data']);
     this.progressBarInfo = 80;
     this.progressBar.isDeviceConnected = true;
     this.progressBar.isMessageSent = true;
@@ -64,7 +64,6 @@ export class SetWifiPasswordComponent implements OnInit {
       this.progressBarInfo = 100;
       this.progressBar.isNetworkConnect = true;
       timer(10000).subscribe(() => {
-        this.modalController.dismiss();
         this.modalController.dismiss();
         this.modalController.dismiss();
       });

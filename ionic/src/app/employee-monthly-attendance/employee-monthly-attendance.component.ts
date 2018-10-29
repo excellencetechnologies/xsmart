@@ -15,9 +15,9 @@ export class EmployeeMonthlyAttendanceComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    const data = this.navParams;
-    delete data['data']['modal']
-    this.employeeMonthlyPunches = Object.values(data['data']);
+    const getDataMonthlyPunches = this.navParams;
+    delete getDataMonthlyPunches['data']['modal']
+    this.employeeMonthlyPunches = Object.values(getDataMonthlyPunches['data']);
   }
   modelClose() {
     this.modalController.dismiss();
