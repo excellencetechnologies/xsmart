@@ -1,5 +1,5 @@
 import { Component, OnInit, EventEmitter } from '@angular/core';
-import { Platform, MenuController, ToastController } from '@ionic/angular';
+import { Platform, MenuController, ToastController, ModalController } from '@ionic/angular';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ApiService } from "../api/api.service";
@@ -9,7 +9,8 @@ import { Ping, Wifi, Device, Switch } from "../api/api"
 import { EventHandlerService } from '../api/event-handler.service'
 import { Router, NavigationEnd } from '@angular/router';
 import { NativeStorage } from '@ionic-native/native-storage/ngx';
-import { newDevice } from "../components/model/user";
+import { newDevice, employeeMonthlyPunches } from "../components/model/user";
+import { EmployeeMonthlyAttendanceComponent } from '../employee-monthly-attendance/employee-monthly-attendance.component';
 
 let socket = null;
 let wifiCheckInterval = null;
@@ -34,6 +35,9 @@ export class HomePage implements OnInit {
   routerSet: any;
   wifiSet: boolean = false;
   deviceSubscription: any;
+  currentdate = new Date();
+  loading: boolean;
+  employeeMonthlyPunches: any;
   // mode show in which state the mobile app is 
   // 1. device (i.e it will show list of devices if any)
   // 2. scan ( i.e scan for devices )
@@ -51,6 +55,7 @@ export class HomePage implements OnInit {
     private router: Router,
     private nativeStorage: NativeStorage,
     private _event: EventHandlerService,
+    public modalController: ModalController
   ) { }
 
   async ngOnInit() {
@@ -67,18 +72,18 @@ export class HomePage implements OnInit {
     if (localStorage.getItem('live') != undefined) {
       this.live = JSON.parse(localStorage.getItem("live"))
     }
-    else if (this.platform.is("mobile")) {
+    else if (this.platform.is("cordova")) {
       const liveStatus = await this.nativeStorage.getItem('live')
       if (liveStatus != undefined)
-        this.live = liveStatus;
+        this.live = liveStatus;  
     }
     this.deviceSubscription = this._event.devices.subscribe(async (res) => {
       this.time = res.deviceTime;
       this.devices = await this.deviceService.getDevices();
       this.devices.forEach(value => {
         if (value.device_id == res.id) {
-          const currentDate = new Date(this.time);
-          const utcTime = new Date(currentDate.getTime() + (30 * 60 * 1000));
+          const currentDate = new Date(this.currentdate);
+          const utcTime = new Date(currentDate.getTime());
           value['time'] = utcTime;
         }
       });
@@ -87,7 +92,7 @@ export class HomePage implements OnInit {
 
   async onliveMode() {
     this.live = !this.live;
-    if (this.platform.is("mobile")) {
+    if (this.platform.is("cordova")) {
       this.nativeStorage.setItem('live', JSON.stringify(this.live))
     }
     else {
@@ -138,6 +143,7 @@ export class HomePage implements OnInit {
   }
   async checkExistingDevice() {
     this.devices = await this.deviceService.getDevices();
+
     if (this.devices.length > 0) {
       this.keepCheckingDeviceOnline();
     }
@@ -163,11 +169,37 @@ export class HomePage implements OnInit {
         type: "device_online_check",
         chip: device.chip,
         app_id: await this.deviceService.getAppID(),
-        stage: "init"
+        stage: "init",
+        userId: await this.deviceService.getUserIdFromLocal(),
       });
     });
   }
+  currentDate() {
+    const year = this.currentdate.getFullYear();
+    const month =
+      this.currentdate.getMonth() < 10
+        ? + (this.currentdate.getMonth() + 1)
+        : this.currentdate.getMonth() + 1;
+    return month + "/" + year;
+  }
+  async report() {
+    this.loading=true;
+    try {
+      const data = await this.api.employeeMonthlyAttendance(this.currentDate());
+      this.loading=false;
+      this.employeeMonthlyPunches = data['attendance_summary'].attendance_info;
+      const data2 =  this.employeeMonthlyPunches;
+      const modal = await this.modalController.create({
+        component: EmployeeMonthlyAttendanceComponent,
+        componentProps: data2
+      });
+      return await modal.present();
+    }
+    catch (e) {
+      this.loading=false;
+    }
 
+  }
   async keepCheckingDeviceOnline() {
     setTimeout(async () => {
       this.pingDevices();

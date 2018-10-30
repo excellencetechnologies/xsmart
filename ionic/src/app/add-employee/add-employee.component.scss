@@ -1,16 +1,45 @@
-.employeeForm{
+.employeeForm {
     border: thin solid var(--ion-color-light-tint);
 }
-.employeeId{
-    margin-left:10px;
+
+.employeeId {
+    margin-left: 10px;
 }
-.loder{
-    border:1px solid var(--ion-color-medium);
+
+.loder {
+    border: 1px solid var(--ion-color-medium);
 }
+
 .logo {
     transform: scale(1.6);
     color: var(--ion-color-medium);
 }
+
+.report {
+    border: 1px solid var(--ion-color-primary);
+    color: var(--ion-color-primary);
+    border-radius: 2px;
+    padding-left: 9px;
+    height: 37px;
+    margin-top: 5px;
+}
+
+.date {
+    min-width: 5px;
+    height: 0px;
+}
+
+.report--text {
+    cursor: pointer;
+    margin-bottom: 12px;
+    padding-left: 5px;
+    font-size: 13.33px;
+}
+
+.button-radius {
+    text-transform: capitalize;
+}
+
 .spinner {
     margin: auto;
     border: 12px solid var(--ion-color-light-tint);
@@ -18,20 +47,32 @@
     border-top: 12px solid var(--ion-color-primary);
     width: 146px;
     height: 146px;
-    -webkit-animation: spin 2s linear infinite; /* Safari */
+    -webkit-animation: spin 2s linear infinite;
+    /* Safari */
     animation: spin 2s linear infinite;
-  }
-  /* Safari */
-  @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-  .error{
+}
+
+/* Safari */
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.error {
     text-align: center;
     color: red;
 }

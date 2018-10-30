@@ -8,7 +8,7 @@
 
 <ion-content padding>
   <div class="login-box">
-    <form *ngIf="loginForm" class="form-horizontal" [formGroup]="loginForm">
+    <form *ngIf="loginForm" class="form-horizontal" [formGroup]="loginForm" (submit)="onSubmit(loginForm)">
       <ion-row>
         <ion-col>
           <ion-list class="login-Form">
@@ -27,7 +27,7 @@
         <p *ngIf="errorMessage">{{errorMessage}}</p>
       </div>
       <ion-col class="signup-col">
-        <ion-button expand="block" (click)="onSubmit(loginForm)" color="light">{{loading ? '' : 'Log in'}}
+        <ion-button  type="submit" expand="block"  color="light">{{loading ? '' : 'Log in'}}
           <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
         </ion-button>
       </ion-col>

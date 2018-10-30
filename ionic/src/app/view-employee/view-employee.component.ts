@@ -2,9 +2,11 @@ import { Component, OnInit } from '@angular/core'
 import { FormControl, FormGroup, Validators } from "@angular/forms";
 import { DeviceService } from '../api/device.service';
 import { ActivatedRoute, Router } from '@angular/router'
-import { employeeList } from "../components/model/user";
+import { employeeList, employeeDetail } from "../components/model/user";
 import { EventHandlerService } from '../api/event-handler.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, PopoverController } from '@ionic/angular';
+import { ApiService } from '../api/api.service';
+import { EmployeePunchComponent } from '../employee-punch/employee-punch.component';
 @Component({
   selector: 'app-view-employee',
   templateUrl: './view-employee.component.html',
@@ -16,12 +18,23 @@ export class ViewEmployeeComponent implements OnInit {
   listEmployeeSubscription: any;
   employees: employeeList;
   employeeList = [];
+  getEmployee: employeeDetail[];
+  employeePunches: any;
+  employeetiming: any = [];
+  maxDate: any = new Date().getFullYear();
+  customPickerOptions;
+  employee;
+  event;
+  refEmployeeList;
+  searchText: string = '';
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
     private router: Router,
     private _event: EventHandlerService,
     public alertController: AlertController,
+    public apiService: ApiService,
+    public PopoverController: PopoverController
   ) { }
 
   ngOnInit() {
@@ -37,15 +50,82 @@ export class ViewEmployeeComponent implements OnInit {
         }
       });
     })
-    this.employeeData();
+    this.maxDate += 2;
+    this.employeesList();
+    this.presentDatePicker();
+  }
+  presentDatePicker() {
+    this.customPickerOptions = {
+      buttons: [{
+        text: 'save',
+        handler: (date) => {
+          this.report(date);
+        }
+      }, {
+        text: 'cancel',
+        handler: () => {
+        }
+      }]
+    }
+  }
+  setEmployee(employee, event) {
+    this.employee = employee;
+    this.event = event;
   }
 
-  async employeeData() {
-    this.deviceService.sendMessageToSocket({
-      type: "device_set_list_employee",
-      chip: this.deviceId,
-      app_id: await this.deviceService.getAppID(),
-      stage: "init"
-    })
+  async report(date) {
+    date = date.day.text + '-' + date.month.text + '-' + date.year.text;
+    try {
+      const data = await this.apiService.employeePunch(this.employee.emp_id, date);
+      this.employeePunches = data['punches']
+      if (this.employeePunches) {
+        this.employeePunches.forEach((element) => {
+          element.timing = element.timing.split(' ');
+          this.employeetiming.push({
+            "time": element.timing[1]
+          })
+        });
+        const getDataEmployeePunches =  this.employeetiming;
+        const modal = await this.PopoverController.create({
+          component: EmployeePunchComponent,
+          componentProps: getDataEmployeePunches
+        });
+        return await modal.present();
+      }
+    
+    }
+    catch (e) {
+      this.presentAlert()
+    }
   }
+
+  async presentAlert() {
+    const alert = await this.alertController.create({
+      header: 'Message',
+      message: 'Employee has not punched .',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
+  async employeesList() {
+    try {
+      this.getEmployee = await this.apiService.getEmployeesList();
+      this.refEmployeeList = JSON.parse(JSON.stringify(this.getEmployee));
+    }
+    catch (e) {
+    }
+  }
+  filterEmployee(searchText) {
+    if (searchText.detail.data && searchText.detail.data.length) {
+      this.searchText += searchText.detail.data;
+      this.getEmployee = this.refEmployeeList;
+      this.getEmployee = this.getEmployee.filter((employee) => {
+        return employee.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1;
+      });
+    } else {
+      this.searchText = '';
+      this.getEmployee = this.refEmployeeList;
+    }
+  }
+
 }

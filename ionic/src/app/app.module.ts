@@ -21,6 +21,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { File } from '@ionic-native/file/ngx';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { Camera } from '@ionic-native/camera/ngx';
+import { Device } from '@ionic-native/device/ngx';
 import { HttpModule } from '@angular/http';
 import { ScanDeviceComponent } from './scan-device/scan-device.component';
 import { PairDeviceComponent } from './pair-device/pair-device.component';
@@ -31,6 +32,8 @@ import { SettingComponent } from './setting/setting.component';
 import { AddDevicesComponent } from './add-devices/add-devices.component';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
+import { EmployeePunchComponent } from './employee-punch/employee-punch.component';
+import { EmployeeMonthlyAttendanceComponent } from './employee-monthly-attendance/employee-monthly-attendance.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -47,6 +50,8 @@ import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
     SettingComponent,
     AddDevicesComponent,
     WifiNetworkComponent,
+    EmployeePunchComponent,
+    EmployeeMonthlyAttendanceComponent,
   ],
   entryComponents: [],
   imports: [BrowserModule,
@@ -66,12 +71,13 @@ import { WifiNetworkComponent } from './wifi-network/wifi-network.component';
       innerStrokeColor: "#f5f5f5",
       animationDuration: 100,
     })
-    ],
+  ],
   providers: [
     StatusBar,
     SplashScreen,
     NativeStorage,
     UniqueDeviceID,
+    Device,
     AuthGuard,
     File,
     FileTransfer,

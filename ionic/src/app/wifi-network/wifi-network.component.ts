@@ -32,7 +32,6 @@ export class WifiNetworkComponent implements OnInit {
     this.progressBar = {
       isNetworkConnect: false
     }
-    localStorage.removeItem('routerSet');
   }
   async scanWifi() {
     try {
@@ -55,12 +54,13 @@ export class WifiNetworkComponent implements OnInit {
     }
   }
   async askWifiPassword(wifi) {
-    const data = { wifi: wifi.SSID };
-    const modal1 = await this.modalController.create({
+    const data = wifi.SSID;
+    const modal = await this.modalController.create({
       component: SetWifiPasswordComponent,
-      componentProps: { ssid: data }
+      componentProps:data
     });
-    return await modal1.present();
-
+    await modal.present();
+    const modalCLoseReponse = await modal.onDidDismiss();
+    this.modalController.dismiss({closePrvModel: true});
   }
 }

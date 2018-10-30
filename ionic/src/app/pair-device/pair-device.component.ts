@@ -16,7 +16,7 @@ let wifiCheckInterval = null;
 export class PairDeviceComponent implements OnInit {
   wifinetworks: Wifi[] = [];
   devices: Device[] = [];
-  devicePing: Ping;
+  devicePing: any;
   isScanningDevice: boolean = false;
   mode: String = "device";
   loader: boolean = true;
@@ -47,7 +47,7 @@ export class PairDeviceComponent implements OnInit {
       try {
         const data = await this.api.checkPing();
         this.loader = false;
-        this.devicePing = data;
+        this.devicePing = data['data'];
         if (this.devicePing) {
           if (this.devicePing.name && this.devicePing.name.length > 0) {
             this.devicePing.isNew = false;
@@ -59,18 +59,21 @@ export class PairDeviceComponent implements OnInit {
         this.progressBar.isDeviceConnected = true;
         clearInterval(wifiCheckInterval);
         this.mode = "discovery";
-        const data2 = { pingDevice: this.devicePing };
+        const data2 =  this.devicePing;
         const modal = await this.modalController.create({
           component: WifiNetworkComponent,
-          componentProps: { pingDevice: data2 }
+          componentProps: data2
         });
-        return await modal.present();
+         await modal.present();
+         const modalCLoseReponse = await modal.onDidDismiss();
+         this.modalController.dismiss({closePrvModel: true});
       } catch (e) {
         this.isScanningDevice = true;
         this.errorMessage = e;
       }
     }, 5000);
   }
+
   scanDevice() {
     this.mode = "scan";
     this.isScanningDevice = true;

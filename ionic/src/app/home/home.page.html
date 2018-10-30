@@ -61,35 +61,51 @@
           </ion-item>
         </ion-list>
         <ion-list class="grid-item-header" *ngIf="device && device.type =='access'">
-          <ion-item class="grid-item-header" (click)="addEmployee(device)">
-            <ion-icon slot="start" mode="md" name="add"></ion-icon>
-            <ion-label class="item-padding"> Add Employee</ion-label>
-          </ion-item>
-          <ion-item class="grid-item-header" (click)="deleteEmployee(device)">
-            <ion-icon slot="start" mode="md" name="trash"></ion-icon>
-            <ion-label class="item-padding"> Remove Employee</ion-label>
-          </ion-item>
-          <ion-item class="grid-item-header" (click)="disableEmployee(device)">
-            <ion-icon slot="start" name="eye-off"></ion-icon>
-            <ion-label class="item-padding">Disable Employee</ion-label>
-          </ion-item>
-          <ion-item class="grid-item-header">
-            <ion-icon slot="start" ios="ios-sync" md="md-sync"></ion-icon>
-            <ion-label class="item-padding"> Sync Employee</ion-label>
-          </ion-item>
-          <ion-item class="grid-item-header" (click)="listEmployee(device)">
-            <ion-icon slot="start" mode="ios" name="list-box"></ion-icon>
-            <ion-label class="item-padding">List Employee</ion-label>
-          </ion-item>
-          
-          <ion-item class="grid-item-header">
-            <ion-icon md="md-options" slot="start" ios="ios-options"></ion-icon>
-            <ion-label class="item-padding"> Set special mode</ion-label>
-          </ion-item>
-          <ion-item class="grid-item-header">
-            <ion-icon name="cloud-download" slot="start" mode="ios"></ion-icon>
-            <ion-label class="item-padding">Download Data</ion-label>
-          </ion-item>
+          <ion-list>
+            <ion-item class="grid-item-header" (click)="addEmployee(device)">
+              <ion-icon slot="start" mode="md" name="add"></ion-icon>
+              <ion-label class="item-padding"> Add Employee</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item class="grid-item-header" (click)="deleteEmployee(device)">
+              <ion-icon slot="start" mode="md" name="trash"></ion-icon>
+              <ion-label class="item-padding"> Remove Employee</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item class="grid-item-header" (click)="disableEmployee(device)">
+              <ion-icon slot="start" name="eye-off"></ion-icon>
+              <ion-label class="item-padding">Disable Employee</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item class="grid-item-header">
+              <ion-icon slot="start" ios="ios-sync" md="md-sync"></ion-icon>
+              <ion-label class="item-padding"> Sync Employee</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item class="grid-item-header" (click)="listEmployee(device)">
+              <ion-icon slot="start" mode="ios" name="list-box"></ion-icon>
+              <ion-label class="item-padding">List Employee</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item class="grid-item-header">
+              <ion-icon md="md-options" slot="start" ios="ios-options"></ion-icon>
+              <ion-label class="item-padding"> Set special mode</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-list>
+            <ion-item class="grid-item-header">
+              <ion-icon name="cloud-download" slot="start" mode="ios"></ion-icon>
+              <ion-label class="item-padding">Download Data</ion-label>
+            </ion-item>
+          </ion-list>
+          <ion-button class="button-radius" (click)="report()" expand="block" color="primary" fill="clear">{{loading ? '' : 'Report'}}
+            <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
+          </ion-button>
         </ion-list>
         <ion-list>
           <ion-grid no-padding class="group">
