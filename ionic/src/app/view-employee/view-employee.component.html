@@ -9,6 +9,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
+  <ion-toolbar>
+    <ion-searchbar [debounce]="250" (ionInput)="filterEmployee($event)" [(ngModel)]="searchText"></ion-searchbar>
+  </ion-toolbar>
   <ion-card *ngFor="let employee of getEmployee">
     <ion-card-content no-padding>
       <ion-list class="grid-item-header" no-padding>
@@ -39,7 +42,7 @@
                 <ion-item no-lines class="report" no-lines no-padding>
                   <span class="report--text">Report</span>
                   <ion-datetime no-padding text-center no-padding class="date" displayFormat="MM/DD/YYYY" [pickerOptions]="customPickerOptions"
-                    fill="outline"  max="{{maxDate}}" (click)="setEmployee(employee,ev)">
+                    fill="outline" max="{{maxDate}}" (click)="setEmployee(employee,ev)">
                   </ion-datetime>
                 </ion-item>
               </ion-list>

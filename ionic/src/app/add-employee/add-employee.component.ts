@@ -29,7 +29,8 @@ export class AddEmployeeComponent implements OnInit {
   customPickerOptions;
   employee;
   event;
-
+  searchText: string = '';
+  refEmployeeList;
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
@@ -78,7 +79,7 @@ export class AddEmployeeComponent implements OnInit {
 
   async addEmployee(employee) {
     try {
-      this.employeeData = await this.deviceService.getEmployee(employee,this.employeeList);
+      this.employeeData = await this.deviceService.getEmployee(employee, this.employeeList);
       if (this.employeeData) {
         this.enrollCard.isEmployeeExist = true;
       } else {
@@ -87,6 +88,18 @@ export class AddEmployeeComponent implements OnInit {
     }
     catch (e) {
       this.errorMessage = true;
+    }
+  }
+  filterEmployee(searchText) {
+    if (searchText.detail.data && searchText.detail.data.length) {
+      this.searchText += searchText.detail.data;
+      this.employeeList = this.refEmployeeList;
+      this.employeeList = this.employeeList.filter((employee) => {
+        return employee.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1;
+      });
+    } else {
+      this.searchText = '';
+      this.employeeList = this.refEmployeeList;
     }
   }
   async employeeFoundSuccessFully() {
@@ -137,10 +150,10 @@ export class AddEmployeeComponent implements OnInit {
       }
     }
     catch (e) {
-      this.presentAlert() 
+      this.presentAlert()
     }
   }
- 
+
 
   async presentAlert() {
     const alert = await this.alertController.create({
@@ -151,13 +164,14 @@ export class AddEmployeeComponent implements OnInit {
     await alert.present();
   }
   async employeesList() {
-    this.loading=true
+    this.loading = true
     try {
-      this.loading=false;
+      this.loading = false;
       this.employeeList = await this.apiServices.getEmployeesList();
+      this.refEmployeeList = JSON.parse(JSON.stringify(this.employeeList));
     }
     catch (e) {
-      this.loading=false;
+      this.loading = false;
     }
   }
 }

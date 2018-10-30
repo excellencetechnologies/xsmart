@@ -9,6 +9,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content padding>
+    <ion-toolbar>
+      <ion-searchbar [debounce]="250" (ionInput)="filterEmployee($event)"></ion-searchbar>
+    </ion-toolbar>
   <ion-spinner *ngIf="loading" name="bubbles"></ion-spinner>
   <div *ngIf="!enrollCard.isEmployeeExist">
     <ion-card *ngFor="let employee of employeeList">

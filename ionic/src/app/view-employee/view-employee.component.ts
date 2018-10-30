@@ -25,6 +25,8 @@ export class ViewEmployeeComponent implements OnInit {
   customPickerOptions;
   employee;
   event;
+  refEmployeeList;
+  searchText: string = '';
   constructor(
     private deviceService: DeviceService,
     private route: ActivatedRoute,
@@ -108,8 +110,21 @@ export class ViewEmployeeComponent implements OnInit {
   async employeesList() {
     try {
       this.getEmployee = await this.apiService.getEmployeesList();
+      this.refEmployeeList = JSON.parse(JSON.stringify(this.getEmployee));
     }
     catch (e) {
+    }
+  }
+  filterEmployee(searchText) {
+    if (searchText.detail.data && searchText.detail.data.length) {
+      this.searchText += searchText.detail.data;
+      this.getEmployee = this.refEmployeeList;
+      this.getEmployee = this.getEmployee.filter((employee) => {
+        return employee.name.toLowerCase().indexOf(this.searchText.toLowerCase()) > -1;
+      });
+    } else {
+      this.searchText = '';
+      this.getEmployee = this.refEmployeeList;
     }
   }
 

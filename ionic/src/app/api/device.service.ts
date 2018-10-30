@@ -188,6 +188,7 @@ export class DeviceService {
                 emp = element;
             }
         })
+        console.log(emp);
         return emp;
     }
     currentDate() {

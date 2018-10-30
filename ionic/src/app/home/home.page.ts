@@ -75,7 +75,7 @@ export class HomePage implements OnInit {
     else if (this.platform.is("cordova")) {
       const liveStatus = await this.nativeStorage.getItem('live')
       if (liveStatus != undefined)
-        this.live = liveStatus;
+        this.live = liveStatus;  
     }
     this.deviceSubscription = this._event.devices.subscribe(async (res) => {
       this.time = res.deviceTime;
